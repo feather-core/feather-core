@@ -15,6 +15,10 @@
 # Generated files
 .idea/**/contentModel.xml
 
+# Copyright
+!.idea/copyright/feather_core.xml
+!.idea/copyright/profiles_settings.xml
+
 # Sensitive or high-churn files
 .idea/**/dataSources/
 .idea/**/dataSources.ids
@@ -76,7 +80,11 @@ fabric.properties
 # Ignores the whole .idea folder and all .iml files
 # See https://github.com/joeblau/gitignore.io/issues/186 and https://github.com/joeblau/gitignore.io/issues/360
 
-.idea/
+## Modified by PROgrammer_JARvis so that licensing is not ignored
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/vcs.xml
+## End of PROgrammer_JARvis's modifications
 
 # Reason: https://github.com/joeblau/gitignore.io/issues/186#issuecomment-249601023
 

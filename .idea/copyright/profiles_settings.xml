@@ -1,0 +1,7 @@
+<component name="CopyrightManager">
+  <settings default="feather-core">
+    <module2copyright>
+      <element module="All" copyright="feather-core" />
+    </module2copyright>
+  </settings>
+</component>
