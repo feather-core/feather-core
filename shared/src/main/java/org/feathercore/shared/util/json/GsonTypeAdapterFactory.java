@@ -23,52 +23,49 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import lombok.NonNull;
+import lombok.val;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
 public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
-    @SuppressWarnings("unchecked")
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> token) {
-        Class<T> oclass = (Class<T>) token.getRawType();
+    public <T> TypeAdapter<T> create(@NonNull final Gson gson, @NonNull final TypeToken<T> token) {
+        @SuppressWarnings("unchecked")val oclass = (Class<T>) token.getRawType();
 
         if (!oclass.isEnum()) {
             return null;
         } else {
-            final Map<String, T> map = new HashMap<>();
+            val map = new HashMap<String, T>();
 
             for (T t : oclass.getEnumConstants()) {
                 map.put(deserialize(t), t);
             }
 
             return new TypeAdapter<T>() {
-                public void write(JsonWriter writer, T value) throws IOException {
-                    if (value == null) {
-                        writer.nullValue();
-                    } else {
-                        writer.value(deserialize(value));
-                    }
+                public void write(@NonNull final JsonWriter writer, @NonNull final T value) throws IOException {
+                    if (value == null) writer.nullValue();
+                    else writer.value(deserialize(value));
                 }
 
-                public T read(JsonReader reader) throws IOException {
+                public T read(@NonNull final JsonReader reader) throws IOException {
                     if (reader.peek() == JsonToken.NULL) {
                         reader.nextNull();
+
                         return null;
-                    } else {
-                        return map.get(reader.nextString());
-                    }
+                    } else return map.get(reader.nextString());
                 }
             };
         }
     }
 
-    private String deserialize(Object value) {
-        return value instanceof Enum ? ((Enum) value).name().toLowerCase(Locale.US) : value.toString().toLowerCase(Locale.US);
+    private String deserialize(@NonNull final Object value) {
+        return value instanceof Enum
+                ? ((Enum) value).name().toLowerCase(Locale.US) : value.toString().toLowerCase(Locale.US);
     }
 }
