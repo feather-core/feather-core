@@ -17,12 +17,12 @@
 package org.feathercore.protocol.packet.login.server;
 
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class S03EnableCompression extends Packet {
+public class S03EnableCompression implements Packet {
 
     private int compressionThreshold;
 
@@ -35,11 +35,6 @@ public class S03EnableCompression extends Packet {
 
     public int getCompressionThreshold() {
         return compressionThreshold;
-    }
-
-    @Override
-    public int getId() {
-        return 0x03;
     }
 
     @Override

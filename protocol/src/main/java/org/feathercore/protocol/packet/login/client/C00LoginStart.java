@@ -18,12 +18,12 @@ package org.feathercore.protocol.packet.login.client;
 
 import com.mojang.authlib.GameProfile;
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C00LoginStart extends Packet {
+public class C00LoginStart implements Packet {
 
     private GameProfile profile;
 
@@ -36,11 +36,6 @@ public class C00LoginStart extends Packet {
 
     public GameProfile getProfile() {
         return profile;
-    }
-
-    @Override
-    public int getId() {
-        return 0x00;
     }
 
     @Override

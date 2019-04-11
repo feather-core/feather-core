@@ -18,12 +18,12 @@ package org.feathercore.protocol.packet.login.server;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class S00Disconnect extends Packet {
+public class S00Disconnect implements Packet {
 
     private BaseComponent reason;
 
@@ -36,11 +36,6 @@ public class S00Disconnect extends Packet {
 
     public BaseComponent getReason() {
         return this.reason;
-    }
-
-    @Override
-    public int getId() {
-        return 0x00;
     }
 
     @Override

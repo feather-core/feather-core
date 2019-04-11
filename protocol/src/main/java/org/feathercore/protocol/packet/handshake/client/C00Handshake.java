@@ -17,13 +17,13 @@
 package org.feathercore.protocol.packet.handshake.client;
 
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
 import org.feathercore.protocol.packet.ConnectionState;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C00Handshake extends Packet {
+public class C00Handshake implements Packet {
 
     private int protocolVersion;
     private String ip;
@@ -54,11 +54,6 @@ public class C00Handshake extends Packet {
 
     public ConnectionState getRequestedState() {
         return requestedState;
-    }
-
-    @Override
-    public int getId() {
-        return 0x00;
     }
 
     @Override

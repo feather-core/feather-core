@@ -20,7 +20,7 @@ import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 import org.feathercore.shared.util.json.JsonUtil;
 
 import java.lang.reflect.Type;
@@ -29,16 +29,11 @@ import java.util.UUID;
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class S00ServerInfo extends Packet {
+public class S00ServerInfo implements Packet {
 
     // FIXME: 09.04.2019
     private final static Gson GSON = new GsonBuilder().create();//(new GsonBuilder()).registerTypeAdapter(MinecraftProtocolVersionIdentifier.class, new MinecraftProtocolVersionIdentifier.Serializer()).registerTypeAdapter(PlayerCountData.class, new PlayerCountData.Serializer()).registerTypeAdapter(ServerStatusResponse.class, new Serializer()).registerTypeHierarchyAdapter(ChatComponent.class, new ChatComponent.Serializer()).registerTypeHierarchyAdapter(ChatStyle.class, new ChatStyle.Serializer()).registerTypeAdapterFactory(new TypeAdapterFactory()).create();
     private ServerStatusResponse response;
-
-    @Override
-    public int getId() {
-        return 0x00;
-    }
 
     @Override
     public void write(Buffer buffer) {

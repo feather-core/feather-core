@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol;
+package org.feathercore.protocol.packet;
+
+import org.feathercore.protocol.Buffer;
+import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Base for all packets used in standard minecraft protocol.
  */
-public abstract class Packet implements Cloneable {
+public interface Packet {
 
-    public abstract int getId();
-
-    public abstract void write(Buffer buffer);
-
-    public abstract void read(Buffer buffer);
-
-    @Override
-    public Packet clone() {
-        try {
-            return (Packet) super.clone();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return null;
-        }
+    default void read(@NotNull Buffer buffer) {
+        throw new UnsupportedOperationException("Packet " + getClass().getName() + " is not an incoming packet");
     }
 
+    default void write(@NotNull Buffer buffer) {
+        throw new UnsupportedOperationException("Packet " + getClass().getName() + " is not an outcoming packet");
+    }
 }

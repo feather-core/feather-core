@@ -17,14 +17,14 @@
 package org.feathercore.protocol.packet.login.server;
 
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 import java.security.PublicKey;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class S01EncryptionRequest extends Packet {
+public class S01EncryptionRequest implements Packet {
 
     private String hashedServerID;
     private PublicKey publicKey;
@@ -49,11 +49,6 @@ public class S01EncryptionRequest extends Packet {
 
     public byte[] getVerifyToken() {
         return verifyToken;
-    }
-
-    @Override
-    public int getId() {
-        return 0x01;
     }
 
     @Override

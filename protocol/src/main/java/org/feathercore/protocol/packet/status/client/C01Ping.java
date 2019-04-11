@@ -17,12 +17,12 @@
 package org.feathercore.protocol.packet.status.client;
 
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C01Ping extends Packet {
+public class C01Ping implements Packet {
 
     private long clientTime;
 
@@ -35,11 +35,6 @@ public class C01Ping extends Packet {
 
     public long getClientTime() {
         return clientTime;
-    }
-
-    @Override
-    public int getId() {
-        return 0x01;
     }
 
     @Override

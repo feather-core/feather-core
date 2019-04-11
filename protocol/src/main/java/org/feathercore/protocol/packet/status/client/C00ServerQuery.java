@@ -17,16 +17,12 @@
 package org.feathercore.protocol.packet.status.client;
 
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C00ServerQuery extends Packet {
-    @Override
-    public int getId() {
-        return 0x00;
-    }
+public class C00ServerQuery implements Packet {
 
     @Override
     public void write(Buffer buffer) {

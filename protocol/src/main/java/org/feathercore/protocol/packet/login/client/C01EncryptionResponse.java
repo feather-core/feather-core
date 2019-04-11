@@ -17,7 +17,7 @@
 package org.feathercore.protocol.packet.login.client;
 
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.Packet;
 
 import javax.crypto.SecretKey;
 import java.security.PrivateKey;
@@ -25,7 +25,7 @@ import java.security.PrivateKey;
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C01EncryptionResponse extends Packet {
+public class C01EncryptionResponse implements Packet {
 
     private byte[] secretKeyEncrypted = new byte[0];
     private byte[] verifyTokenEncrypted = new byte[0];
@@ -46,11 +46,6 @@ public class C01EncryptionResponse extends Packet {
     public byte[] getVerifyToken(PrivateKey key) {
         throw new UnsupportedOperationException("Should be recreated using Mojang API");
         // TODO: return key == null ? this.verifyTokenEncrypted : CryptManager.decryptData(key, this.verifyTokenEncrypted);
-    }
-
-    @Override
-    public int getId() {
-        return 0x01;
     }
 
     @Override
