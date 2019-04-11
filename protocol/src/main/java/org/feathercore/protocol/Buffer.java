@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol;
+package org.feathercore.protocol;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

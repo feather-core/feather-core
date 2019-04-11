@@ -14,45 +14,42 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol.packet.login.server;
+package org.feathercore.protocol.packet.login.server;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class S00Disconnect extends Packet {
+public class S03EnableCompression extends Packet {
 
-    private BaseComponent reason;
+    private int compressionThreshold;
 
-    public S00Disconnect(BaseComponent reason) {
-        this.reason = reason;
+    public S03EnableCompression(int compressionThreshold) {
+        this.compressionThreshold = compressionThreshold;
     }
 
-    public S00Disconnect() {
+    public S03EnableCompression() {
     }
 
-    public BaseComponent getReason() {
-        return this.reason;
+    public int getCompressionThreshold() {
+        return compressionThreshold;
     }
 
     @Override
     public int getId() {
-        return 0x00;
+        return 0x03;
     }
 
     @Override
     public void write(Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        // TODO buffer.writeChatComponent(this.reason);
+        buffer.writeVarInt(this.compressionThreshold);
     }
 
     @Override
     public void read(Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        // TODO this.reason = buffer.readChatComponent();
+        this.compressionThreshold = buffer.readVarInt();
     }
 
 }

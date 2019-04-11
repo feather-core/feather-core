@@ -14,42 +14,48 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol.packet.login.server;
+package org.feathercore.protocol.packet.login.server;
 
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
+import com.mojang.authlib.GameProfile;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
+
+import java.util.UUID;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class S03EnableCompression extends Packet {
+public class S02LoginSuccess extends Packet {
 
-    private int compressionThreshold;
+    private GameProfile profile;
 
-    public S03EnableCompression(int compressionThreshold) {
-        this.compressionThreshold = compressionThreshold;
+    public S02LoginSuccess(GameProfile profile) {
+        this.profile = profile;
     }
 
-    public S03EnableCompression() {
+    public S02LoginSuccess() {
     }
 
-    public int getCompressionThreshold() {
-        return compressionThreshold;
+    public GameProfile getProfile() {
+        return profile;
     }
 
     @Override
     public int getId() {
-        return 0x03;
+        return 0x02;
     }
 
     @Override
     public void write(Buffer buffer) {
-        buffer.writeVarInt(this.compressionThreshold);
+        UUID uuid = this.profile.getId();
+        buffer.writeString(uuid == null ? "" : uuid.toString());
+        buffer.writeString(this.profile.getName());
     }
 
     @Override
     public void read(Buffer buffer) {
-        this.compressionThreshold = buffer.readVarInt();
+        UUID uuid = UUID.fromString(buffer.readString(36));
+        String name = buffer.readString(16);
+        this.profile = new GameProfile(uuid, name);
     }
-
 }

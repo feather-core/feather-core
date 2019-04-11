@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol.packet.login.client;
+package org.feathercore.protocol.packet.login.client;
 
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
 
 import javax.crypto.SecretKey;
 import java.security.PrivateKey;

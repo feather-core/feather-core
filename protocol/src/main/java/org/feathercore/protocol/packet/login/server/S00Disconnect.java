@@ -14,28 +14,28 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol.packet.login.client;
+package org.feathercore.protocol.packet.login.server;
 
-import com.mojang.authlib.GameProfile;
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
+import net.md_5.bungee.api.chat.BaseComponent;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C00LoginStart extends Packet {
+public class S00Disconnect extends Packet {
 
-    private GameProfile profile;
+    private BaseComponent reason;
 
-    public C00LoginStart(GameProfile profile) {
-        this.profile = profile;
+    public S00Disconnect(BaseComponent reason) {
+        this.reason = reason;
     }
 
-    public C00LoginStart() {
+    public S00Disconnect() {
     }
 
-    public GameProfile getProfile() {
-        return profile;
+    public BaseComponent getReason() {
+        return this.reason;
     }
 
     @Override
@@ -45,12 +45,14 @@ public class C00LoginStart extends Packet {
 
     @Override
     public void write(Buffer buffer) {
-        buffer.writeString(this.profile.getName());
+        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        // TODO buffer.writeChatComponent(this.reason);
     }
 
     @Override
     public void read(Buffer buffer) {
-        this.profile = new GameProfile(null, buffer.readString(16));
+        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        // TODO this.reason = buffer.readChatComponent();
     }
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.feathercore.network.packet;
+package org.feathercore.protocol.packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019

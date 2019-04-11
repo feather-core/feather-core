@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol.packet.status.server;
+package org.feathercore.protocol.packet.status.server;
 
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
 import org.feathercore.shared.util.json.JsonUtil;
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
 
 import java.lang.reflect.Type;
 import java.util.UUID;

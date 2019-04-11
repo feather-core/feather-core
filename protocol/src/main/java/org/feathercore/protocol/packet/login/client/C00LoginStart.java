@@ -14,42 +14,43 @@
  * limitations under the License.
  */
 
-package org.feathercore.network.packet.status.client;
+package org.feathercore.protocol.packet.login.client;
 
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
+import com.mojang.authlib.GameProfile;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class C01Ping extends Packet {
+public class C00LoginStart extends Packet {
 
-    private long clientTime;
+    private GameProfile profile;
 
-    public C01Ping(long clientTime) {
-        this.clientTime = clientTime;
+    public C00LoginStart(GameProfile profile) {
+        this.profile = profile;
     }
 
-    public C01Ping() {
+    public C00LoginStart() {
     }
 
-    public long getClientTime() {
-        return clientTime;
+    public GameProfile getProfile() {
+        return profile;
     }
 
     @Override
     public int getId() {
-        return 0x01;
+        return 0x00;
     }
 
     @Override
     public void write(Buffer buffer) {
-        buffer.writeLong(this.clientTime);
+        buffer.writeString(this.profile.getName());
     }
 
     @Override
     public void read(Buffer buffer) {
-        this.clientTime = buffer.readLong();
+        this.profile = new GameProfile(null, buffer.readString(16));
     }
 
 }

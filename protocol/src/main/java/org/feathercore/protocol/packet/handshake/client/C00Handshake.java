@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.featherframework.protocol.packet.handshake.client;
+package org.feathercore.protocol.packet.handshake.client;
 
-import org.feathercore.network.packet.ConnectionState;
-import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.Packet;
+import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.Packet;
+import org.feathercore.protocol.packet.ConnectionState;
 
 /**
  * Created by k.shandurenko on 09/04/2019
