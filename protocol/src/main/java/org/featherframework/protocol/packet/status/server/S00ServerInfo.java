@@ -18,9 +18,9 @@ package org.featherframework.protocol.packet.status.server;
 
 import com.google.gson.*;
 import com.mojang.authlib.GameProfile;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.shared.util.json.JsonUtil;
 import org.featherframework.protocol.Buffer;
-import org.featherframework.protocol.ChatComponent;
 import org.featherframework.protocol.Packet;
 
 import java.lang.reflect.Type;
@@ -52,12 +52,12 @@ public class S00ServerInfo extends Packet {
 
     public static class ServerStatusResponse {
 
-        private ChatComponent serverMotd;
+        private net.md_5.bungee.api.chat.BaseComponent serverMotd;
         private PlayerCountData playerCountData;
         private MinecraftProtocolVersionIdentifier protocolVersionIdentifier;
         private String favicon;
 
-        public ServerStatusResponse(ChatComponent serverMotd, PlayerCountData playerCountData, MinecraftProtocolVersionIdentifier protocolVersionIdentifier, String favicon) {
+        public ServerStatusResponse(BaseComponent serverMotd, PlayerCountData playerCountData, MinecraftProtocolVersionIdentifier protocolVersionIdentifier, String favicon) {
             this.serverMotd = serverMotd;
             this.playerCountData = playerCountData;
             this.protocolVersionIdentifier = protocolVersionIdentifier;
@@ -67,11 +67,11 @@ public class S00ServerInfo extends Packet {
         public ServerStatusResponse() {
         }
 
-        public ChatComponent getServerMotd() {
+        public BaseComponent getServerMotd() {
             return serverMotd;
         }
 
-        public void setServerMotd(ChatComponent serverMotd) {
+        public void setServerMotd(BaseComponent serverMotd) {
             this.serverMotd = serverMotd;
         }
 
@@ -219,7 +219,7 @@ public class S00ServerInfo extends Packet {
             ServerStatusResponse serverstatusresponse = new ServerStatusResponse();
 
             if (jsonobject.has("description")) {
-                serverstatusresponse.setServerMotd(p_deserialize_3_.deserialize(jsonobject.get("description"), ChatComponent.class));
+                serverstatusresponse.setServerMotd(p_deserialize_3_.deserialize(jsonobject.get("description"), BaseComponent.class));
             }
 
             if (jsonobject.has("players")) {

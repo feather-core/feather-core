@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package org.feathercore.network.packet.login.server;
+package org.featherframework.protocol.packet.login.server;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.featherframework.protocol.Buffer;
 import org.featherframework.protocol.Packet;
 
@@ -24,20 +25,18 @@ import org.featherframework.protocol.Packet;
  */
 public class S00Disconnect extends Packet {
 
-    /* TODO
-    private ChatComponent reason;
+    private BaseComponent reason;
 
-    public S00Disconnect(ChatComponent reason) {
+    public S00Disconnect(BaseComponent reason) {
         this.reason = reason;
     }
 
     public S00Disconnect() {
     }
 
-    public ChatComponent getReason() {
+    public BaseComponent getReason() {
         return this.reason;
     }
-    */
 
     @Override
     public int getId() {

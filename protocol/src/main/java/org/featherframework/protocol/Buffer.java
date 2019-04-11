@@ -368,12 +368,12 @@ public abstract class Buffer {
         }
     }
 
-    /* TODO ChatComponent support
-    public ChatComponent readChatComponent() {
+    /* TODO BaseComponent support
+    public BaseComponent readChatComponent() {
         return ChatComponent.Serializer.jsonToComponent(readString(32767));
     }
 
-    public void writeChatComponent(ChatComponent component) {
+    public void writeChatComponent(BaseComponent component) {
         writeString(ChatComponent.Serializer.componentToJson(component));
     }
     */
