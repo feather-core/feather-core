@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol;
+package org.feathercore.protocol.netty.codec;
 
-import org.feathercore.protocol.packet.Packet;
-import org.jetbrains.annotations.NotNull;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
 
-import java.net.InetSocketAddress;
+import javax.crypto.Cipher;
+import javax.crypto.ShortBufferException;
 
 /**
  * Created by k.shandurenko on 12/04/2019
  */
-public interface Connection {
+public class CipherEncoder extends MessageToByteEncoder<ByteBuf> {
 
-    default void write(@NotNull Packet packet) {
-        write(packet.serialize());
+    private final CipherTranslator translator;
+
+    public CipherEncoder(Cipher cipher) {
+        this.translator = new CipherTranslator(cipher);
     }
 
-    void write(@NotNull byte[] bytes);
-
-    InetSocketAddress getRemoteAddress();
-
-    boolean isActive();
-
-    boolean isEncrypted();
+    @Override
+    protected void encode(ChannelHandlerContext ctx, ByteBuf in, ByteBuf out) throws ShortBufferException {
+        this.translator.cipher(in, out);
+    }
 
 }

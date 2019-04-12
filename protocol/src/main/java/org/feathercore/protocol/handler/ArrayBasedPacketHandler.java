@@ -20,6 +20,7 @@ import lombok.val;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +51,7 @@ public abstract class ArrayBasedPacketHandler implements PacketHandler {
     }
 
     @Override
-    public void handle(Connection connection, Packet packet) {
+    public void handle(@NotNull Connection connection, @NotNull Packet packet) {
         val handlers = this.handlers[packet.getID()];
         if (handlers == null) {
             return;

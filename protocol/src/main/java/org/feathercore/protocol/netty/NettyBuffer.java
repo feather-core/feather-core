@@ -146,6 +146,15 @@ public class NettyBuffer extends Buffer {
         this.buffer.writeBytes(bytes);
     }
 
+    @Override
+    public void writeBytes(byte[] bytes, int index, int size) {
+        this.buffer.writeBytes(bytes, index, size);
+    }
+
+    public void writeBytes(ByteBuf buffer) {
+        this.buffer.writeBytes(buffer);
+    }
+
     public void writeBytes(ByteBuf buffer, int index, int size) {
         this.buffer.writeBytes(buffer, index, size);
     }

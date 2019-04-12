@@ -69,6 +69,8 @@ public abstract class Buffer {
      */
     public abstract void writeBytes(byte[] bytes);
 
+    public abstract void writeBytes(byte[] bytes, int index, int size);
+
     /**
      * Reads an unsigned varint
      */
