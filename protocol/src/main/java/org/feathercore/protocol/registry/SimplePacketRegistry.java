@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.handler;
+package org.feathercore.protocol.registry;
 
 import lombok.NonNull;
 import org.feathercore.protocol.packet.Packet;

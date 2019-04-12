@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.handler;
+package org.feathercore.protocol.registry;
 
 import lombok.NonNull;
-import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -44,7 +43,7 @@ public interface PacketRegistry<P extends Packet> {
      * @param id identifier of the packet.
      * @return null, whether there is no packet type of given id; empty packet instance otherwise.
      */
-    default P createEmptyPacketByID(int id) {
+    default @Nullable P createEmptyPacketByID(int id) {
         PacketType<? extends P> type = getTypeByID(id);
         return type == null ? null : type.getSupplier().get();
     }

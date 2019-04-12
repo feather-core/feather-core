@@ -18,7 +18,10 @@ package org.feathercore.protocol.netty.util;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
-import org.feathercore.protocol.handler.PacketRegistry;
+import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.netty.HandlerBoss;
+import org.feathercore.protocol.registry.PacketRegistry;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -26,12 +29,14 @@ import org.feathercore.protocol.handler.PacketRegistry;
 public class NettyAttributes {
 
     public final static AttributeKey<PacketRegistry> PACKET_REGISTRY_ATTRIBUTE_KEY = AttributeKey.newInstance("PRAK");
+    public final static AttributeKey<Connection> CONNECTION_ATTRIBUTE_KEY = AttributeKey.newInstance("CAK");
+    public final static AttributeKey<HandlerBoss> HANDLER_BOSS_ATTRIBUTE_KEY = AttributeKey.newInstance("HBAK");
 
-    public static <T> void setAttribute(ChannelHandlerContext ctx, AttributeKey<T> key, T value) {
+    public static <T> void setAttribute(@NotNull ChannelHandlerContext ctx, @NotNull AttributeKey<T> key, @NotNull T value) {
         ctx.channel().attr(key).set(value);
     }
 
-    public static <T> T getAttribute(ChannelHandlerContext ctx, AttributeKey<T> key) {
+    public static <T> T getAttribute(@NotNull ChannelHandlerContext ctx, @NotNull AttributeKey<T> key) {
         return ctx.channel().hasAttr(key) ? ctx.channel().attr(key).get() : null;
     }
 

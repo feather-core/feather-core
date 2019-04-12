@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.handler;
+package org.feathercore.protocol.registry;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import lombok.val;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
 

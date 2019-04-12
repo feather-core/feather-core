@@ -20,7 +20,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
-import org.feathercore.protocol.handler.PacketRegistry;
+import org.feathercore.protocol.registry.PacketRegistry;
 import org.feathercore.protocol.netty.NettyBuffer;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
