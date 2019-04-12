@@ -24,6 +24,8 @@ import org.feathercore.protocol.packet.Packet;
  */
 public class S03EnableCompression implements Packet {
 
+    public final static int ID = 0x03;
+
     private int compressionThreshold;
 
     public S03EnableCompression(int compressionThreshold) {
@@ -45,6 +47,11 @@ public class S03EnableCompression implements Packet {
     @Override
     public void read(Buffer buffer) {
         this.compressionThreshold = buffer.readVarInt();
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

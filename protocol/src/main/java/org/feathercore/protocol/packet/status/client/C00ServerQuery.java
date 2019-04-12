@@ -24,6 +24,8 @@ import org.feathercore.protocol.packet.Packet;
  */
 public class C00ServerQuery implements Packet {
 
+    public final static int ID = 0x00;
+
     @Override
     public void write(Buffer buffer) {
 
@@ -32,5 +34,10 @@ public class C00ServerQuery implements Packet {
     @Override
     public void read(Buffer buffer) {
 
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 }

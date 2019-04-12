@@ -27,6 +27,8 @@ import java.security.PrivateKey;
  */
 public class C01EncryptionResponse implements Packet {
 
+    public final static int ID = 0x01;
+
     private byte[] secretKeyEncrypted = new byte[0];
     private byte[] verifyTokenEncrypted = new byte[0];
 
@@ -58,5 +60,10 @@ public class C01EncryptionResponse implements Packet {
     public void read(Buffer buffer) {
         this.secretKeyEncrypted = buffer.readByteArray();
         this.verifyTokenEncrypted = buffer.readByteArray();
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 }

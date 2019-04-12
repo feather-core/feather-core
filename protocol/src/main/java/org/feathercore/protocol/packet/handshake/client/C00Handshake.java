@@ -25,6 +25,8 @@ import org.feathercore.protocol.packet.Packet;
  */
 public class C00Handshake implements Packet {
 
+    public final static int ID = 0x00;
+
     private int protocolVersion;
     private String ip;
     private int port;
@@ -70,6 +72,11 @@ public class C00Handshake implements Packet {
         this.ip = buffer.readString();
         this.port = buffer.readShort();
         this.requestedState = ConnectionState.getByID(buffer.readVarInt());
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

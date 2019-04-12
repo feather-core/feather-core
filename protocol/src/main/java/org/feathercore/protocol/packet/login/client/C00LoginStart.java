@@ -25,6 +25,8 @@ import org.feathercore.protocol.packet.Packet;
  */
 public class C00LoginStart implements Packet {
 
+    public final static int ID = 0x00;
+
     private GameProfile profile;
 
     public C00LoginStart(GameProfile profile) {
@@ -46,6 +48,11 @@ public class C00LoginStart implements Packet {
     @Override
     public void read(Buffer buffer) {
         this.profile = new GameProfile(null, buffer.readString(16));
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

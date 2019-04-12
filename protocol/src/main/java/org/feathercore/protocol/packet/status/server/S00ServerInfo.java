@@ -31,6 +31,8 @@ import java.util.UUID;
  */
 public class S00ServerInfo implements Packet {
 
+    public final static int ID = 0x00;
+
     // FIXME: 09.04.2019
     private final static Gson GSON = new GsonBuilder().create();//(new GsonBuilder()).registerTypeAdapter(MinecraftProtocolVersionIdentifier.class, new MinecraftProtocolVersionIdentifier.Serializer()).registerTypeAdapter(PlayerCountData.class, new PlayerCountData.Serializer()).registerTypeAdapter(ServerStatusResponse.class, new Serializer()).registerTypeHierarchyAdapter(ChatComponent.class, new ChatComponent.Serializer()).registerTypeHierarchyAdapter(ChatStyle.class, new ChatStyle.Serializer()).registerTypeAdapterFactory(new TypeAdapterFactory()).create();
     private ServerStatusResponse response;
@@ -43,6 +45,11 @@ public class S00ServerInfo implements Packet {
     @Override
     public void read(Buffer buffer) {
         this.response = GSON.fromJson(buffer.readString(32767), ServerStatusResponse.class);
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
     public static class ServerStatusResponse {

@@ -26,6 +26,8 @@ import java.security.PublicKey;
  */
 public class S01EncryptionRequest implements Packet {
 
+    public final static int ID = 0x01;
+
     private String hashedServerID;
     private PublicKey publicKey;
     private byte[] verifyToken;
@@ -64,6 +66,11 @@ public class S01EncryptionRequest implements Packet {
         this.hashedServerID = buffer.readString(20);
         // TODO: this.publicKey = CryptManager.decodePublicKey(buffer.readByteArray());
         this.verifyToken = buffer.readByteArray();
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

@@ -25,6 +25,8 @@ import org.feathercore.protocol.packet.Packet;
  */
 public class S00Disconnect implements Packet {
 
+    public final static int ID = 0x00;
+
     private BaseComponent reason;
 
     public S00Disconnect(BaseComponent reason) {
@@ -48,6 +50,11 @@ public class S00Disconnect implements Packet {
     public void read(Buffer buffer) {
         if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
         // TODO this.reason = buffer.readChatComponent();
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

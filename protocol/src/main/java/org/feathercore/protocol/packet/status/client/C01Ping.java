@@ -24,6 +24,8 @@ import org.feathercore.protocol.packet.Packet;
  */
 public class C01Ping implements Packet {
 
+    public final static int ID = 0x01;
+
     private long clientTime;
 
     public C01Ping(long clientTime) {
@@ -45,6 +47,11 @@ public class C01Ping implements Packet {
     @Override
     public void read(Buffer buffer) {
         this.clientTime = buffer.readLong();
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 
 }

@@ -27,6 +27,8 @@ import java.util.UUID;
  */
 public class S02LoginSuccess implements Packet {
 
+    public final static int ID = 0x02;
+
     private GameProfile profile;
 
     public S02LoginSuccess(GameProfile profile) {
@@ -52,5 +54,10 @@ public class S02LoginSuccess implements Packet {
         UUID uuid = UUID.fromString(buffer.readString(36));
         String name = buffer.readString(16);
         this.profile = new GameProfile(uuid, name);
+    }
+
+    @Override
+    public int getID() {
+        return ID;
     }
 }
