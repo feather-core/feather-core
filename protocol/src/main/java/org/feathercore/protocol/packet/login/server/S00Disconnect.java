@@ -54,7 +54,7 @@ public class S00Disconnect implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

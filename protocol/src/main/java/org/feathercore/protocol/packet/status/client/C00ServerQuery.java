@@ -38,7 +38,7 @@ public class C00ServerQuery implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 }

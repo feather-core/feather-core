@@ -52,7 +52,7 @@ public class C00LoginStart implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

@@ -76,7 +76,7 @@ public class C00Handshake implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

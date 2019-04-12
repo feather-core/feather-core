@@ -33,11 +33,11 @@ public interface Packet {
         throw new UnsupportedOperationException("Packet " + getClass().getName() + " is not an outcoming packet");
     }
 
-    int getID();
+    int getId();
 
     default byte[] serialize() {
         NettyBuffer buffer = NettyBuffer.newInstance();
-        buffer.writeVarInt(getID());
+        buffer.writeVarInt(getId());
         write(buffer);
         try {
             return buffer.readBytes(buffer.readableBytes());

@@ -58,7 +58,7 @@ public class S02LoginSuccess implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 }

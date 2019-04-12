@@ -51,7 +51,7 @@ public class C01Ping implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

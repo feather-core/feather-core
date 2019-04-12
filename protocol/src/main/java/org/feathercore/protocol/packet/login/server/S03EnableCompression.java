@@ -51,7 +51,7 @@ public class S03EnableCompression implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

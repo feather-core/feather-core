@@ -70,7 +70,7 @@ public class S01EncryptionRequest implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

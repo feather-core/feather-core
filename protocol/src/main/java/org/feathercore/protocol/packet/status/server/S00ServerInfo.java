@@ -49,7 +49,7 @@ public class S00ServerInfo implements Packet {
     }
 
     @Override
-    public int getID() {
+    public int getId() {
         return ID;
     }
 

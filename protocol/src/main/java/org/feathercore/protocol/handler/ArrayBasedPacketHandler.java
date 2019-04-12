@@ -52,7 +52,7 @@ public abstract class ArrayBasedPacketHandler implements PacketHandler {
 
     @Override
     public void handle(@NotNull Connection connection, @NotNull Packet packet) {
-        val handlers = this.handlers[packet.getID()];
+        val handlers = this.handlers[packet.getId()];
         if (handlers == null) {
             return;
         }
