@@ -30,7 +30,24 @@ import java.util.function.Predicate;
  */
 public interface PacketRegistry<P extends Packet> {
 
-    P createEmptyPacket(int id);
+    /**
+     * Gets packet type of given id.
+     *
+     * @param id identifier of the packet type.
+     * @return null, whether there is no packet type of given id; packet type otherwise.
+     */
+    PacketType<? extends P> getTypeByID(int id);
+
+    /**
+     * Creates empty packet (wrapper) by it's identifier.
+     *
+     * @param id identifier of the packet.
+     * @return null, whether there is no packet type of given id; empty packet instance otherwise.
+     */
+    default P createEmptyPacketByID(int id) {
+        PacketType<? extends P> type = getTypeByID(id);
+        return type == null ? null : type.getSupplier().get();
+    }
 
     interface Builder<P extends Packet> {
 

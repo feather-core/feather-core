@@ -22,6 +22,7 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CorruptedFrameException;
 import org.feathercore.protocol.handler.PacketRegistry;
 import org.feathercore.protocol.netty.NettyBuffer;
+import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
 
 import java.util.List;
@@ -34,16 +35,16 @@ public class InboundPacketDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         NettyBuffer buffer = NettyBuffer.newInstance(in);
         int packetID = buffer.readVarInt();
-        Packet packet = getPacketRegistryFromSomewhere().createEmptyPacket(packetID);
+        PacketRegistry<?> registry = NettyAttributes.getAttribute(ctx, NettyAttributes.PACKET_REGISTRY_ATTRIBUTE_KEY);
+        if (registry == null) {
+            throw new IllegalStateException("Could not retrieve context packet registry");
+        }
+        Packet packet = registry.createEmptyPacketByID(packetID);
         if (packet == null) {
             throw new CorruptedFrameException("Packet with unknown id: " + packetID);
         }
         packet.read(buffer);
         out.add(packet);
-    }
-
-    private PacketRegistry getPacketRegistryFromSomewhere() {
-        return null;
     }
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.netty;
+package org.feathercore.protocol.netty.util;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
