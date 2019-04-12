@@ -35,7 +35,6 @@ import javax.crypto.spec.IvParameterSpec;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.security.spec.AlgorithmParameterSpec;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -82,7 +81,7 @@ public class NettyConnection implements Connection {
             if (handler instanceof Compressor) {
                 ((Compressor) handler).setThreshold(threshold);
             } else {
-                channel.pipeline().addBefore("encoder", "compressor", new Compressor(threshold));
+                channel.pipeline().addAfter("prepender", "compressor", new Compressor(threshold));
             }
             handler = channel.pipeline().get("decompressor");
             if (handler instanceof Decompressor) {
