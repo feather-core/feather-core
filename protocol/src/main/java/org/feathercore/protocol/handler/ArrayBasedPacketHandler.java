@@ -16,6 +16,8 @@
 
 package org.feathercore.protocol.handler;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.val;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
@@ -31,6 +33,7 @@ import java.util.function.BiConsumer;
 /**
  * Created by k.shandurenko on 12/04/2019
  */
+@NoArgsConstructor(access = AccessLevel.PACKAGE)
 public abstract class ArrayBasedPacketHandler implements PacketHandler {
 
     private List<BiConsumer<Connection, Packet>>[] handlers;
@@ -41,12 +44,14 @@ public abstract class ArrayBasedPacketHandler implements PacketHandler {
     public void register() {
         this.handlers = new List[this.temporaryMap.keySet().stream().mapToInt(i -> i).max().orElse(0)];
         this.temporaryMap.forEach((id, handlers) -> this.handlers[id] = new ArrayList<>(handlers));
-        this.temporaryMap.clear();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <P extends Packet> void addHandler(PacketType<P> type, BiConsumer<Connection, P> handler) {
+        if (this.handlers != null) {
+            throw new IllegalStateException("ArrayBasedPacketHandler has already been registered: you can't add handlers anymore");
+        }
         this.temporaryMap.computeIfAbsent(type.getId(), i -> new ArrayList<>()).add((BiConsumer<Connection, Packet>) handler);
     }
 
