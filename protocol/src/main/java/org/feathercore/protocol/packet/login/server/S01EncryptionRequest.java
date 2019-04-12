@@ -18,6 +18,7 @@ package org.feathercore.protocol.packet.login.server;
 
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 import java.security.PublicKey;
 
@@ -54,14 +55,14 @@ public class S01EncryptionRequest implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         buffer.writeString(this.hashedServerID);
         buffer.writeByteArray(this.publicKey.getEncoded());
         buffer.writeByteArray(this.verifyToken);
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
         this.hashedServerID = buffer.readString(20);
         // TODO: this.publicKey = CryptManager.decodePublicKey(buffer.readByteArray());

@@ -19,6 +19,7 @@ package org.feathercore.protocol.packet.login.client;
 import com.mojang.authlib.GameProfile;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 09/04/2019
@@ -41,12 +42,12 @@ public class C00LoginStart implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         buffer.writeString(this.profile.getName());
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         this.profile = new GameProfile(null, buffer.readString(16));
     }
 

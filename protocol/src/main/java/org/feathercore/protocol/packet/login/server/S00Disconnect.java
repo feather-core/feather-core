@@ -19,6 +19,7 @@ package org.feathercore.protocol.packet.login.server;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 09/04/2019
@@ -41,13 +42,13 @@ public class S00Disconnect implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
         // TODO buffer.writeChatComponent(this.reason);
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
         // TODO this.reason = buffer.readChatComponent();
     }

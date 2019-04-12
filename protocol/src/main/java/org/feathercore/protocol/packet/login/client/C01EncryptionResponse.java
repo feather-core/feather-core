@@ -18,6 +18,7 @@ package org.feathercore.protocol.packet.login.client;
 
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.SecretKey;
 import java.security.PrivateKey;
@@ -51,13 +52,13 @@ public class C01EncryptionResponse implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         buffer.writeByteArray(this.secretKeyEncrypted);
         buffer.writeByteArray(this.verifyTokenEncrypted);
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         this.secretKeyEncrypted = buffer.readByteArray();
         this.verifyTokenEncrypted = buffer.readByteArray();
     }

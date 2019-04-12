@@ -18,6 +18,7 @@ package org.feathercore.protocol.packet.login.server;
 
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 09/04/2019
@@ -40,12 +41,12 @@ public class S03EnableCompression implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         buffer.writeVarInt(this.compressionThreshold);
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         this.compressionThreshold = buffer.readVarInt();
     }
 

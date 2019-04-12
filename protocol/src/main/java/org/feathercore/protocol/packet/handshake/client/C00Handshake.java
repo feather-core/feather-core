@@ -19,6 +19,7 @@ package org.feathercore.protocol.packet.handshake.client;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.ConnectionState;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 09/04/2019
@@ -59,7 +60,7 @@ public class C00Handshake implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         buffer.writeVarInt(this.protocolVersion);
         buffer.writeString(this.ip);
         buffer.writeShort((short) this.port);
@@ -67,7 +68,7 @@ public class C00Handshake implements Packet {
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         this.protocolVersion = buffer.readVarInt();
         this.ip = buffer.readString();
         this.port = buffer.readShort();

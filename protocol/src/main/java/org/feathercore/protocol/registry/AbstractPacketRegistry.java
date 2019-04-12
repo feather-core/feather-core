@@ -22,6 +22,7 @@ import lombok.ToString;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Predicate;
@@ -39,6 +40,10 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
             this.packetTypesView = Collections.unmodifiableCollection(this.packetTypes = packetTypes);
+        }
+
+        protected Builder() {
+            this(new ArrayList<>());
         }
 
         @Override

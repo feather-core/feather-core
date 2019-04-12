@@ -19,6 +19,7 @@ package org.feathercore.protocol.packet.login.server;
 import com.mojang.authlib.GameProfile;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -43,14 +44,14 @@ public class S02LoginSuccess implements Packet {
     }
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         UUID uuid = this.profile.getId();
         buffer.writeString(uuid == null ? "" : uuid.toString());
         buffer.writeString(this.profile.getName());
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         UUID uuid = UUID.fromString(buffer.readString(36));
         String name = buffer.readString(16);
         this.profile = new GameProfile(uuid, name);

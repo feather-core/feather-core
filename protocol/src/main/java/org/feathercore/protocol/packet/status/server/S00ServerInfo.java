@@ -22,6 +22,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.shared.util.json.JsonUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Type;
 import java.util.UUID;
@@ -38,12 +39,12 @@ public class S00ServerInfo implements Packet {
     private ServerStatusResponse response;
 
     @Override
-    public void write(Buffer buffer) {
+    public void write(@NotNull Buffer buffer) {
         buffer.writeString(GSON.toJson(this.response));
     }
 
     @Override
-    public void read(Buffer buffer) {
+    public void read(@NotNull Buffer buffer) {
         this.response = GSON.fromJson(buffer.readString(32767), ServerStatusResponse.class);
     }
 
