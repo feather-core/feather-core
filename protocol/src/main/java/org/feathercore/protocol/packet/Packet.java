@@ -17,6 +17,7 @@
 package org.feathercore.protocol.packet;
 
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.netty.NettyBuffer;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -31,4 +32,19 @@ public interface Packet {
     default void write(@NotNull Buffer buffer) {
         throw new UnsupportedOperationException("Packet " + getClass().getName() + " is not an outcoming packet");
     }
+
+    //TODO
+    PacketType<?> getType();
+
+    default byte[] serialize() {
+        NettyBuffer buffer = NettyBuffer.newInstance();
+        buffer.writeVarInt(getType().getId());
+        write(buffer);
+        try {
+            return buffer.readBytes(buffer.readableBytes());
+        } finally {
+            buffer.release();
+        }
+    }
+
 }

@@ -384,6 +384,10 @@ public abstract class Buffer {
 
     public abstract Buffer newBuffer(int size);
 
-    public void release() {
-    }
+    public abstract void release();
+
+    public abstract int readableBytes();
+
+    public abstract void ensureWritable(int size);
+
 }

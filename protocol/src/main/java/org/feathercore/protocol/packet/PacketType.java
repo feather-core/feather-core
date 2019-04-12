@@ -33,7 +33,8 @@ import java.util.function.Supplier;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@NonFinal public abstract class PacketType<P extends Packet> {
+@NonFinal
+public abstract class PacketType<P extends Packet> {
 
     @NonNull Direction direction;
     int id;

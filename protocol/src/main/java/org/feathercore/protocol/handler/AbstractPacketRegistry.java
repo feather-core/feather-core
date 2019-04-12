@@ -34,7 +34,8 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
     @RequiredArgsConstructor
     protected abstract static class Builder<P extends Packet> implements PacketRegistry.Builder<P> {
 
-        @NonNull final Collection<PacketType<? extends P>> packetTypes;
+        @NonNull
+        final Collection<PacketType<? extends P>> packetTypes;
         protected final Collection<PacketType<? extends P>> packetTypesView;
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
@@ -43,9 +44,7 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
 
         @Override
         public Builder addPacket(@NonNull final PacketType<? extends P> packetType) {
-            val iterator = packetTypes.iterator();
-            while (iterator.hasNext()) if (!packetType.canCoexist(iterator.next())) iterator.remove();
-
+            packetTypes.removeIf(packetType1 -> !packetType.canCoexist(packetType1));
             packetTypes.add(packetType);
 
             return this;

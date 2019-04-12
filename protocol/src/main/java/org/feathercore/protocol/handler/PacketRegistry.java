@@ -30,9 +30,7 @@ import java.util.function.Predicate;
  */
 public interface PacketRegistry<P extends Packet> {
 
-    P read(@NotNull Buffer buffer);
-
-    void write(@NotNull P packet, @NotNull Buffer buffer);
+    P createEmptyPacket(int id);
 
     interface Builder<P extends Packet> {
 
