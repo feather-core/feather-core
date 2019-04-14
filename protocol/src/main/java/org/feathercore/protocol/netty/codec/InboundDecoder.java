@@ -20,8 +20,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import io.netty.handler.codec.CorruptedFrameException;
 import org.feathercore.protocol.netty.NettyBuffer;
+import org.feathercore.protocol.packet.exception.WrongPacketSizeException;
 
 import java.util.List;
 
@@ -54,7 +54,6 @@ public class InboundDecoder extends ByteToMessageDecoder {
                 }
             }
         }
-        throw new CorruptedFrameException("Packet size doesn't fit varint: it exceeds it's maximal size");
+        throw new WrongPacketSizeException("Packet size doesn't fit varint: it exceeds it's maximal size");
     }
-
 }

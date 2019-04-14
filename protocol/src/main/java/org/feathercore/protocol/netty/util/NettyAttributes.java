@@ -28,7 +28,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NettyAttributes {
 
-    public final static AttributeKey<PacketRegistry> PACKET_REGISTRY_ATTRIBUTE_KEY = AttributeKey.newInstance("PRAK");
+    public final static AttributeKey<PacketRegistry<?>> PACKET_REGISTRY_ATTRIBUTE_KEY
+            = AttributeKey.newInstance("PRAK");
     public final static AttributeKey<Connection> CONNECTION_ATTRIBUTE_KEY = AttributeKey.newInstance("CAK");
     public final static AttributeKey<HandlerBoss> HANDLER_BOSS_ATTRIBUTE_KEY = AttributeKey.newInstance("HBAK");
 

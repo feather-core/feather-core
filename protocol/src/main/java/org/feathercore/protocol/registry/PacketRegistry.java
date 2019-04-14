@@ -17,6 +17,7 @@
 package org.feathercore.protocol.registry;
 
 import lombok.NonNull;
+import lombok.val;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
 import org.jetbrains.annotations.Nullable;
@@ -26,25 +27,28 @@ import java.util.function.Predicate;
 
 /**
  * Object responsible for storing all registered packets.
+ * Implementations of the registry are commonly used for inbound packets decoding
+ * when an instance should be allocated by the ID and the exact type of the object depends on the very ID.
  */
 public interface PacketRegistry<P extends Packet> {
 
     /**
-     * Gets packet type of given id.
+     * Gets packet type of given ID.
      *
      * @param id identifier of the packet type.
-     * @return null, whether there is no packet type of given id; packet type otherwise.
+     * @return packet type of the specified packet or {@code null} if none is registered by this ID.
      */
-    PacketType<? extends P> getTypeByID(int id);
+    @Nullable PacketType<? extends P> getTypeById(final int id);
 
     /**
-     * Creates empty packet (wrapper) by it's identifier.
+     * Creates empty packet by it's ID.
      *
      * @param id identifier of the packet.
-     * @return null, whether there is no packet type of given id; empty packet instance otherwise.
+     * @return instance of a packet by the specified ID or {@code null} if there is no packet type registered by this ID
      */
-    default @Nullable P createEmptyPacketByID(int id) {
-        PacketType<? extends P> type = getTypeByID(id);
+    @Nullable default P createById(final int id) {
+        val type = getTypeById(id);
+
         return type == null ? null : type.getSupplier().get();
     }
 

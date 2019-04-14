@@ -16,9 +16,10 @@
 
 package org.feathercore.protocol.registry;
 
+import lombok.AccessLevel;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
 
@@ -31,12 +32,11 @@ import java.util.stream.Collectors;
 public abstract class AbstractPacketRegistry<P extends Packet> implements PacketRegistry<P> {
 
     @ToString
-    @RequiredArgsConstructor
+    @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
     protected abstract static class Builder<P extends Packet> implements PacketRegistry.Builder<P> {
 
-        @NonNull
-        final Collection<PacketType<? extends P>> packetTypes;
-        protected final Collection<PacketType<? extends P>> packetTypesView;
+        @NonNull Collection<PacketType<? extends P>> packetTypes;
+        @NonNull Collection<PacketType<? extends P>> packetTypesView;
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
             this.packetTypesView = Collections.unmodifiableCollection(this.packetTypes = packetTypes);

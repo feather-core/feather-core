@@ -17,6 +17,8 @@
 package org.feathercore.protocol.registry;
 
 import lombok.NonNull;
+import lombok.ToString;
+import lombok.val;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
 
@@ -25,33 +27,37 @@ import java.util.Collection;
 /**
  * Created by k.shandurenko on 12/04/2019
  */
-public class SimplePacketRegistry extends AbstractPacketRegistry<Packet> {
+@ToString
+public class SimplePacketRegistry<P extends Packet> extends AbstractPacketRegistry<P> {
 
     private final PacketType[] types;
 
-    private SimplePacketRegistry(Collection<PacketType<?>> types) {
-        this.types = new PacketType[types.stream().mapToInt(PacketType::getId).max().orElse(0)];
-        types.forEach(type -> this.types[type.getId()] = type);
+    private SimplePacketRegistry(@NonNull final Collection<PacketType<? extends P>> types) {
+        this.types = new PacketType[types
+                .stream()
+                .mapToInt(PacketType::getId)
+                .max()
+                .orElse(0)
+                ];
+
+        for (val type : types) this.types[type.getId()] = type;
     }
 
     @Override
-    public PacketType<? extends Packet> getTypeByID(int id) {
+    @SuppressWarnings("unchecked")
+    public PacketType<? extends P> getTypeById(int id) {
         return id < 0 || id >= this.types.length ? null : this.types[id];
     }
 
-    public static class SimplePacketRegistryBuilder extends Builder<Packet> {
+    public static class Builder<P extends Packet> extends AbstractPacketRegistry.Builder<P> {
 
-        public SimplePacketRegistryBuilder(@NonNull Collection<PacketType<? extends Packet>> packetTypes, Collection<PacketType<? extends Packet>> packetTypesView) {
-            super(packetTypes, packetTypesView);
-        }
-
-        protected SimplePacketRegistryBuilder(@NonNull Collection<PacketType<? extends Packet>> packetTypes) {
+        protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
             super(packetTypes);
         }
 
         @Override
-        public PacketRegistry<Packet> build() {
-            return new SimplePacketRegistry(super.packetTypes);
+        public PacketRegistry<P> build() {
+            return new SimplePacketRegistry<>(super.packetTypes);
         }
     }
 
