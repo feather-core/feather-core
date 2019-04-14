@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.netty;
+package org.feathercore.protocol.server;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.feathercore.protocol.handler.PacketHandler;
 import org.feathercore.protocol.netty.channel.ChannelInitializer;
-import org.feathercore.protocol.netty.util.NettyUtil;
+import org.feathercore.protocol.netty.util.SharedNettyResources;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -33,27 +34,32 @@ import org.feathercore.protocol.netty.util.NettyUtil;
 @RequiredArgsConstructor
 public abstract class NettyServer {
 
-    private final String host;
+    @NonNull private final String host;
     private final int port;
+
+    @NonNull private final SharedNettyResources sharedNettyResources;
 
     private Channel channel;
 
+    public NettyServer(@NonNull final String host, final int port) {
+        this(host, port, SharedNettyResources.builder().build());
+    }
+
     public ChannelFuture start() {
         ServerBootstrap bootstrap = new ServerBootstrap()
-                .group(NettyUtil.getBossLoopGroup(), NettyUtil.getWorkerLoopGroup())
-                .channel(NettyUtil.getServerChannel())
+                .group(sharedNettyResources.getBossLoopGroup(), sharedNettyResources.getWorkerLoopGroup())
+                .channel(sharedNettyResources.getServerChannelClass())
                 //TODO
                 .childHandler(new ChannelInitializer(this::generateInitialHandler, log));
-        return bootstrap.bind(this.host, this.port).addListener((ChannelFutureListener) future -> {
+        return bootstrap.bind(host, port).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
-                this.channel = future.channel();
-                log.info("Server has been started on " + this.host + ":" + this.port);
+                channel = future.channel();
+                log.info("Server has been started on " + host + ":" + port);
             } else {
-                log.warn("Server could not bind to " + this.host + ":" + this.port, future.cause());
+                log.warn("Server could not bind to " + host + ":" + port, future.cause());
             }
         });
     }
 
     protected abstract PacketHandler generateInitialHandler();
-
 }
