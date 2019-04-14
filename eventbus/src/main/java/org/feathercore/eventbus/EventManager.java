@@ -119,7 +119,7 @@ public class EventManager {
 
     private static class Handler {
 
-        private final static AtomicInteger ID = new AtomicInteger();
+        private static final AtomicInteger ID = new AtomicInteger();
 
         private final byte priority;
         private final boolean ignoreCancelled;

@@ -28,10 +28,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NettyAttributes {
 
-    public final static AttributeKey<PacketRegistry<?>> PACKET_REGISTRY_ATTRIBUTE_KEY
+    public static final AttributeKey<PacketRegistry<?>> PACKET_REGISTRY_ATTRIBUTE_KEY
             = AttributeKey.newInstance("PRAK");
-    public final static AttributeKey<Connection> CONNECTION_ATTRIBUTE_KEY = AttributeKey.newInstance("CAK");
-    public final static AttributeKey<HandlerBoss> HANDLER_BOSS_ATTRIBUTE_KEY = AttributeKey.newInstance("HBAK");
+    public static final AttributeKey<Connection> CONNECTION_ATTRIBUTE_KEY = AttributeKey.newInstance("CAK");
+    public static final AttributeKey<HandlerBoss> HANDLER_BOSS_ATTRIBUTE_KEY = AttributeKey.newInstance("HBAK");
 
     public static <T> void setAttribute(@NotNull ChannelHandlerContext ctx, @NotNull AttributeKey<T> key, @NotNull T value) {
         ctx.channel().attr(key).set(value);

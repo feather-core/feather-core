@@ -25,11 +25,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface Packet {
 
-    default void read(@NotNull Buffer buffer) {
+    default void read(@NotNull final Buffer buffer) {
         throw new UnsupportedOperationException("Packet " + getClass().getName() + " is not an incoming packet");
     }
 
-    default void write(@NotNull Buffer buffer) {
+    default void write(@NotNull final Buffer buffer) {
         throw new UnsupportedOperationException("Packet " + getClass().getName() + " is not an outcoming packet");
     }
 

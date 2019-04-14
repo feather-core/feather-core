@@ -25,7 +25,7 @@ public enum ConnectionState {
     STATUS(1),
     LOGIN(2);
 
-    private final static ConnectionState[] VALUES = values();
+    private static final ConnectionState[] VALUES = values();
 
     public static ConnectionState getByID(int id) {
         for (ConnectionState state : VALUES) {

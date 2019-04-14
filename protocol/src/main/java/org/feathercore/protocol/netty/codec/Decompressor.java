@@ -33,7 +33,7 @@ import java.util.zip.Inflater;
  */
 public class Decompressor extends ByteToMessageDecoder {
 
-    private final static int PROTOCOL_MAXIMUM = 2097152;
+    private static final int PROTOCOL_MAXIMUM = 2097152;
 
     private final Inflater inflater;
     @Setter private int threshold;
