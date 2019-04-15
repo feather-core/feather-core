@@ -41,6 +41,21 @@ public abstract class PacketType<P extends Packet> {
     @NonNull Class<P> type;
     @NonNull Supplier<P> supplier;
 
+    protected PacketType(Direction direction, Class<P> type, Supplier<P> supplier) {
+        this.direction = direction;
+        try {
+            this.id = type.getField("ID").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(
+                    "Could not instantiate packet type, because there is not ID field in given packet class or it is "
+                            + "not accessible",
+                    e
+            );
+        }
+        this.type = type;
+        this.supplier = supplier;
+    }
+
     public abstract boolean canCoexist(@NonNull final PacketType packetType);
 
     public static <P extends Packet> PacketType<P> incoming(@NonNull final int id, @NonNull final Class<P> type,
@@ -64,6 +79,7 @@ public abstract class PacketType<P extends Packet> {
     }
 
     public enum Direction {
-        INCOMING, OUTCOMING
+        INCOMING,
+        OUTCOMING
     }
 }

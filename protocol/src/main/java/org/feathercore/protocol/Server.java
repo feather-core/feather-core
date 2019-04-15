@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package org.feathercore.eventbus;
+package org.feathercore.protocol;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+
+import java.util.concurrent.Future;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-public class Event {
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class Server {
 
-    /**
-     * Calls this event.
-     *
-     * @see EventManager#call(Event) for more info.
-     */
-    public final Event call() {
-        EventManager.call(this);
-        return this;
-    }
+    @NonNull protected final String host;
+    protected final int port;
+
+    public abstract Future<Void> start();
 
 }

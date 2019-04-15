@@ -50,7 +50,8 @@ public enum TransportType {
                                                 @NonNull final ThreadFactory threadFactory) {
             return new EpollEventLoopGroup(threads, threadFactory);
         }
-    }, KQUEUE(KQueueSocketChannel.class, KQueueServerSocketChannel.class) {
+    },
+    KQUEUE(KQueueSocketChannel.class, KQueueServerSocketChannel.class) {
         @Override
         public boolean isAvailable() {
             return KQueue.isAvailable();
@@ -61,7 +62,8 @@ public enum TransportType {
                                                 @NonNull final ThreadFactory threadFactory) {
             return new KQueueEventLoopGroup(threads, threadFactory);
         }
-    }, NIO(NioSocketChannel.class, NioServerSocketChannel.class) {
+    },
+    NIO(NioSocketChannel.class, NioServerSocketChannel.class) {
         @Override
         public boolean isAvailable() {
             return true;
@@ -85,7 +87,9 @@ public enum TransportType {
 
     public static TransportType getNative() {
         for (val transportType : TRANSPORT_TYPES) {
-            if (transportType.isAvailable()) return transportType;
+            if (transportType.isAvailable()) {
+                return transportType;
+            }
         }
 
         return getDefault();

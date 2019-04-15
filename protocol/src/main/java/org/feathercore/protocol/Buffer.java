@@ -192,7 +192,9 @@ public abstract class Buffer {
     public String readString(int maxLength) {
         int length = readVarInt();
         if (length > maxLength) {
-            throw new IllegalStateException("Trying to read string with length " + length + " when the max is " + maxLength);
+            throw new IllegalStateException(
+                    "Trying to read string with length " + length + " when the max is " + maxLength
+            );
         }
         return new String(readBytes(length), StandardCharsets.UTF_8);
     }
@@ -238,14 +240,17 @@ public abstract class Buffer {
      * List&lt;User&gt; list = buffer.readCollection(255, ArrayList::new, this::readUser);
      * </pre>
      *
-     * @param maxSize           max collection size
+     * @param maxSize max collection size
      * @param collectionCreator collection constructor
-     * @param reader            function to read collection
+     * @param reader function to read collection
      */
-    public <T, C extends Collection<T>> C readCollection(int maxSize, Function<Integer, C> collectionCreator, Supplier<T> reader) {
+    public <T, C extends Collection<T>> C readCollection(int maxSize, Function<Integer, C> collectionCreator,
+                                                         Supplier<T> reader) {
         int size = readVarInt();
         if (size > maxSize) {
-            throw new IllegalStateException("Trying to read collection with size " + size + " when the max is " + maxSize);
+            throw new IllegalStateException(
+                    "Trying to read collection with size " + size + " when the max is " + maxSize
+            );
         }
         C collection = collectionCreator.apply(size);
         for (int i = 0; i < size; ++i) {
@@ -282,7 +287,9 @@ public abstract class Buffer {
     public int[] readIntArray(int maxSize, IntSupplier reader) {
         int size = readVarInt();
         if (size > maxSize) {
-            throw new IllegalStateException("Trying to read int array with size " + size + " when the max is " + maxSize);
+            throw new IllegalStateException(
+                    "Trying to read int array with size " + size + " when the max is " + maxSize
+            );
         }
         int[] arr = new int[size];
         for (int i = 0; i < arr.length; i++) {
@@ -301,7 +308,9 @@ public abstract class Buffer {
     public long[] readLongArray(int maxSize, LongSupplier reader) {
         int size = readVarInt();
         if (size > maxSize) {
-            throw new IllegalStateException("Trying to read long array with size " + size + " when the max is " + maxSize);
+            throw new IllegalStateException(
+                    "Trying to read long array with size " + size + " when the max is " + maxSize
+            );
         }
         long[] arr = new long[size];
         for (int i = 0; i < arr.length; i++) {
@@ -329,7 +338,9 @@ public abstract class Buffer {
     public byte[] readByteArray(int maxSize) {
         int size = readVarInt();
         if (size > maxSize) {
-            throw new IllegalStateException("Trying to read byte array with size " + size + " when the max is " + maxSize);
+            throw new IllegalStateException(
+                    "Trying to read byte array with size " + size + " when the max is " + maxSize
+            );
         }
         byte[] arr = new byte[size];
         for (int i = 0; i < arr.length; i++) {

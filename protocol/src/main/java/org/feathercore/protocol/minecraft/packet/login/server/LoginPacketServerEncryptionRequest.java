@@ -51,7 +51,9 @@ public class LoginPacketServerEncryptionRequest implements Packet {
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        if (true) {
+            throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        }
         this.hashedServerID = buffer.readString(20);
         // TODO: this.publicKey = CryptManager.decodePublicKey(buffer.readByteArray());
         this.verifyToken = buffer.readByteArray();

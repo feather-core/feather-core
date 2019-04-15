@@ -163,7 +163,8 @@ public class NettyBuffer extends Buffer {
     public String readString(int maxLength) {
         int length = readVarInt();
         if (length > maxLength) {
-            throw new IllegalStateException("Trying to read string with length " + length + " when the max is " + maxLength);
+            throw new IllegalStateException(
+                    "Trying to read string with length " + length + " when the max is " + maxLength);
         }
         String read = this.buffer.toString(this.buffer.readerIndex(), length, StandardCharsets.UTF_8);
         this.buffer.skipBytes(length);

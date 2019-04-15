@@ -40,7 +40,8 @@ import static java.lang.Math.max;
 @Value
 @Builder
 @FieldDefaults(level = AccessLevel.PROTECTED)
-@NonFinal public class SharedNettyResources {
+@NonFinal
+public class SharedNettyResources {
 
     @NonNull private final Lock readLock, writeLock;
 
@@ -76,8 +77,11 @@ import static java.lang.Math.max;
             if (bossLoopGroup != null) {
                 writeLock.lock();
                 try {
-                    if (await) bossLoopGroup.shutdownGracefully().await();
-                    else bossLoopGroup.shutdownGracefully();
+                    if (await) {
+                        bossLoopGroup.shutdownGracefully().await();
+                    } else {
+                        bossLoopGroup.shutdownGracefully();
+                    }
 
                     bossLoopGroup = null;
                 } finally {
@@ -87,7 +91,9 @@ import static java.lang.Math.max;
             if (workerLoopGroup != null) {
                 writeLock.lock();
                 try {
-                    if (await) workerLoopGroup.shutdownGracefully().await();
+                    if (await) {
+                        workerLoopGroup.shutdownGracefully().await();
+                    }
                     workerLoopGroup.shutdownGracefully();
 
                     workerLoopGroup = null;

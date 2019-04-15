@@ -49,7 +49,8 @@ public class LoginPacketClientEncryptionResponse implements Packet {
 
     public byte[] getVerifyToken(@NotNull final PrivateKey key) {
         throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        // TODO: return key == null ? this.verifyTokenEncrypted : CryptManager.decryptData(key, this.verifyTokenEncrypted);
+        // TODO: return key == null ? this.verifyTokenEncrypted : CryptManager.decryptData(key, this
+        // .verifyTokenEncrypted);
     }
 
     @Override

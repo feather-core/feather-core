@@ -44,7 +44,8 @@ public class Decompressor extends ByteToMessageDecoder {
     }
 
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws DecoderException, DataFormatException {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out)
+            throws DecoderException, DataFormatException {
         if (in.readableBytes() != 0) {
             NettyBuffer buffer = NettyBuffer.newInstance(in);
             int size = buffer.readVarInt();
@@ -55,10 +56,13 @@ public class Decompressor extends ByteToMessageDecoder {
             }
 
             if (size < this.threshold) {
-                throw new DecoderException("Badly compressed packet: size of " + size + " is below server threshold of " + this.threshold);
+                throw new DecoderException(
+                        "Badly compressed packet: size of " + size + " is below server threshold of " + this.threshold);
             }
             if (size > PROTOCOL_MAXIMUM) {
-                throw new DecoderException("Badly compressed packet: size of " + size + " is larger than protocol maximum of " + PROTOCOL_MAXIMUM);
+                throw new DecoderException(
+                        "Badly compressed packet: size of " + size + " is larger than protocol maximum of "
+                                + PROTOCOL_MAXIMUM);
             }
 
             byte[] temporary = buffer.readBytes(buffer.readableBytes());

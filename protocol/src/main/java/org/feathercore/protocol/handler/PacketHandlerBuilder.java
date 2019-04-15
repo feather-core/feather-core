@@ -39,12 +39,14 @@ public class PacketHandlerBuilder<H extends PacketHandler> {
 
     private final H packetHandler;
 
-    public <P extends Packet> PacketHandlerBuilder<H> addHandler(@NonNull PacketType<P> type, @NonNull BiConsumer<Connection, P> handler) {
+    public <P extends Packet> PacketHandlerBuilder<H> addHandler(@NonNull PacketType<P> type,
+                                                                 @NonNull BiConsumer<Connection, P> handler) {
         this.packetHandler.addHandler(type, handler);
         return this;
     }
 
-    public <P extends Packet> PacketHandlerBuilder<H> addHandler(@NonNull PacketType<P> type, @NonNull Consumer<P> handler) {
+    public <P extends Packet> PacketHandlerBuilder<H> addHandler(@NonNull PacketType<P> type,
+                                                                 @NonNull Consumer<P> handler) {
         return addHandler(type, (connection, packet) -> handler.accept(packet));
     }
 

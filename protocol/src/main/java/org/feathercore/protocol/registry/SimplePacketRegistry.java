@@ -40,7 +40,9 @@ public class SimplePacketRegistry<P extends Packet> extends AbstractPacketRegist
                 .orElse(0)
                 ];
 
-        for (val type : types) this.types[type.getId()] = type;
+        for (val type : types) {
+            this.types[type.getId()] = type;
+        }
     }
 
     @Override

@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import lombok.val;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
-import org.feathercore.protocol.packet.PacketType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -48,11 +47,14 @@ public abstract class ArrayBasedPacketHandler implements PacketHandler {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <P extends Packet> void addHandler(PacketType<P> type, BiConsumer<Connection, P> handler) {
+    public <P extends Packet> void addHandler(int packetId, BiConsumer<Connection, P> handler) {
         if (this.handlers != null) {
-            throw new IllegalStateException("ArrayBasedPacketHandler has already been registered: you can't add handlers anymore");
+            throw new IllegalStateException(
+                    "ArrayBasedPacketHandler has already been registered: you can't add handlers anymore"
+            );
         }
-        this.temporaryMap.computeIfAbsent(type.getId(), i -> new ArrayList<>()).add((BiConsumer<Connection, Packet>) handler);
+        this.temporaryMap.computeIfAbsent(packetId, i -> new ArrayList<>())
+                .add((BiConsumer<Connection, Packet>) handler);
     }
 
     @Override

@@ -41,13 +41,17 @@ public class LoginPacketServerDisconnect implements Packet {
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        if (true) {
+            throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        }
         // TODO buffer.writeChatComponent(this.reason);
     }
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        if (true) {
+            throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        }
         // TODO this.reason = buffer.readChatComponent();
     }
 

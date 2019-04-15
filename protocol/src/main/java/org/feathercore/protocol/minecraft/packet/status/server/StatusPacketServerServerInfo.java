@@ -41,7 +41,13 @@ public class StatusPacketServerServerInfo implements Packet {
     public static final int ID = 0x00;
 
     // FIXME: 09.04.2019
-    private static final Gson GSON = new GsonBuilder().create();//(new GsonBuilder()).registerTypeAdapter(MinecraftProtocolVersionIdentifier.class, new MinecraftProtocolVersionIdentifier.Serializer()).registerTypeAdapter(PlayerCountData.class, new PlayerCountData.Serializer()).registerTypeAdapter(ServerStatusResponse.class, new Serializer()).registerTypeHierarchyAdapter(ChatComponent.class, new ChatComponent.Serializer()).registerTypeHierarchyAdapter(ChatStyle.class, new ChatStyle.Serializer()).registerTypeAdapterFactory(new TypeAdapterFactory()).create();
+    private static final Gson GSON = new GsonBuilder().create();
+            //(new GsonBuilder()).registerTypeAdapter(MinecraftProtocolVersionIdentifier.class, new
+            // MinecraftProtocolVersionIdentifier.Serializer()).registerTypeAdapter(PlayerCountData.class, new
+            // PlayerCountData.Serializer()).registerTypeAdapter(ServerStatusResponse.class, new Serializer())
+            // .registerTypeHierarchyAdapter(ChatComponent.class, new ChatComponent.Serializer())
+            // .registerTypeHierarchyAdapter(ChatStyle.class, new ChatStyle.Serializer()).registerTypeAdapterFactory
+            // (new TypeAdapterFactory()).create();
     ServerStatusResponse response;
 
     @Override
@@ -119,15 +125,20 @@ public class StatusPacketServerServerInfo implements Packet {
             return this.protocol;
         }
 
-        public static class Serializer implements JsonDeserializer<MinecraftProtocolVersionIdentifier>, JsonSerializer<MinecraftProtocolVersionIdentifier> {
+        public static class Serializer
+                implements JsonDeserializer<MinecraftProtocolVersionIdentifier>,
+                JsonSerializer<MinecraftProtocolVersionIdentifier> {
 
-            public MinecraftProtocolVersionIdentifier deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
+            public MinecraftProtocolVersionIdentifier deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_,
+                                                                  JsonDeserializationContext p_deserialize_3_)
+                    throws JsonParseException {
                 JsonObject jsonobject = JsonUtil.getJsonObject(p_deserialize_1_, "version");
                 return new MinecraftProtocolVersionIdentifier(
                         JsonUtil.getString(jsonobject, "name"), JsonUtil.getInt(jsonobject, "protocol"));
             }
 
-            public JsonElement serialize(MinecraftProtocolVersionIdentifier p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_) {
+            public JsonElement serialize(MinecraftProtocolVersionIdentifier p_serialize_1_, Type p_serialize_2_,
+                                         JsonSerializationContext p_serialize_3_) {
                 JsonObject jsonobject = new JsonObject();
                 jsonobject.addProperty("name", p_serialize_1_.getName());
                 jsonobject.addProperty("protocol", p_serialize_1_.getProtocol());
@@ -161,7 +172,8 @@ public class StatusPacketServerServerInfo implements Packet {
 
         public static class Serializer implements JsonDeserializer<PlayerCountData>, JsonSerializer<PlayerCountData> {
 
-            public PlayerCountData deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
+            public PlayerCountData deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_,
+                                               JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
                 JsonObject jsonobject = JsonUtil.getJsonObject(p_deserialize_1_, "players");
                 PlayerCountData serverstatusresponse$playercountdata = new PlayerCountData(
                         JsonUtil.getInt(jsonobject, "max"), JsonUtil.getInt(jsonobject, "online"));
@@ -175,7 +187,8 @@ public class StatusPacketServerServerInfo implements Packet {
                         for (int i = 0; i < agameprofile.length; ++i) {
                             JsonObject jsonobject1 = JsonUtil.getJsonObject(jsonarray.get(i), "player[" + i + "]");
                             String s = JsonUtil.getString(jsonobject1, "id");
-                            agameprofile[i] = new GameProfile(UUID.fromString(s), JsonUtil.getString(jsonobject1, "name"));
+                            agameprofile[i] = new GameProfile(UUID.fromString(s),
+                                    JsonUtil.getString(jsonobject1, "name"));
                         }
 
                         serverstatusresponse$playercountdata.setPlayers(agameprofile);
@@ -185,7 +198,8 @@ public class StatusPacketServerServerInfo implements Packet {
                 return serverstatusresponse$playercountdata;
             }
 
-            public JsonElement serialize(PlayerCountData p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_) {
+            public JsonElement serialize(PlayerCountData p_serialize_1_, Type p_serialize_2_,
+                                         JsonSerializationContext p_serialize_3_) {
                 JsonObject jsonobject = new JsonObject();
                 jsonobject.addProperty("max", p_serialize_1_.getMaxPlayers());
                 jsonobject.addProperty("online", p_serialize_1_.getOnlinePlayerCount());
@@ -209,22 +223,27 @@ public class StatusPacketServerServerInfo implements Packet {
         }
     }
 
-    public static class Serializer implements JsonDeserializer<ServerStatusResponse>, JsonSerializer<ServerStatusResponse> {
+    public static class Serializer
+            implements JsonDeserializer<ServerStatusResponse>, JsonSerializer<ServerStatusResponse> {
 
-        public ServerStatusResponse deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_, JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
+        public ServerStatusResponse deserialize(JsonElement p_deserialize_1_, Type p_deserialize_2_,
+                                                JsonDeserializationContext p_deserialize_3_) throws JsonParseException {
             JsonObject jsonobject = JsonUtil.getJsonObject(p_deserialize_1_, "status");
             ServerStatusResponse serverstatusresponse = new ServerStatusResponse();
 
             if (jsonobject.has("description")) {
-                serverstatusresponse.setServerMotd(p_deserialize_3_.deserialize(jsonobject.get("description"), BaseComponent.class));
+                serverstatusresponse.setServerMotd(
+                        p_deserialize_3_.deserialize(jsonobject.get("description"), BaseComponent.class));
             }
 
             if (jsonobject.has("players")) {
-                serverstatusresponse.setPlayerCountData(p_deserialize_3_.deserialize(jsonobject.get("players"), PlayerCountData.class));
+                serverstatusresponse.setPlayerCountData(
+                        p_deserialize_3_.deserialize(jsonobject.get("players"), PlayerCountData.class));
             }
 
             if (jsonobject.has("version")) {
-                serverstatusresponse.setProtocolVersionIdentifier(p_deserialize_3_.deserialize(jsonobject.get("version"), MinecraftProtocolVersionIdentifier.class));
+                serverstatusresponse.setProtocolVersionIdentifier(p_deserialize_3_
+                        .deserialize(jsonobject.get("version"), MinecraftProtocolVersionIdentifier.class));
             }
 
             if (jsonobject.has("favicon")) {
@@ -234,7 +253,8 @@ public class StatusPacketServerServerInfo implements Packet {
             return serverstatusresponse;
         }
 
-        public JsonElement serialize(ServerStatusResponse p_serialize_1_, Type p_serialize_2_, JsonSerializationContext p_serialize_3_) {
+        public JsonElement serialize(ServerStatusResponse p_serialize_1_, Type p_serialize_2_,
+                                     JsonSerializationContext p_serialize_3_) {
             JsonObject jsonobject = new JsonObject();
 
             if (p_serialize_1_.getServerMotd() != null) {

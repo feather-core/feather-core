@@ -31,7 +31,8 @@ public class OutboundEncoder extends MessageToByteEncoder<ByteBuf> {
         int readable = in.readableBytes();
         int readableSize = getVarIntSize(readable);
         if (readableSize > 3) {
-            throw new IllegalArgumentException("Packet size doesn't fit varint: it requires " + readableSize + " bytes");
+            throw new IllegalArgumentException(
+                    "Packet size doesn't fit varint: it requires " + readableSize + " bytes");
         }
         NettyBuffer buffer = NettyBuffer.newInstance(out);
         buffer.ensureWritable(readable + readableSize);

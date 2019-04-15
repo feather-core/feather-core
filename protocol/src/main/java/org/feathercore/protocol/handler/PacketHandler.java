@@ -31,7 +31,12 @@ public interface PacketHandler {
 
     void register();
 
-    <P extends Packet> void addHandler(@NonNull PacketType<P> type, @NonNull BiConsumer<Connection, P> handler);
+    default <P extends Packet> void addHandler(@NonNull PacketType<P> type,
+                                               @NonNull BiConsumer<Connection, P> handler) {
+        addHandler(type.getId(), handler);
+    }
+
+    <P extends Packet> void addHandler(int packetId, @NonNull BiConsumer<Connection, P> handler);
 
     void handle(@NotNull Connection connection, @NotNull Packet packet);
 

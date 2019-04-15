@@ -46,7 +46,8 @@ public interface PacketRegistry<P extends Packet> {
      * @param id identifier of the packet.
      * @return instance of a packet by the specified ID or {@code null} if there is no packet type registered by this ID
      */
-    @Nullable default P createById(final int id) {
+    @Nullable
+    default P createById(final int id) {
         val type = getTypeById(id);
 
         return type == null ? null : type.getSupplier().get();
@@ -59,9 +60,7 @@ public interface PacketRegistry<P extends Packet> {
          *
          * @param packetType data identifying this packet
          * @return self for chaining
-         *
          * @throws NullPointerException if {@code packetSupplier} is {@link null}
-         *
          * @apiNote if a packet is already registered by this ID and direction then it should be overridden
          */
         Builder addPacket(@NonNull PacketType<? extends P> packetType);
@@ -71,7 +70,6 @@ public interface PacketRegistry<P extends Packet> {
          *
          * @param packetType packet type of the packet
          * @return self for chaining
-         *
          * @apiNote if a packet is not registered by this ID then nothing should happen
          */
         Builder removePacket(PacketType<? extends P> packetType);
