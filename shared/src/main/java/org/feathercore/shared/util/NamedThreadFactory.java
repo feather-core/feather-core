@@ -16,28 +16,31 @@
 
 package org.feathercore.shared.util;
 
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by k.shandurenko on 12/04/2019
  */
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class NamedThreadFactory implements ThreadFactory {
-    private String name;
-    private boolean daemon;
-    private AtomicInteger counter;
 
-    public NamedThreadFactory(String name, boolean daemon) {
-        this.name = name;
-        this.daemon = daemon;
-        this.counter = new AtomicInteger(1);
-    }
+    @NonNull String name;
+    boolean daemon;
+    @NonNull AtomicInteger counter = new AtomicInteger(1);
 
     @Override
-    public Thread newThread(Runnable r) {
-        Thread thread = new Thread(r);
+    public Thread newThread(@NonNull final Runnable runnable) {
+        val thread = new Thread(runnable);
         thread.setDaemon(daemon);
         thread.setName(name + counter.getAndIncrement());
+
         return thread;
     }
 }

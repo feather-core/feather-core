@@ -31,7 +31,7 @@ import java.util.function.Consumer;
  */
 public class EventManager {
 
-    private static Map<Class<Event>, Set<Handler>> HANDLERS = new ConcurrentHashMap<>();
+    private static final Map<Class<Event>, Set<Handler>> HANDLERS = new ConcurrentHashMap<>();
 
     /**
      * Register given listener (all events handling method within it).
@@ -50,7 +50,7 @@ public class EventManager {
             if (!event.isAssignableFrom(param)) {
                 continue;
             }
-            @SuppressWarnings("SuspiciousMethodCalls") Set<Handler> handlers = HANDLERS.get(param);
+            Set<Handler> handlers = HANDLERS.get(param);
             if (handlers == null) {
                 handlers = new TreeSet<>(Comparator.comparing(Handler::priority).thenComparingInt(a -> a.id));
                 handlers = Collections.synchronizedSet(handlers);

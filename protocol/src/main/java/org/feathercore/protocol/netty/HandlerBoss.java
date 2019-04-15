@@ -56,7 +56,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         NettyConnection connection = new NettyConnection(ctx);
         NettyAttributes.setAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY, connection);
         NettyAttributes.setAttribute(ctx, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY, this);
@@ -64,7 +64,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+    public void channelInactive(ChannelHandlerContext ctx) {
         Connection connection = NettyAttributes.getAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY);
         if (connection == null) {
             return;
@@ -73,7 +73,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         Connection connection = NettyAttributes.getAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY);
         if (connection == null) {
             return;
