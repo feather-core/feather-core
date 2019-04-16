@@ -32,26 +32,33 @@ public class InboundDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
-        in.markReaderIndex();
-        byte[] readableSize = new byte[3];
-        for (int i = 0; i < readableSize.length; ++i) {
+        if (!in.isReadable()) {
+            return;
+        }
+
+        int origReaderIndex = in.readerIndex();
+        for (int i = 0; i < 3; i++) {
             if (!in.isReadable()) {
-                in.resetReaderIndex();
+                in.readerIndex(origReaderIndex);
                 return;
             }
-            readableSize[i] = in.readByte();
-            if (readableSize[i] >= 0) {
-                NettyBuffer buffer = NettyBuffer.newInstance(Unpooled.wrappedBuffer(readableSize));
-                try {
-                    int size = buffer.readVarInt();
-                    if (in.readableBytes() >= size) {
-                        out.add(in.readBytes(size));
-                        return;
-                    }
-                    in.resetReaderIndex();
-                } finally {
-                    buffer.release();
+
+            byte read = in.readByte();
+            if (read >= 0) {
+                in.readerIndex(origReaderIndex);
+                // TODO: Don't create NettyBuffer just for reading varint?
+                int packetLength = NettyBuffer.newInstance(in).readVarInt();
+                if (packetLength == 0) {
+                    return;
                 }
+
+                if (in.readableBytes() < packetLength) {
+                    in.readerIndex(origReaderIndex);
+                    return;
+                }
+
+                out.add(in.readRetainedSlice(packetLength));
+                return;
             }
         }
         throw new WrongPacketSizeException("Packet size doesn't fit varint: it exceeds it's maximal size");

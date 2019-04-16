@@ -18,7 +18,7 @@ package org.feathercore.protocol.registry.common;
 
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
-import org.feathercore.protocol.minecraft.packet.client.HandshakePacketClientHandshake;
+import org.feathercore.protocol.minecraft.packet.handshake.client.HandshakePacketClientHandshake;
 import org.feathercore.protocol.packet.PacketType;
 import org.feathercore.protocol.registry.ArrayBasedPacketRegistry;
 import org.feathercore.protocol.registry.PacketRegistry;
