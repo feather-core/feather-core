@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.NotNull;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class StatusPacketClientServerQuery implements Packet {
+public class StatusPacketClientServerQuery implements MinecraftPacket {
 
     public static final int ID = 0x00;
 
