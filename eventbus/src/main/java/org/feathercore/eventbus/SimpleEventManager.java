@@ -138,18 +138,6 @@ public class SimpleEventManager<E extends Event> implements EventManager<E> {
         return constructor.newInstance(owner);
     }
 
-    @Value
-    @RequiredArgsConstructor
-    @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-    protected static class HandlerQueue<E extends Event> implements Queue<Consumer<E>> {
-
-        @Delegate @NonNull Queue<Consumer<E>> queue;
-
-        public HandlerQueue() {
-            this(new PriorityQueue<>());
-        }
-    }
-
     @Data
     @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
     private static class Handler<E extends Event> implements Comparable<Handler<E>>, Consumer<E> {
@@ -160,6 +148,22 @@ public class SimpleEventManager<E extends Event> implements EventManager<E> {
         @Override
         public int compareTo(@NonNull final Handler<E> handler) {
             return priority - handler.priority;
+        }
+    }
+
+    @Value
+    @RequiredArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
+    @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+    protected static class HandlerQueue<E extends Event> extends PriorityQueue<Consumer<E>> {
+
+        // because JDK is an evil guy
+        private static final long serialVersionUID = 297336550679724498L;
+
+        @NonNull Queue<Consumer<E>> queue;
+
+        public HandlerQueue() {
+            this(new PriorityQueue<>());
         }
     }
 }
