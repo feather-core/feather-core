@@ -32,15 +32,11 @@ public class CommonHandshakePacketRegistry {
 
     @SuppressWarnings("unchecked")
     public static PacketRegistry<MinecraftPacket> createNew() {
-        //noinspection Convert2Lambda bug in javac
         return ArrayBasedPacketRegistry.Builder.create()
                 .addPacket(
                         PacketType.create(HandshakePacketClientHandshake.class, HandshakePacketClientHandshake::new),
-                        new BiConsumer<Connection, HandshakePacketClientHandshake>() {
-                            @Override
-                            public void accept(final Connection connection, final HandshakePacketClientHandshake packet) {
-                                //TODO
-                            }
+                        (BiConsumer<Connection, HandshakePacketClientHandshake>) (connection, packet) -> {
+                            //TODO
                         }
                 )
                 .build();
