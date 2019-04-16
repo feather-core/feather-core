@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.client;
+package org.feathercore.protocol.minecraft.packet.handshake.client;
 
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
