@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
  */
 public class InterfaceImplementor {
 
-    private static final Pattern GETTER_PATTERN = Pattern.compile("/^get(?<varname>.+)$/");
-    private static final Pattern SETTER_PATTERN = Pattern.compile("/^set(?<varname>.+)$/");
+    private static final Pattern GETTER_PATTERN = Pattern.compile("get(?<varname>.+)");
+    private static final Pattern SETTER_PATTERN = Pattern.compile("set(?<varname>.+)");
 
     public static <T> ImplementationGenerator<T> createFactory(Class<T> interfaceClass) {
         Map<String, Class<?>> fieldTypes = new HashMap<>();
