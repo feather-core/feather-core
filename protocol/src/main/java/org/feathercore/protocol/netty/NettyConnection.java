@@ -70,7 +70,7 @@ public class NettyConnection implements Connection {
         return this.encrypted;
     }
 
-    public void changePacketRegistry(PacketRegistry<? extends Packet> packetRegistry) {
+    public void changePacketRegistry(@NonNull PacketRegistry<? extends Packet> packetRegistry) {
         HandlerBoss boss = NettyAttributes.getAttribute(context, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
         if (boss == null) {
             throw new IllegalStateException("This connection is not connected anymore: packet registry can't be changed");

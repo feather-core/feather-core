@@ -34,7 +34,7 @@ public class CommonServer extends AbstractServer {
     }
 
     @Override
-    public PacketRegistry<? extends Packet> getInitialPacketRegistry() {
+    public @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry() {
         return this.initialPacketRegistry;
     }
 

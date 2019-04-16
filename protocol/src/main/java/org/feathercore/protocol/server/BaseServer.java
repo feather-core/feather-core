@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Future;
 
@@ -40,10 +41,10 @@ public abstract class BaseServer {
 
     public abstract Future<Void> stop();
 
-    public abstract void onConnected(Connection connection);
+    public abstract void onConnected(@NotNull Connection connection);
 
-    public abstract void onDisconnected(Connection connection);
+    public abstract void onDisconnected(@NotNull Connection connection);
 
-    public abstract PacketRegistry<? extends Packet> getInitialPacketRegistry();
+    public abstract @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry();
 
 }

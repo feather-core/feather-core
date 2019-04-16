@@ -19,6 +19,7 @@ package org.feathercore.protocol.server;
 import lombok.NonNull;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.netty.NettyServer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 16/04/2019
@@ -30,12 +31,12 @@ public abstract class AbstractServer extends NettyServer {
     }
 
     @Override
-    public void onConnected(final Connection connection) {
+    public void onConnected(@NotNull final Connection connection) {
 
     }
 
     @Override
-    public void onDisconnected(final Connection connection) {
+    public void onDisconnected(@NotNull final Connection connection) {
 
     }
 

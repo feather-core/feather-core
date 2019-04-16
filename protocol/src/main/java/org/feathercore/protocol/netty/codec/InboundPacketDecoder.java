@@ -19,6 +19,7 @@ package org.feathercore.protocol.netty.codec;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.feathercore.protocol.netty.HandlerBoss;
 import org.feathercore.protocol.netty.NettyBuffer;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
@@ -35,11 +36,11 @@ public class InboundPacketDecoder extends ByteToMessageDecoder {
     protected void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) {
         NettyBuffer buffer = NettyBuffer.newInstance(in);
         int packetID = buffer.readVarInt();
-        PacketRegistry<?> registry = NettyAttributes.getAttribute(ctx, NettyAttributes.PACKET_REGISTRY_ATTRIBUTE_KEY);
-        if (registry == null) {
-            throw new IllegalStateException("Could not retrieve context packet registry");
+        HandlerBoss boss = NettyAttributes.getAttribute(ctx, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
+        if (boss == null) {
+            throw new IllegalStateException("Could not retrieve context handler boss");
         }
-        Packet packet = registry.createById(packetID);
+        Packet packet = boss.getPacketRegistry().createById(packetID);
         if (packet == null) {
             throw new UnknownPacketIdException("Packet with unknown id: " + packetID);
         }
