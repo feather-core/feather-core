@@ -60,14 +60,12 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         NettyConnection connection = new NettyConnection(ctx);
-        {
-            val event = new PreConnectionEventSimple(connection);
-            event.callGlobally();
-            if (event.isCancelled()) {
-                ctx.channel().close();
-                return;
-            }
+
+        if (new PreConnectionEventSimple(connection).callCancellableGlobally()) {
+            ctx.channel().close();
+            return;
         }
+
         NettyAttributes.setAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY, connection);
         NettyAttributes.setAttribute(ctx, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY, this);
         this.serverSoftReference.get().onConnected(connection);
@@ -92,9 +90,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
         try {
             val packet = (Packet) msg;
 
-            val event = new PacketReceiveEventSimple(connection, packet);
-            event.callGlobally();
-            if (event.isCancelled()) {
+            if (new PacketReceiveEventSimple(connection, packet).callCancellableGlobally()) {
                 return;
             }
 
