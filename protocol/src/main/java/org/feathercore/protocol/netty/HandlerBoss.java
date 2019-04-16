@@ -60,7 +60,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         NettyConnection connection = new NettyConnection(ctx);
         if (new PreConnectionEvent(connection).call().isCancelled()) {
-            ctx.channel().close().syncUninterruptibly();
+            ctx.channel().close();
             return;
         }
         NettyAttributes.setAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY, connection);
