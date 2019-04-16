@@ -27,6 +27,9 @@ import org.feathercore.protocol.netty.codec.CipherDecoder;
 import org.feathercore.protocol.netty.codec.CipherEncoder;
 import org.feathercore.protocol.netty.codec.Compressor;
 import org.feathercore.protocol.netty.codec.Decompressor;
+import org.feathercore.protocol.netty.util.NettyAttributes;
+import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.Cipher;
@@ -65,6 +68,14 @@ public class NettyConnection implements Connection {
     @Override
     public boolean isEncrypted() {
         return this.encrypted;
+    }
+
+    public void changePacketRegistry(PacketRegistry<? extends Packet> packetRegistry) {
+        HandlerBoss boss = NettyAttributes.getAttribute(context, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
+        if (boss == null) {
+            throw new IllegalStateException("This connection is not connected anymore: packet registry can't be changed");
+        }
+        boss.setPacketRegistry(packetRegistry);
     }
 
     public void enableEncryption(@NonNull SecretKey key) {
