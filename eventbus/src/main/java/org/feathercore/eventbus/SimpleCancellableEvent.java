@@ -28,4 +28,11 @@ import lombok.experimental.FieldDefaults;
 public abstract class SimpleCancellableEvent implements CancellableEvent {
 
     boolean cancelled = false;
+
+    @Override
+    public boolean callCancellableGlobally() {
+        EventManager.getGlobal().call(this);
+
+        return cancelled;
+    }
 }

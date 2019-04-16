@@ -34,4 +34,11 @@ public interface CancellableEvent extends Event {
      * @param cancelled {@link true} if this event should be marked as cancelled and {@link false} otherwise
      */
     void setCancelled(boolean cancelled);
+
+
+    default boolean callCancellableGlobally() {
+        EventManager.getGlobal().call(this);
+
+        return isCancelled();
+    }
 }
