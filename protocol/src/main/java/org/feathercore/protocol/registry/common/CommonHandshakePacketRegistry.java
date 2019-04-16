@@ -16,6 +16,7 @@
 
 package org.feathercore.protocol.registry.common;
 
+import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.minecraft.packet.client.HandshakePacketClientHandshake;
 import org.feathercore.protocol.packet.PacketType;
@@ -35,9 +36,9 @@ public class CommonHandshakePacketRegistry {
         return ArrayBasedPacketRegistry.Builder.create()
                 .addPacket(
                         PacketType.create(HandshakePacketClientHandshake.class, HandshakePacketClientHandshake::new),
-                        new BiConsumer() {
+                        new BiConsumer<Connection, HandshakePacketClientHandshake>() {
                             @Override
-                            public void accept(final Object connection, final Object packet) {
+                            public void accept(final Connection connection, final HandshakePacketClientHandshake packet) {
                                 //TODO
                             }
                         }
