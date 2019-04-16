@@ -20,14 +20,14 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public abstract class AbstractPacketRegistry<P extends Packet> implements PacketRegistry<P> {
 
@@ -37,9 +37,11 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
 
         @NonNull Collection<PacketType<? extends P>> packetTypes;
         @NonNull Collection<PacketType<? extends P>> packetTypesView;
+        @NonNull Map<Integer, BiConsumer<Connection, Packet>> packetHandlers;
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
             this.packetTypesView = Collections.unmodifiableCollection(this.packetTypes = packetTypes);
+            this.packetHandlers = new HashMap<>();
         }
 
         protected Builder() {
@@ -47,8 +49,10 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
         }
 
         @Override
-        public Builder addPacket(@NonNull final PacketType<? extends P> packetType) {
-            packetTypes.removeIf(packetType1 -> !packetType.canCoexist(packetType1));
+        public <T extends P> PacketRegistry.Builder addPacket(@NonNull final PacketType<T> packetType,
+                                                              @Nullable final BiConsumer<Connection, T> handler) {
+            packetTypes.removeIf(type -> type.getId() == packetType.getId());
+            packetHandlers.remove(packetType.getId());
             packetTypes.add(packetType);
 
             return this;
@@ -57,6 +61,7 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
         @Override
         public Builder removePacket(final PacketType<? extends P> packetType) {
             packetTypes.remove(packetType);
+            packetHandlers.remove(packetType.getId());
 
             return this;
         }
@@ -64,27 +69,30 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
         @Override
         public Builder clearPackets() {
             packetTypes.clear();
+            packetHandlers.clear();
 
             return this;
         }
 
         @Override
         public Builder removeOnly(@NonNull final Predicate<PacketType<? extends P>> filter) {
-            packetTypes.removeAll(packetTypes.stream().filter(filter).collect(Collectors.toList()));
+            new HashSet<>(packetTypes).stream().filter(filter).forEach(type -> {
+                packetTypes.remove(type);
+                packetHandlers.remove(type.getId());
+            });
 
             return this;
         }
 
         @Override
         public Builder retainOnly(@NonNull final Predicate<PacketType<? extends P>> filter) {
-            packetTypes.retainAll(packetTypes.stream().filter(filter).collect(Collectors.toList()));
-
-            return this;
+            return removeOnly(filter.negate());
         }
 
         @Override
         public Collection<@NonNull PacketType<? extends P>> getPackets() {
             return packetTypesView;
         }
+
     }
 }

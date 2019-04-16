@@ -26,7 +26,7 @@ public class Event {
      *
      * @see EventManager#call(Event) for more info.
      */
-    public final Event call() {
+    public Event call() {
         EventManager.call(this);
         return this;
     }

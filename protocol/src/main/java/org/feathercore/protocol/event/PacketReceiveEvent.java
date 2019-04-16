@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package org.feathercore.eventbus;
+package org.feathercore.protocol.event;
+
+import lombok.Data;
+import org.feathercore.eventbus.CancellableEvent;
+import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.packet.Packet;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-public abstract class CancellableEvent extends Event {
+@Data
+public class PacketReceiveEvent extends CancellableEvent {
 
-    private boolean cancelled = false;
-
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    public void setCancelled(boolean value) {
-        this.cancelled = value;
-    }
-
-    @Override
-    public CancellableEvent call() {
-        super.call();
-        return this;
-    }
+    private final Connection connection;
+    private final Packet packet;
 
 }

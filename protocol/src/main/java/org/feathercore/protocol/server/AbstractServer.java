@@ -14,27 +14,29 @@
  * limitations under the License.
  */
 
-package org.feathercore.eventbus;
+package org.feathercore.protocol.server;
+
+import lombok.NonNull;
+import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.netty.NettyServer;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-public abstract class CancellableEvent extends Event {
+public abstract class AbstractServer extends NettyServer {
 
-    private boolean cancelled = false;
-
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    public void setCancelled(boolean value) {
-        this.cancelled = value;
+    public AbstractServer(final @NonNull String host, final int port) {
+        super(host, port);
     }
 
     @Override
-    public CancellableEvent call() {
-        super.call();
-        return this;
+    public void onConnected(final Connection connection) {
+
+    }
+
+    @Override
+    public void onDisconnected(final Connection connection) {
+
     }
 
 }

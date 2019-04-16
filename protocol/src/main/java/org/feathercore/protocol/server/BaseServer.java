@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol;
+package org.feathercore.protocol.server;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.registry.PacketRegistry;
 
 import java.util.concurrent.Future;
 
@@ -28,11 +31,19 @@ import java.util.concurrent.Future;
  */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class Server {
+public abstract class BaseServer {
 
     @NonNull protected final String host;
     protected final int port;
 
     public abstract Future<Void> start();
+
+    public abstract Future<Void> stop();
+
+    public abstract void onConnected(Connection connection);
+
+    public abstract void onDisconnected(Connection connection);
+
+    public abstract PacketRegistry<? extends Packet> getInitialPacketRegistry();
 
 }

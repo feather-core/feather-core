@@ -19,27 +19,36 @@ package org.feathercore.protocol.netty;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.DecoderException;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.Logger;
 import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.server.BaseServer;
+import org.feathercore.protocol.event.PacketReceiveEvent;
+import org.feathercore.protocol.event.PreConnectionEvent;
+import org.feathercore.protocol.event.PreDisconnectionEvent;
 import org.feathercore.protocol.exception.PacketHandleException;
-import org.feathercore.protocol.handler.PacketHandler;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.registry.PacketRegistry;
 
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.util.concurrent.TimeoutException;
 
 /**
  * Created by k.shandurenko on 12/04/2019
  */
+@SuppressWarnings("ConstantConditions")
 public class HandlerBoss extends ChannelInboundHandlerAdapter {
 
-    private PacketHandler packetHandler;
+    @Setter @Getter private PacketRegistry<?> packetRegistry;
+    private SoftReference<BaseServer> serverSoftReference;
     private final Logger logger;
 
-    public HandlerBoss(PacketHandler packetHandler, Logger logger) {
-        this.packetHandler = packetHandler;
+    public HandlerBoss(SoftReference<BaseServer> serverSoftReference, Logger logger) {
+        this.serverSoftReference = serverSoftReference;
+        this.packetRegistry = serverSoftReference.get().getInitialPacketRegistry();
         this.logger = logger;
     }
 
@@ -47,20 +56,16 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
         return logger;
     }
 
-    public PacketHandler getHandler() {
-        return this.packetHandler;
-    }
-
-    public void setHandler(@NonNull PacketHandler handler) {
-        this.packetHandler = handler;
-    }
-
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         NettyConnection connection = new NettyConnection(ctx);
+        if (new PreConnectionEvent(connection).call().isCancelled()) {
+            ctx.channel().close().syncUninterruptibly();
+            return;
+        }
         NettyAttributes.setAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY, connection);
         NettyAttributes.setAttribute(ctx, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY, this);
-        this.packetHandler.onConnected(connection);
+        this.serverSoftReference.get().onConnected(connection);
     }
 
     @Override
@@ -69,7 +74,8 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
         if (connection == null) {
             return;
         }
-        this.packetHandler.onDisconnected(connection);
+        new PreDisconnectionEvent(connection).call();
+        this.serverSoftReference.get().onDisconnected(connection);
     }
 
     @Override
@@ -79,7 +85,10 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
             return;
         }
         try {
-            this.packetHandler.handle(connection, (Packet) msg);
+            if (new PacketReceiveEvent(connection, (Packet) msg).call().isCancelled()) {
+                return;
+            }
+            this.packetRegistry.handlePacket(connection, (Packet) msg);
         } catch (Exception ex) {
             throw new PacketHandleException(msg.getClass().getSimpleName(), ex);
         }

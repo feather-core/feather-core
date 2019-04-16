@@ -19,20 +19,26 @@ package org.feathercore.protocol.registry;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.val;
+import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * Created by k.shandurenko on 12/04/2019
  */
 @ToString
-public class SimplePacketRegistry<P extends Packet> extends AbstractPacketRegistry<P> {
+public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRegistry<P> {
 
     private final PacketType[] types;
+    private final BiConsumer<Connection, Packet>[] handlers;
 
-    private SimplePacketRegistry(@NonNull final Collection<PacketType<? extends P>> types) {
+    protected ArrayBasedPacketRegistry(@NonNull final Collection<PacketType<? extends P>> types,
+                                     Map<Integer, BiConsumer<Connection, Packet>> handlers) {
         this.types = new PacketType[types
                 .stream()
                 .mapToInt(PacketType::getId)
@@ -43,6 +49,10 @@ public class SimplePacketRegistry<P extends Packet> extends AbstractPacketRegist
         for (val type : types) {
             this.types[type.getId()] = type;
         }
+
+        //noinspection unchecked
+        this.handlers = new BiConsumer[handlers.keySet().stream().mapToInt(i -> i).max().orElse(0)];
+        handlers.forEach((id, handler) -> this.handlers[id] = handler);
     }
 
     @Override
@@ -51,15 +61,33 @@ public class SimplePacketRegistry<P extends Packet> extends AbstractPacketRegist
         return id < 0 || id >= this.types.length ? null : this.types[id];
     }
 
+    @Override
+    public void handlePacket(@NotNull final Connection connection, @NotNull final Packet packet) {
+        val handler = this.handlers[packet.getId()];
+        if (handler != null) {
+            handler.accept(connection, packet);
+        }
+    }
+
     public static class Builder<P extends Packet> extends AbstractPacketRegistry.Builder<P> {
+
+        public static <P extends Packet> Builder create(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
+            return new Builder<>(packetTypes);
+        }
+
+        public static Builder create() {
+            return new Builder<>();
+        }
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
             super(packetTypes);
         }
 
+        protected Builder() {}
+
         @Override
         public PacketRegistry<P> build() {
-            return new SimplePacketRegistry<>(super.packetTypes);
+            return new ArrayBasedPacketRegistry<>(super.packetTypes, super.packetHandlers);
         }
     }
 

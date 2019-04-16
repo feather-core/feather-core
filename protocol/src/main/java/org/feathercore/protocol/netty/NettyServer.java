@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.server;
+package org.feathercore.protocol.netty;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -22,20 +22,21 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.feathercore.protocol.Server;
-import org.feathercore.protocol.handler.PacketHandler;
+import org.feathercore.protocol.server.BaseServer;
 import org.feathercore.protocol.netty.channel.ChannelInitializer;
 import org.feathercore.protocol.netty.util.SharedNettyResources;
+
+import java.lang.ref.SoftReference;
 
 /**
  * Created by k.shandurenko on 12/04/2019
  */
 @Log4j2
-public abstract class NettyServer extends Server {
+public abstract class NettyServer extends BaseServer {
 
     @NonNull private final SharedNettyResources sharedNettyResources;
 
-    private Channel channel;
+    protected Channel channel;
 
     public NettyServer(@NonNull final String host, final int port) {
         super(host, port);
@@ -47,16 +48,20 @@ public abstract class NettyServer extends Server {
         ServerBootstrap bootstrap = new ServerBootstrap()
                 .group(sharedNettyResources.getBossLoopGroup(), sharedNettyResources.getWorkerLoopGroup())
                 .channel(sharedNettyResources.getServerChannelClass())
-                .childHandler(new ChannelInitializer(this::generateInitialHandler, log));
+                .childHandler(new ChannelInitializer(new SoftReference<>(this), log));
         return bootstrap.bind(host, port).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 channel = future.channel();
-                log.info("Server has been started on " + host + ":" + port);
+                log.info("BaseServer has been started on " + host + ":" + port);
             } else {
-                log.warn("Server could not bind to " + host + ":" + port, future.cause());
+                log.warn("BaseServer could not bind to " + host + ":" + port, future.cause());
             }
         });
     }
 
-    protected abstract PacketHandler generateInitialHandler();
+    @Override
+    public ChannelFuture stop() {
+        return channel.close().syncUninterruptibly();
+    }
+
 }
