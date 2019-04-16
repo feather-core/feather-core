@@ -21,16 +21,17 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.DecoderException;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.val;
 import org.apache.logging.log4j.Logger;
 import org.feathercore.protocol.Connection;
-import org.feathercore.protocol.server.BaseServer;
-import org.feathercore.protocol.event.PacketReceiveEvent;
-import org.feathercore.protocol.event.PreConnectionEvent;
+import org.feathercore.protocol.event.PacketReceiveEventSimple;
+import org.feathercore.protocol.event.PreConnectionEventSimple;
 import org.feathercore.protocol.event.PreDisconnectionEvent;
 import org.feathercore.protocol.exception.PacketHandleException;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
+import org.feathercore.protocol.server.BaseServer;
 
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -59,9 +60,13 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         NettyConnection connection = new NettyConnection(ctx);
-        if (new PreConnectionEvent(connection).call().isCancelled()) {
-            ctx.channel().close();
-            return;
+        {
+            val event = new PreConnectionEventSimple(connection);
+            event.callGlobally();
+            if (event.isCancelled()) {
+                ctx.channel().close();
+                return;
+            }
         }
         NettyAttributes.setAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY, connection);
         NettyAttributes.setAttribute(ctx, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY, this);
@@ -74,7 +79,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
         if (connection == null) {
             return;
         }
-        new PreDisconnectionEvent(connection).call();
+        new PreDisconnectionEvent(connection).callGlobally();
         this.serverSoftReference.get().onDisconnected(connection);
     }
 
@@ -85,10 +90,15 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
             return;
         }
         try {
-            if (new PacketReceiveEvent(connection, (Packet) msg).call().isCancelled()) {
+            val packet = (Packet) msg;
+
+            val event = new PacketReceiveEventSimple(connection, packet);
+            event.callGlobally();
+            if (event.isCancelled()) {
                 return;
             }
-            this.packetRegistry.handlePacket(connection, (Packet) msg);
+
+            this.packetRegistry.handlePacket(connection, packet);
         } catch (Exception ex) {
             throw new PacketHandleException(msg.getClass().getSimpleName(), ex);
         }

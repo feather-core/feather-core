@@ -25,9 +25,8 @@ import org.feathercore.protocol.Connection;
  * Created by k.shandurenko on 16/04/2019
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
-public class PreDisconnectionEvent extends Event {
+@EqualsAndHashCode
+public class PreDisconnectionEvent implements Event {
 
     private final Connection connection;
-
 }
