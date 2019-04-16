@@ -16,15 +16,16 @@
 
 package org.feathercore.eventbus;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 /**
- * Class, which implements IListener and also auto-registers itself in EventManager.
- *
- * Created by k.shandurenko on 09/04/2019
+ * Standard implementation of {@link CancellableEvent}.
  */
-public class Listener implements IListener {
+@Data
+@FieldDefaults(level = AccessLevel.PROTECTED)
+public abstract class SimpleCancellableEvent implements CancellableEvent {
 
-    public Listener() {
-        EventManager.register(this);
-    }
-
+    boolean cancelled = false;
 }
