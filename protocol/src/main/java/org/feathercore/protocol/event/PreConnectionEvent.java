@@ -17,6 +17,7 @@
 package org.feathercore.protocol.event;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.feathercore.eventbus.CancellableEvent;
 import org.feathercore.protocol.Connection;
 
@@ -24,6 +25,7 @@ import org.feathercore.protocol.Connection;
  * Created by k.shandurenko on 16/04/2019
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 public class PreConnectionEvent extends CancellableEvent {
 
     private final Connection connection;

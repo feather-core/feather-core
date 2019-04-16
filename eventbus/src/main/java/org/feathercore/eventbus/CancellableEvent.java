@@ -16,9 +16,14 @@
 
 package org.feathercore.eventbus;
 
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * Created by k.shandurenko on 09/04/2019
  */
+@Data
+@EqualsAndHashCode(callSuper = false)
 public abstract class CancellableEvent extends Event {
 
     private boolean cancelled = false;
