@@ -29,6 +29,15 @@ import java.util.function.Consumer;
 public interface EventManager<E extends Event> {
 
     /**
+     * Gets the global (singleton) event manager initialized lazily.
+     *
+     * @return global event manager (singleton)
+     */
+    static EventManager<Event> getGlobal() {
+        return GlobalContainer.INSTANCE;
+    }
+
+    /**
      * Registers an event-handler for the specified event type.
      *
      * @param eventType type of the event
@@ -68,4 +77,9 @@ public interface EventManager<E extends Event> {
      * @param <T> exact type of the event to call
      */
     <T extends E> void call(@NotNull T event);
+
+    final class GlobalContainer {
+
+        private static final EventManager<Event> INSTANCE = new SimpleEventManager<>();
+    }
 }

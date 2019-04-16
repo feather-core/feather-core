@@ -19,4 +19,9 @@ package org.feathercore.eventbus;
 /**
  * Base for any event handled by {@link SimpleEventManager <Event>}.
  */
-public interface Event {}
+public interface Event {
+
+    default void callGlobally() {
+        EventManager.getGlobal().call(this);
+    }
+}
