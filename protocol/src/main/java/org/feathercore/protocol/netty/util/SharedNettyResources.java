@@ -27,8 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnegative;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -43,13 +42,7 @@ import static java.lang.Math.max;
 @NonFinal
 public class SharedNettyResources {
 
-    @NonNull private final Lock readLock, writeLock;
-
-    {
-        val lock = new ReentrantReadWriteLock();
-        readLock = lock.readLock();
-        writeLock = lock.writeLock();
-    }
+    @NonNull protected final ReadWriteLock lock;
 
     boolean bossIsWorker;
     @Builder.Default boolean useNativeTransport = true;
@@ -58,24 +51,34 @@ public class SharedNettyResources {
     @NonFinal @Nullable volatile EventLoopGroup bossLoopGroup, workerLoopGroup;
 
     @NonNull Supplier<ThreadFactory>
-            bossThreadFactorySupplier = () -> new NamedThreadFactory("Netty Boss Thread #", false),
-            workerThreadFactorySupplier = () -> new NamedThreadFactory("Netty Worker Thread #", false);
+            bossThreadFactorySupplier = new Supplier<ThreadFactory>() {
+        @Override
+        public ThreadFactory get() {
+            return new NamedThreadFactory("Netty Boss Thread #", false);
+        }
+    },
+            workerThreadFactorySupplier = new Supplier<ThreadFactory>() {
+                @Override
+                public ThreadFactory get() {
+                    return new NamedThreadFactory("Netty Worker Thread #", false);
+                }
+            };
 
     public boolean isInitialized() {
-        readLock.lock();
+        lock.readLock().lock();
         try {
             return bossLoopGroup != null && workerLoopGroup != null;
         } finally {
-            readLock.unlock();
+            lock.readLock().unlock();
         }
     }
 
     @SneakyThrows(InterruptedException.class)
     public void shutdownLoopGroupsGracefully(final boolean await) {
-        readLock.lock();
+        lock.readLock().lock();
         try {
             if (bossLoopGroup != null) {
-                writeLock.lock();
+                lock.writeLock().lock();
                 try {
                     if (await) {
                         bossLoopGroup.shutdownGracefully().await();
@@ -85,11 +88,11 @@ public class SharedNettyResources {
 
                     bossLoopGroup = null;
                 } finally {
-                    writeLock.unlock();
+                    lock.writeLock().unlock();
                 }
             }
             if (workerLoopGroup != null) {
-                writeLock.lock();
+                lock.writeLock().lock();
                 try {
                     if (await) {
                         workerLoopGroup.shutdownGracefully().await();
@@ -98,11 +101,11 @@ public class SharedNettyResources {
 
                     workerLoopGroup = null;
                 } finally {
-                    writeLock.unlock();
+                    lock.writeLock().unlock();
                 }
             }
         } finally {
-            readLock.unlock();
+            lock.readLock().unlock();
         }
     }
 
@@ -111,29 +114,29 @@ public class SharedNettyResources {
     }
 
     public EventLoopGroup getBossLoopGroup() {
-        readLock.lock();
+        lock.readLock().lock();
         try {
             if (bossLoopGroup == null) {
-                writeLock.lock();
+                lock.writeLock().lock();
                 try {
                     bossLoopGroup = (useNativeTransport ? TransportType.getNative() : TransportType.getDefault())
                             .newEventLoopGroup(bossThreads, bossThreadFactorySupplier.get());
                 } finally {
-                    writeLock.unlock();
+                    lock.writeLock().unlock();
                 }
             }
 
             return bossLoopGroup;
         } finally {
-            readLock.unlock();
+            lock.readLock().unlock();
         }
     }
 
     public EventLoopGroup getWorkerLoopGroup() {
-        readLock.lock();
+        lock.readLock().lock();
         try {
             if (workerLoopGroup == null) {
-                writeLock.lock();
+                lock.writeLock().lock();
                 try {
                     if (bossIsWorker) {
                         workerLoopGroup = getWorkerLoopGroup();
@@ -142,13 +145,13 @@ public class SharedNettyResources {
                                 .newEventLoopGroup(max(1, workerThreads), workerThreadFactorySupplier.get());
                     }
                 } finally {
-                    writeLock.unlock();
+                    lock.writeLock().unlock();
                 }
             }
 
             return workerLoopGroup;
         } finally {
-            readLock.unlock();
+            lock.readLock().unlock();
         }
     }
 
@@ -178,14 +181,8 @@ public class SharedNettyResources {
             return this;
         }
 
-        protected SharedNettyResourcesBuilder readLock(@NonNull final Lock readLock) {
-            this.readLock = readLock;
-
-            return this;
-        }
-
-        protected SharedNettyResourcesBuilder writeLock(@NonNull final Lock writeLock) {
-            this.writeLock = writeLock;
+        protected SharedNettyResourcesBuilder lock(@NonNull final ReadWriteLock lock) {
+            this.lock = lock;
 
             return this;
         }

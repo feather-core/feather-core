@@ -24,7 +24,6 @@ import org.feathercore.protocol.netty.NettyBuffer;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.exception.UnknownPacketIdException;
-import org.feathercore.protocol.registry.PacketRegistry;
 
 import java.util.List;
 

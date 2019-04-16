@@ -58,6 +58,10 @@
         </repository>
     </repositories>
 
+    <build>
+        <defaultGoal>verify install</defaultGoal>
+    </build>
+
     <dependencyManagement>
         <dependencies>
             <!-- Own components -->

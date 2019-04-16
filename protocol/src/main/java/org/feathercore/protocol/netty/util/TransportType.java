@@ -46,8 +46,7 @@ public enum TransportType {
         }
 
         @Override
-        public EventLoopGroup newEventLoopGroup(@NonNull final int threads,
-                                                @NonNull final ThreadFactory threadFactory) {
+        public EventLoopGroup newEventLoopGroup(final int threads, @NonNull final ThreadFactory threadFactory) {
             return new EpollEventLoopGroup(threads, threadFactory);
         }
     },
@@ -58,8 +57,7 @@ public enum TransportType {
         }
 
         @Override
-        public EventLoopGroup newEventLoopGroup(@NonNull final int threads,
-                                                @NonNull final ThreadFactory threadFactory) {
+        public EventLoopGroup newEventLoopGroup(final int threads, @NonNull final ThreadFactory threadFactory) {
             return new KQueueEventLoopGroup(threads, threadFactory);
         }
     },
@@ -70,8 +68,7 @@ public enum TransportType {
         }
 
         @Override
-        public EventLoopGroup newEventLoopGroup(@NonNull final int threads,
-                                                @NonNull final ThreadFactory threadFactory) {
+        public EventLoopGroup newEventLoopGroup(final int threads, @NonNull final ThreadFactory threadFactory) {
             return new NioEventLoopGroup(threads, threadFactory);
         }
     };
@@ -83,7 +80,7 @@ public enum TransportType {
 
     public abstract boolean isAvailable();
 
-    public abstract EventLoopGroup newEventLoopGroup(@NonNull int threads, @NonNull ThreadFactory threadFactory);
+    public abstract EventLoopGroup newEventLoopGroup(int threads, @NonNull ThreadFactory threadFactory);
 
     public static TransportType getNative() {
         for (val transportType : TRANSPORT_TYPES) {

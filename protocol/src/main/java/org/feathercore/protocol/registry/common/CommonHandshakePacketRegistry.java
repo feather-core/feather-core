@@ -22,6 +22,8 @@ import org.feathercore.protocol.packet.PacketType;
 import org.feathercore.protocol.registry.ArrayBasedPacketRegistry;
 import org.feathercore.protocol.registry.PacketRegistry;
 
+import java.util.function.BiConsumer;
+
 /**
  * Created by k.shandurenko on 16/04/2019
  */
@@ -29,11 +31,15 @@ public class CommonHandshakePacketRegistry {
 
     @SuppressWarnings("unchecked")
     public static PacketRegistry<MinecraftPacket> createNew() {
+        //noinspection Convert2Lambda bug in javac
         return ArrayBasedPacketRegistry.Builder.create()
                 .addPacket(
                         PacketType.create(HandshakePacketClientHandshake.class, HandshakePacketClientHandshake::new),
-                        (connection, packet) -> {
-                            //TODO
+                        new BiConsumer() {
+                            @Override
+                            public void accept(final Object connection, final Object packet) {
+                                //TODO
+                            }
                         }
                 )
                 .build();
