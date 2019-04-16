@@ -39,7 +39,8 @@ public class ServerPingAdapter extends ChannelInboundHandlerAdapter {
 
                 switch (i) {
                     case 0:
-                        String result = getServerMOTD() + "\u00a7" + getCurrentPlayerCount() + "\u00a7" + getMaxPlayers();
+                        String result = getServerMOTD() + "\u00a7" + getCurrentPlayerCount() + "\u00a7"
+                                + getMaxPlayers();
                         this.writeAndFlush(ctx, this.getStringBuffer(result));
                         break;
 
@@ -48,14 +49,17 @@ public class ServerPingAdapter extends ChannelInboundHandlerAdapter {
                             return;
                         }
 
-                        result = "\u00a71\u0000127\u0000" + getMinecraftVersion() + "\u0000" + getServerMOTD() + "\u0000" + getCurrentPlayerCount() + "\u0000" + getMaxPlayers();
+                        result = "\u00a71\u0000127\u0000" + getMinecraftVersion() + "\u0000" + getServerMOTD()
+                                + "\u0000" + getCurrentPlayerCount() + "\u0000" + getMaxPlayers();
                         this.writeAndFlush(ctx, this.getStringBuffer(result));
                         break;
 
                     default:
                         boolean flag2 = buffer.readUnsignedByte() == 1;
                         flag2 = flag2 & buffer.readUnsignedByte() == 250;
-                        flag2 = flag2 & "MC|PingHost".equals(new String(buffer.readBytes(buffer.readShort() * 2).array(), Charsets.UTF_16BE));
+                        flag2 = flag2 & "MC|PingHost"
+                                .equals(new String(buffer.readBytes(buffer.readShort() * 2).array(),
+                                        Charsets.UTF_16BE));
                         int size = buffer.readUnsignedShort();
                         flag2 = flag2 & buffer.readUnsignedByte() >= 73;
                         flag2 = flag2 & 3 + buffer.readBytes(buffer.readShort() * 2).array().length + 4 == size;
@@ -66,7 +70,8 @@ public class ServerPingAdapter extends ChannelInboundHandlerAdapter {
                             return;
                         }
 
-                        result = "\u00a71\u0000127\u0000" + getMinecraftVersion() + "\u0000" + getServerMOTD() + "\u0000" + getCurrentPlayerCount() + "\u0000" + getMaxPlayers();
+                        result = "\u00a71\u0000127\u0000" + getMinecraftVersion() + "\u0000" + getServerMOTD()
+                                + "\u0000" + getCurrentPlayerCount() + "\u0000" + getMaxPlayers();
                         ByteBuf out = this.getStringBuffer(result);
 
                         try {

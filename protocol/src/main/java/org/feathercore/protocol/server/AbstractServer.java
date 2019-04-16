@@ -14,33 +14,30 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.status.client;
+package org.feathercore.protocol.server;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
+import lombok.NonNull;
+import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.netty.NettyServer;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class StatusPacketClientServerQuery implements MinecraftPacket {
+public abstract class AbstractServer extends NettyServer {
 
-    public static final int ID = 0x00;
-
-    @Override
-    public void write(@NotNull final Buffer buffer) {}
-
-    @Override
-    public void read(@NotNull final Buffer buffer) {}
-
-    @Override
-    public int getId() {
-        return ID;
+    public AbstractServer(final @NonNull String host, final int port) {
+        super(host, port);
     }
+
+    @Override
+    public void onConnected(@NotNull final Connection connection) {
+
+    }
+
+    @Override
+    public void onDisconnected(@NotNull final Connection connection) {
+
+    }
+
 }

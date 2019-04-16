@@ -21,14 +21,14 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.Logger;
-import org.feathercore.protocol.handler.PacketHandler;
+import org.feathercore.protocol.server.BaseServer;
 import org.feathercore.protocol.netty.HandlerBoss;
 import org.feathercore.protocol.netty.codec.InboundDecoder;
 import org.feathercore.protocol.netty.codec.InboundPacketDecoder;
 import org.feathercore.protocol.netty.codec.OutboundEncoder;
 import org.feathercore.protocol.netty.codec.ServerPingAdapter;
 
-import java.util.function.Supplier;
+import java.lang.ref.SoftReference;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -36,7 +36,7 @@ import java.util.function.Supplier;
 @RequiredArgsConstructor
 public class ChannelInitializer extends io.netty.channel.ChannelInitializer<Channel> {
 
-    private final Supplier<? extends PacketHandler> initialHandlerSupplier;
+    private final SoftReference<BaseServer> serverSoftReference;
     private final Logger logger;
 
     @Override
@@ -48,6 +48,6 @@ public class ChannelInitializer extends io.netty.channel.ChannelInitializer<Chan
                 .addLast("splitter", new InboundDecoder())
                 .addLast("decoder", new InboundPacketDecoder())
                 .addLast("prepender", new OutboundEncoder())
-                .addLast("handler_boss", new HandlerBoss(this.initialHandlerSupplier.get(), this.logger));
+                .addLast("handler_boss", new HandlerBoss(serverSoftReference, logger));
     }
 }

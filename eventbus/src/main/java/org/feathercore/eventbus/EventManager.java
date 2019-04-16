@@ -50,7 +50,7 @@ public class EventManager {
             if (!event.isAssignableFrom(param)) {
                 continue;
             }
-            Set<Handler> handlers = HANDLERS.get(param);
+            @SuppressWarnings("SuspiciousMethodCalls") Set<Handler> handlers = HANDLERS.get(param);
             if (handlers == null) {
                 handlers = new TreeSet<>(Comparator.comparing(Handler::priority).thenComparingInt(a -> a.id));
                 handlers = Collections.synchronizedSet(handlers);

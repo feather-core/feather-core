@@ -20,7 +20,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.netty.HandlerBoss;
-import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -28,12 +27,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NettyAttributes {
 
-    public static final AttributeKey<PacketRegistry<?>> PACKET_REGISTRY_ATTRIBUTE_KEY
-            = AttributeKey.newInstance("PRAK");
     public static final AttributeKey<Connection> CONNECTION_ATTRIBUTE_KEY = AttributeKey.newInstance("CAK");
     public static final AttributeKey<HandlerBoss> HANDLER_BOSS_ATTRIBUTE_KEY = AttributeKey.newInstance("HBAK");
 
-    public static <T> void setAttribute(@NotNull ChannelHandlerContext ctx, @NotNull AttributeKey<T> key, @NotNull T value) {
+    public static <T> void setAttribute(@NotNull ChannelHandlerContext ctx, @NotNull AttributeKey<T> key,
+                                        @NotNull T value) {
         ctx.channel().attr(key).set(value);
     }
 

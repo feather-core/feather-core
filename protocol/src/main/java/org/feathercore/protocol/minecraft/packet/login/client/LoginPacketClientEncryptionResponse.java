@@ -22,7 +22,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
 import javax.crypto.SecretKey;
@@ -35,7 +35,7 @@ import java.security.PrivateKey;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketClientEncryptionResponse implements Packet {
+public class LoginPacketClientEncryptionResponse implements MinecraftPacket {
 
     public static final int ID = 0x01;
 
@@ -49,7 +49,8 @@ public class LoginPacketClientEncryptionResponse implements Packet {
 
     public byte[] getVerifyToken(@NotNull final PrivateKey key) {
         throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        // TODO: return key == null ? this.verifyTokenEncrypted : CryptManager.decryptData(key, this.verifyTokenEncrypted);
+        // TODO: return key == null ? this.verifyTokenEncrypted : CryptManager.decryptData(key, this
+        // .verifyTokenEncrypted);
     }
 
     @Override

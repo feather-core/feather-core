@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
-import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketServerDisconnect implements Packet {
+public class LoginPacketServerDisconnect implements MinecraftPacket {
 
     public static final int ID = 0x00;
 
@@ -41,13 +41,17 @@ public class LoginPacketServerDisconnect implements Packet {
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        if (true) {
+            throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        }
         // TODO buffer.writeChatComponent(this.reason);
     }
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        if (true) throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        if (true) {
+            throw new UnsupportedOperationException("Should be recreated using Mojang API");
+        }
         // TODO this.reason = buffer.readChatComponent();
     }
 

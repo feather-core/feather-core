@@ -14,29 +14,37 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.handler;
+package org.feathercore.protocol.server;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
-import org.feathercore.protocol.packet.PacketType;
+import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.BiConsumer;
+import java.util.concurrent.Future;
 
 /**
- * Created by k.shandurenko on 12/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-public interface PacketHandler {
+@Getter
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class BaseServer {
 
-    void register();
+    @NonNull protected final String host;
+    protected final int port;
 
-    <P extends Packet> void addHandler(@NonNull PacketType<P> type, @NonNull BiConsumer<Connection, P> handler);
+    public abstract Future<Void> start();
 
-    void handle(@NotNull Connection connection, @NotNull Packet packet);
+    public abstract Future<Void> stop();
 
-    void onConnected(@NonNull Connection connection);
+    public abstract void onConnected(@NotNull Connection connection);
 
-    void onDisconnected(@NonNull Connection connection);
+    public abstract void onDisconnected(@NotNull Connection connection);
+
+    public abstract @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry();
 
 }

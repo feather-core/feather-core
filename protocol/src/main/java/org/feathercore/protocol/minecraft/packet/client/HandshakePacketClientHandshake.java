@@ -17,14 +17,14 @@
 package org.feathercore.protocol.minecraft.packet.client;
 
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.packet.ConnectionState;
-import org.feathercore.protocol.packet.Packet;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by k.shandurenko on 09/04/2019
  */
-public class HandshakePacketClientHandshake implements Packet {
+public class HandshakePacketClientHandshake implements MinecraftPacket {
 
     public static final int ID = 0x00;
 

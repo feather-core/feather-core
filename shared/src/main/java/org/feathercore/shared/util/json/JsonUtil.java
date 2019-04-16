@@ -77,7 +77,9 @@ public class JsonUtil {
      * to be thrown.
      */
     public String getString(@NonNull final JsonElement possibleString, @NonNull final String key) {
-        if (possibleString.isJsonPrimitive()) return possibleString.getAsString();
+        if (possibleString.isJsonPrimitive()) {
+            return possibleString.getAsString();
+        }
         throw new JsonSyntaxException("Expected " + key + " to be a string, was " + toString(possibleString));
     }
 
@@ -85,7 +87,9 @@ public class JsonUtil {
      * Gets the string value of the field on the JsonObject with the given name.
      */
     public String getString(@NonNull final JsonObject holder, @NonNull final String key) {
-        if (holder.has(key)) return getString(holder.get(key), key);
+        if (holder.has(key)) {
+            return getString(holder.get(key), key);
+        }
         throw new JsonSyntaxException("Missing " + key + ", expected to find a string");
     }
 
@@ -104,7 +108,9 @@ public class JsonUtil {
      * to be thrown.
      */
     public boolean getBoolean(@NonNull final JsonElement possibleBoolean, @NonNull final String key) {
-        if (possibleBoolean.isJsonPrimitive()) return possibleBoolean.getAsBoolean();
+        if (possibleBoolean.isJsonPrimitive()) {
+            return possibleBoolean.getAsBoolean();
+        }
         throw new JsonSyntaxException("Expected " + key + " to be a Boolean, was " + toString(possibleBoolean));
     }
 
@@ -113,7 +119,9 @@ public class JsonUtil {
      * name.
      */
     public boolean getBoolean(@NonNull final JsonObject holder, @NonNull final String key) {
-        if (holder.has(key)) return getBoolean(holder.get(key), key);
+        if (holder.has(key)) {
+            return getBoolean(holder.get(key), key);
+        }
         throw new JsonSyntaxException("Missing " + key + ", expected to find a Boolean");
     }
 
@@ -132,7 +140,9 @@ public class JsonUtil {
      */
     public float getFloat(JsonElement possibleFloat, @NonNull final String key) {
         if (possibleFloat.isJsonPrimitive()
-                && possibleFloat.getAsJsonPrimitive().isNumber()) return possibleFloat.getAsFloat();
+                && possibleFloat.getAsJsonPrimitive().isNumber()) {
+            return possibleFloat.getAsFloat();
+        }
         throw new JsonSyntaxException("Expected " + key + " to be a Float, was " + toString(possibleFloat));
     }
 
@@ -140,7 +150,9 @@ public class JsonUtil {
      * Gets the float value of the field on the JsonObject with the given name.
      */
     public float getFloat(@NonNull final JsonObject holder, @NonNull final String key) {
-        if (holder.has(key)) return getFloat(holder.get(key), key);
+        if (holder.has(key)) {
+            return getFloat(holder.get(key), key);
+        }
         throw new JsonSyntaxException("Missing " + key + ", expected to find a Float");
     }
 
@@ -158,7 +170,9 @@ public class JsonUtil {
      * to be thrown.
      */
     public int getInt(@NonNull final JsonElement possibleInt, @NonNull final String key) {
-        if (possibleInt.isJsonPrimitive() && possibleInt.getAsJsonPrimitive().isNumber()) return possibleInt.getAsInt();
+        if (possibleInt.isJsonPrimitive() && possibleInt.getAsJsonPrimitive().isNumber()) {
+            return possibleInt.getAsInt();
+        }
         throw new JsonSyntaxException("Expected " + key + " to be a Int, was " + toString(possibleInt));
     }
 
@@ -167,7 +181,9 @@ public class JsonUtil {
      * name.
      */
     public int getInt(@NonNull final JsonObject holder, @NonNull final String key) {
-        if (holder.has(key)) return getInt(holder.get(key), key);
+        if (holder.has(key)) {
+            return getInt(holder.get(key), key);
+        }
         throw new JsonSyntaxException("Missing " + key + ", expected to find a Int");
     }
 
@@ -185,12 +201,16 @@ public class JsonUtil {
      * thrown.
      */
     public JsonObject getJsonObject(@NonNull final JsonElement possibleObject, @NonNull final String key) {
-        if (possibleObject.isJsonObject()) return possibleObject.getAsJsonObject();
+        if (possibleObject.isJsonObject()) {
+            return possibleObject.getAsJsonObject();
+        }
         throw new JsonSyntaxException("Expected " + key + " to be a JsonObject, was " + toString(possibleObject));
     }
 
     public JsonObject getJsonObject(@NonNull final JsonObject holder, @NonNull final String key) {
-        if (holder.has(key)) return getJsonObject(holder.get(key), key);
+        if (holder.has(key)) {
+            return getJsonObject(holder.get(key), key);
+        }
         throw new JsonSyntaxException("Missing " + key + ", expected to find a JsonObject");
     }
 
@@ -209,7 +229,9 @@ public class JsonUtil {
      * thrown.
      */
     public JsonArray getJsonArray(@NonNull final JsonElement possibleArray, @NonNull final String key) {
-        if (possibleArray.isJsonArray()) return possibleArray.getAsJsonArray();
+        if (possibleArray.isJsonArray()) {
+            return possibleArray.getAsJsonArray();
+        }
         throw new JsonSyntaxException("Expected " + key + " to be a JsonArray, was " + toString(possibleArray));
     }
 
@@ -217,7 +239,9 @@ public class JsonUtil {
      * Gets the JsonArray field on the JsonObject with the given name.
      */
     public JsonArray getJsonArray(@NonNull final JsonObject holder, @NonNull final String key) {
-        if (holder.has(key))  return getJsonArray(holder.get(key), key);
+        if (holder.has(key)) {
+            return getJsonArray(holder.get(key), key);
+        }
         throw new JsonSyntaxException("Missing " + key + ", expected to find a JsonArray");
     }
 
@@ -235,15 +259,27 @@ public class JsonUtil {
      * example: "a number (4)"
      */
     public String toString(@NonNull final JsonElement element) {
-        if (element == null) return "null (missing)";
-        if (element.isJsonNull()) return "null (json)";
-        if (element.isJsonArray()) return "an array (" + element.toString() + ")";
-        if (element.isJsonObject()) return "an object (" + element.toString() + ")";
+        if (element == null) {
+            return "null (missing)";
+        }
+        if (element.isJsonNull()) {
+            return "null (json)";
+        }
+        if (element.isJsonArray()) {
+            return "an array (" + element.toString() + ")";
+        }
+        if (element.isJsonObject()) {
+            return "an object (" + element.toString() + ")";
+        }
         if (element.isJsonPrimitive()) {
             val primitive = element.getAsJsonPrimitive();
 
-            if (primitive.isNumber()) return "a number (" + element.toString() + ")";
-            if (primitive.isBoolean()) return "a boolean (" + element.toString() + ")";
+            if (primitive.isNumber()) {
+                return "a number (" + element.toString() + ")";
+            }
+            if (primitive.isBoolean()) {
+                return "a boolean (" + element.toString() + ")";
+            }
         }
 
         return element.toString();

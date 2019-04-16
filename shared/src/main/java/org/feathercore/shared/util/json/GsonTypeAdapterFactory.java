@@ -36,7 +36,7 @@ import java.util.Locale;
 public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
     public <T> TypeAdapter<T> create(@NonNull final Gson gson, @NonNull final TypeToken<T> token) {
-        @SuppressWarnings("unchecked")val oclass = (Class<T>) token.getRawType();
+        @SuppressWarnings("unchecked") val oclass = (Class<T>) token.getRawType();
 
         if (!oclass.isEnum()) {
             return null;
@@ -49,8 +49,11 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
 
             return new TypeAdapter<T>() {
                 public void write(@NonNull final JsonWriter writer, @NonNull final T value) throws IOException {
-                    if (value == null) writer.nullValue();
-                    else writer.value(deserialize(value));
+                    if (value == null) {
+                        writer.nullValue();
+                    } else {
+                        writer.value(deserialize(value));
+                    }
                 }
 
                 public T read(@NonNull final JsonReader reader) throws IOException {
@@ -58,7 +61,9 @@ public class GsonTypeAdapterFactory implements TypeAdapterFactory {
                         reader.nextNull();
 
                         return null;
-                    } else return map.get(reader.nextString());
+                    } else {
+                        return map.get(reader.nextString());
+                    }
                 }
             };
         }

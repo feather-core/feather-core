@@ -14,27 +14,18 @@
  * limitations under the License.
  */
 
-package org.feathercore.eventbus;
+package org.feathercore.protocol.event;
+
+import lombok.Data;
+import org.feathercore.eventbus.Event;
+import org.feathercore.protocol.Connection;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-public abstract class CancellableEvent extends Event {
+@Data
+public class PreDisconnectionEvent extends Event {
 
-    private boolean cancelled = false;
-
-    public boolean isCancelled() {
-        return this.cancelled;
-    }
-
-    public void setCancelled(boolean value) {
-        this.cancelled = value;
-    }
-
-    @Override
-    public CancellableEvent call() {
-        super.call();
-        return this;
-    }
+    private final Connection connection;
 
 }

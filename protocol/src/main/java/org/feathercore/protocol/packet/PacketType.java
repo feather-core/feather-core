@@ -19,7 +19,6 @@ package org.feathercore.protocol.packet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
@@ -31,39 +30,31 @@ import java.util.function.Supplier;
  * @param <P> type of packet
  */
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 @NonFinal
-public abstract class PacketType<P extends Packet> {
+public class PacketType<P extends Packet> {
 
-    @NonNull Direction direction;
     int id;
     @NonNull Class<P> type;
     @NonNull Supplier<P> supplier;
 
-    public abstract boolean canCoexist(@NonNull final PacketType packetType);
-
-    public static <P extends Packet> PacketType<P> incoming(@NonNull final int id, @NonNull final Class<P> type,
-                                                            @NonNull final Supplier<P> supplier) {
-        return new PacketType<P>(Direction.INCOMING, id, type, supplier) {
-            @Override
-            public boolean canCoexist(final @NonNull PacketType packetType) {
-                return packetType.getDirection() == Direction.OUTCOMING || packetType.getId() != id;
-            }
-        };
+    private PacketType(Class<P> type, Supplier<P> supplier) {
+        try {
+            this.id = type.getField("ID").getInt(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(
+                    "Could not instantiate packet type, because there is not ID field in given packet class or it is "
+                            + "not accessible",
+                    e
+            );
+        }
+        this.type = type;
+        this.supplier = supplier;
     }
 
-    public static <P extends Packet> PacketType<P> outcoming(@NonNull final int id, @NonNull final Class<P> type,
+    public static <P extends Packet> PacketType<P> create(@NonNull final Class<P> type,
                                                              @NonNull final Supplier<P> supplier) {
-        return new PacketType<P>(Direction.OUTCOMING, id, type, supplier) {
-            @Override
-            public boolean canCoexist(final @NonNull PacketType packetType) {
-                return packetType.getDirection() == Direction.INCOMING || packetType.getType() != type;
-            }
-        };
+        return new PacketType<>(type, supplier);
     }
 
-    public enum Direction {
-        INCOMING, OUTCOMING
-    }
 }

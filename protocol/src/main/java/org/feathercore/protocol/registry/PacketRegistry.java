@@ -18,11 +18,15 @@ package org.feathercore.protocol.registry;
 
 import lombok.NonNull;
 import lombok.val;
+import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -46,32 +50,56 @@ public interface PacketRegistry<P extends Packet> {
      * @param id identifier of the packet.
      * @return instance of a packet by the specified ID or {@code null} if there is no packet type registered by this ID
      */
-    @Nullable default P createById(final int id) {
+    @Nullable
+    default P createById(final int id) {
         val type = getTypeById(id);
 
         return type == null ? null : type.getSupplier().get();
     }
 
+    void handlePacket(@NotNull Connection connection, @NotNull Packet packet);
+
     interface Builder<P extends Packet> {
 
         /**
-         * Adds a packet by its packet type.
+         * Adds a packet by its packet type without any handler.
          *
          * @param packetType data identifying this packet
          * @return self for chaining
-         *
-         * @throws NullPointerException if {@code packetSupplier} is {@link null}
-         *
          * @apiNote if a packet is already registered by this ID and direction then it should be overridden
          */
-        Builder addPacket(@NonNull PacketType<? extends P> packetType);
+        default <T extends P> Builder addPacket(@NonNull PacketType<T> packetType) {
+            return addPacket(packetType, (BiConsumer<Connection, T>) null);
+        }
+
+        /**
+         * Adds a packet by its packet type without any handler.
+         *
+         * @param packetType data identifying this packet
+         * @param handler action that will be executed when packet arrives.
+         * @return self for chaining
+         * @apiNote if a packet is already registered by this ID and direction then it should be overridden
+         */
+        default <T extends P> Builder addPacket(@NonNull PacketType<T> packetType, @Nullable Consumer<T> handler) {
+            //noinspection ConstantConditions
+            return addPacket(packetType, (connection, packet) -> handler.accept(packet));
+        }
+
+        /**
+         * Adds a packet by its packet type without any handler.
+         *
+         * @param packetType data identifying this packet
+         * @param handler action that will be executed when packet arrives.
+         * @return self for chaining
+         * @apiNote if a packet is already registered by this ID and direction then it should be overridden
+         */
+        <T extends P> Builder addPacket(@NonNull PacketType<T> packetType, @Nullable BiConsumer<Connection, T> handler);
 
         /**
          * Removes a packet by its packet type.
          *
          * @param packetType packet type of the packet
          * @return self for chaining
-         *
          * @apiNote if a packet is not registered by this ID then nothing should happen
          */
         Builder removePacket(PacketType<? extends P> packetType);

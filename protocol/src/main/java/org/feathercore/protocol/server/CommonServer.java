@@ -14,33 +14,28 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.status.client;
+package org.feathercore.protocol.server;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.feathercore.protocol.Buffer;
+import lombok.NonNull;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
-import org.jetbrains.annotations.NotNull;
+import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.registry.PacketRegistry;
+import org.feathercore.protocol.registry.common.CommonHandshakePacketRegistry;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class StatusPacketClientServerQuery implements MinecraftPacket {
+public class CommonServer extends AbstractServer {
 
-    public static final int ID = 0x00;
+    private final PacketRegistry<MinecraftPacket> initialPacketRegistry = CommonHandshakePacketRegistry.createNew();
 
-    @Override
-    public void write(@NotNull final Buffer buffer) {}
-
-    @Override
-    public void read(@NotNull final Buffer buffer) {}
-
-    @Override
-    public int getId() {
-        return ID;
+    public CommonServer(final @NonNull String host, final int port) {
+        super(host, port);
     }
+
+    @Override
+    public @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry() {
+        return this.initialPacketRegistry;
+    }
+
 }

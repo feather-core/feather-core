@@ -30,6 +30,10 @@
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>feathercore-shared</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>feathercore-eventbus</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>net.md-5</groupId>
