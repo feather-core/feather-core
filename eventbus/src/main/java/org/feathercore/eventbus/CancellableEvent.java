@@ -16,30 +16,29 @@
 
 package org.feathercore.eventbus;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 /**
- * Created by k.shandurenko on 09/04/2019
+ * {@link Event} which may be cancelled.
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
-public abstract class CancellableEvent extends Event {
+public interface CancellableEvent extends Event {
 
-    private boolean cancelled = false;
+    /**
+     * Gets this event's cancellation state
+     *
+     * @return {@link true} if this event is cancelled and {@link false} otherwise
+     */
+    boolean isCancelled();
 
-    public boolean isCancelled() {
-        return this.cancelled;
+    /**
+     * Sets this event's cancellation state to the specified value.
+     *
+     * @param cancelled {@link true} if this event should be marked as cancelled and {@link false} otherwise
+     */
+    void setCancelled(boolean cancelled);
+
+
+    default boolean callCancellableGlobally() {
+        EventManager.getGlobal().call(this);
+
+        return isCancelled();
     }
-
-    public void setCancelled(boolean value) {
-        this.cancelled = value;
-    }
-
-    @Override
-    public CancellableEvent call() {
-        super.call();
-        return this;
-    }
-
 }

@@ -22,27 +22,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Marker for a method to be included as an event listener by {@link SimpleEventManager <Event>#register(Object)}.
+ *
+ * @apiNote Annotated method should accept any sub-class of {@link Event} as its only parameter.
  */
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.METHOD)
 public @interface EventHandler {
 
     /**
-     * Priority of execution.
-     * All methods, which are handling the same event as the method, marked with this annotation,
-     * will be executed in order from Byte.MIN_VALUE to Byte.MAX_VALUE priority.
+     * Method's priority of execution when handled by {@link SimpleEventManager <Event>}.
+     * The higher the priority is the later the annotated method is called.
      *
      * @return execution priority of annotated method.
      */
     byte priority() default 0;
-
-    /**
-     * Determines, whether or not this method should handle events that were cancelled
-     * (maybe, on previous handler-methods).
-     *
-     * @return whether annotated method ignores cancelled events
-     */
-    boolean ignoreCancelled() default true;
-
 }

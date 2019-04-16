@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package org.feathercore.eventbus;
+package org.feathercore.protocol.event;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.feathercore.eventbus.SimpleCancellableEvent;
+import org.feathercore.protocol.Connection;
 
 /**
- * Events could be handled (and their handle-methods could be marked with @EventHandler) only
- * inside of classes implementing IListener. Also, you need to call EventManager.registerListener(IListener)
- * in order to make your handle-methods work.
- *
- * Created by k.shandurenko on 09/04/2019
+ * Created by k.shandurenko on 16/04/2019
  */
-public interface IListener {}
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class PreConnectionEventSimple extends SimpleCancellableEvent {
+
+    private final Connection connection;
+}
