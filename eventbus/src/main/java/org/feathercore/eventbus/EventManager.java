@@ -94,8 +94,7 @@ public class EventManager {
                     MethodType.methodType(void.class, method.getParameterTypes()[0])
             ).getTarget().invoke(listener);
         } catch (Throwable t) {
-            t.printStackTrace();
-            return null;
+            throw new RuntimeException("Could not create event listener", t);
         }
     }
 
@@ -110,11 +109,7 @@ public class EventManager {
     private static MethodHandles.Lookup constructLookup(Class<?> owner) throws Exception {
         Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class);
         constructor.setAccessible(true);
-        try {
-            return constructor.newInstance(owner);
-        } finally {
-            constructor.setAccessible(false);
-        }
+        return constructor.newInstance(owner);
     }
 
     private static class Handler {
