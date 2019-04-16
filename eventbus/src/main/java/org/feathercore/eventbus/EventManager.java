@@ -94,7 +94,7 @@ public class EventManager {
                     MethodType.methodType(void.class, method.getParameterTypes()[0])
             ).getTarget().invoke(listener);
         } catch (Throwable t) {
-            throw new IllegalStateException("Could not create event listener", t);
+            throw new RuntimeException("Could not create event listener", t);
         }
     }
 
