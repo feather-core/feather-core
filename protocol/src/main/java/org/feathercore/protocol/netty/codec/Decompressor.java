@@ -22,6 +22,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.DecoderException;
 import lombok.Setter;
+import lombok.var;
 import org.feathercore.protocol.netty.NettyBuffer;
 
 import java.util.List;
@@ -65,11 +66,15 @@ public class Decompressor extends ByteToMessageDecoder {
                                 + PROTOCOL_MAXIMUM);
             }
 
-            byte[] temporary = buffer.readBytes(buffer.readableBytes());
-            this.inflater.setInput(temporary);
-            byte[] compressed = new byte[size];
-            this.inflater.inflate(compressed);
-            out.add(Unpooled.wrappedBuffer(compressed));
+            var bytes = new byte[buffer.readableBytes()];
+            buffer.readBytes(bytes);
+            this.inflater.setInput(bytes);
+
+            // reuse variable
+            bytes = new byte[size];
+            this.inflater.inflate(bytes);
+            out.add(Unpooled.wrappedBuffer(bytes));
+
             this.inflater.reset();
         }
     }
