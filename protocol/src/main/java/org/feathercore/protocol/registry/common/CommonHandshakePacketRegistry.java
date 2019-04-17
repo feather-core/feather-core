@@ -36,6 +36,16 @@ public class CommonHandshakePacketRegistry {
                 .addPacket(
                         PacketType.create(HandshakePacketClientHandshake.class, HandshakePacketClientHandshake::new),
                         (BiConsumer<Connection, HandshakePacketClientHandshake>) (connection, packet) -> {
+                            switch (packet.getRequestedState()) {
+                                case STATUS:
+                                    break;
+                                case LOGIN:
+                                    break;
+                                case PLAY:
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Received unexpected handshake state: " + packet.getRequestedState());
+                            }
                             //TODO
                         }
                 )
