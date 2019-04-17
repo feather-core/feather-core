@@ -104,9 +104,7 @@ public class NettyConnection implements Connection {
             throw new IllegalStateException("This connection is not connected anymore: packet registry can't be changed");
         }
         PacketRegistry<?> old = boss.getPacketRegistry();
-        if (old != null) {
-            old.registryDetached(this);
-        }
+        old.registryDetached(this);
         boss.setPacketRegistry(packetRegistry);
         packetRegistry.registryAttached(this);
     }
