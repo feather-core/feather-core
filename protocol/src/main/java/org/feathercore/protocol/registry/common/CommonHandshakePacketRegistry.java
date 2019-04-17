@@ -19,6 +19,7 @@ package org.feathercore.protocol.registry.common;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.minecraft.packet.handshake.client.HandshakePacketClientHandshake;
+import org.feathercore.protocol.netty.NettyConnection;
 import org.feathercore.protocol.packet.PacketType;
 import org.feathercore.protocol.registry.ArrayBasedPacketRegistry;
 import org.feathercore.protocol.registry.PacketRegistry;
@@ -38,10 +39,11 @@ public class CommonHandshakePacketRegistry {
                         (BiConsumer<Connection, HandshakePacketClientHandshake>) (connection, packet) -> {
                             switch (packet.getRequestedState()) {
                                 case STATUS:
+                                    // TODO
                                     break;
                                 case LOGIN:
-                                    break;
-                                case PLAY:
+                                    // TODO: find more elegant way to switch between registries
+                                    //((NettyConnection)connection).changePacketRegistry(CommonLoginPacketRegistry);
                                     break;
                                 default:
                                     throw new IllegalStateException("Received unexpected handshake state: " + packet.getRequestedState());

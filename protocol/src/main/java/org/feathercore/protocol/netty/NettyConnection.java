@@ -19,6 +19,7 @@ package org.feathercore.protocol.netty;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -68,6 +70,24 @@ public class NettyConnection implements Connection {
     @Override
     public boolean isEncrypted() {
         return this.encrypted;
+    }
+
+    public <T> void setAttributeValue(@NonNull AttributeKey<T> key, @Nullable T newValue) {
+        if (!isActive()) {
+            throw new IllegalStateException("This connection is not connected anymore: can't change attribute's value");
+        }
+        context.channel().attr(key).set(newValue);
+    }
+
+    public void removeAttribute(@NonNull AttributeKey<?> key) {
+        if (!isActive()) {
+            throw new IllegalStateException("This connection is not connected anymore: can't remove attribute");
+        }
+        Channel channel = context.channel();
+        if (!channel.hasAttr(key)) {
+            throw new IllegalStateException("Channel does not contain requested attribute key!");
+        }
+        channel.attr(key).set(null);
     }
 
     public void changePacketRegistry(@NonNull PacketRegistry<? extends Packet> packetRegistry) {
