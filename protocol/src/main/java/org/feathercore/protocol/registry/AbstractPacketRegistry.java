@@ -40,6 +40,7 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
         @NonNull Collection<PacketType<? extends P>> packetTypesView;
         @Nullable @NonFinal Consumer<Connection> attachListener;
         @Nullable @NonFinal Consumer<Connection> detachListener;
+        @Nullable @NonFinal BiConsumer<Connection, Throwable> exceptionHandler;
         @NonNull Map<Integer, BiConsumer<Connection, Packet>> packetHandlers;
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
@@ -101,6 +102,12 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
         @Override
         public PacketRegistry.Builder detachListener(@Nullable final Consumer<Connection> listener) {
             this.detachListener = listener;
+            return this;
+        }
+
+        @Override
+        public PacketRegistry.Builder exceptionHandler(@Nullable final BiConsumer<Connection, Throwable> handler) {
+            this.exceptionHandler = handler;
             return this;
         }
 

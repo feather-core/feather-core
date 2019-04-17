@@ -34,6 +34,8 @@ public class CommonHandshakePacketRegistry {
     @SuppressWarnings("unchecked")
     public static PacketRegistry<MinecraftPacket> createNew() {
         return ArrayBasedPacketRegistry.Builder.create()
+                .exceptionHandler((BiConsumer<Connection, Throwable>) (connection, throwable) ->
+                        connection.disconnect())
                 .addPacket(
                         PacketType.create(HandshakePacketClientHandshake.class, HandshakePacketClientHandshake::new),
                         (BiConsumer<Connection, HandshakePacketClientHandshake>) (connection, packet) -> {

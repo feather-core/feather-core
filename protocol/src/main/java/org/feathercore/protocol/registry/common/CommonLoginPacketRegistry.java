@@ -17,11 +17,13 @@
 package org.feathercore.protocol.registry.common;
 
 import com.mojang.authlib.GameProfile;
+import io.netty.channel.ChannelFutureListener;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.encrypt.EncryptionRequestContext;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.minecraft.packet.login.client.LoginPacketClientEncryptionResponse;
 import org.feathercore.protocol.minecraft.packet.login.client.LoginPacketClientLoginStart;
+import org.feathercore.protocol.minecraft.packet.login.server.LoginPacketServerDisconnect;
 import org.feathercore.protocol.minecraft.packet.login.server.LoginPacketServerEncryptionRequest;
 import org.feathercore.protocol.netty.NettyConnection;
 import org.feathercore.protocol.netty.util.NettyAttributes;
@@ -38,6 +40,10 @@ public class CommonLoginPacketRegistry {
     @SuppressWarnings("unchecked")
     public static PacketRegistry<MinecraftPacket> createNew() {
         return ArrayBasedPacketRegistry.Builder.create()
+                                               .exceptionHandler((BiConsumer<Connection, Throwable>) (connection, t) ->
+                                                       connection.writeFuture(new LoginPacketServerDisconnect(/* TODO message */))
+                                                                 .addListener(ChannelFutureListener.CLOSE)
+                                               )
                                                .attachListener((Consumer<Connection>) connection -> ((NettyConnection)connection)
                                                        .setAttributeValue(
                                                                NettyAttributes.LOGIN_STATE_ATTRIBUTE_KEY,

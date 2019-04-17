@@ -39,9 +39,12 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
     private final BiConsumer<Connection, Packet>[] handlers;
     private final Consumer<Connection> attachListener;
     private final Consumer<Connection> detachListener;
+    private final BiConsumer<Connection, Throwable> exceptionHandler;
 
     protected ArrayBasedPacketRegistry(@NonNull final Collection<PacketType<? extends P>> types,
-                                     Map<Integer, BiConsumer<Connection, Packet>> handlers, Consumer<Connection> attachListener, Consumer<Connection> detachListener) {
+                                     Map<Integer, BiConsumer<Connection, Packet>> handlers,
+                                       Consumer<Connection> attachListener, Consumer<Connection> detachListener,
+                                       BiConsumer<Connection, Throwable> exceptionHandler) {
         this.types = new PacketType[types
                 .stream()
                 .mapToInt(PacketType::getId)
@@ -59,6 +62,7 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
 
         this.attachListener = attachListener;
         this.detachListener = detachListener;
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
@@ -89,6 +93,13 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
         }
     }
 
+    @Override
+    public void exceptionCaught(@NonNull final Connection connection, @NonNull final Throwable t) {
+        if (this.exceptionHandler != null) {
+            this.exceptionHandler.accept(connection, t);
+        }
+    }
+
     public static class Builder<P extends Packet> extends AbstractPacketRegistry.Builder<P> {
 
         public static <P extends Packet> Builder create(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
@@ -107,7 +118,7 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
 
         @Override
         public PacketRegistry<P> build() {
-            return new ArrayBasedPacketRegistry<>(super.packetTypes, super.packetHandlers, this.attachListener, this.detachListener);
+            return new ArrayBasedPacketRegistry<>(super.packetTypes, super.packetHandlers, this.attachListener, this.detachListener, this.exceptionHandler);
         }
     }
 

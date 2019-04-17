@@ -17,6 +17,7 @@
 package org.feathercore.protocol.netty;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.util.AttributeKey;
@@ -40,7 +41,6 @@ import javax.crypto.spec.IvParameterSpec;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.Key;
-import java.util.function.Consumer;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -59,6 +59,11 @@ public class NettyConnection implements Connection {
     }
 
     @Override
+    public ChannelFuture writeFuture(@NonNull final byte[] bytes) {
+        return this.context.writeAndFlush(bytes);
+    }
+
+    @Override
     public InetSocketAddress getRemoteAddress() {
         return (InetSocketAddress) this.context.channel().remoteAddress();
     }
@@ -71,6 +76,13 @@ public class NettyConnection implements Connection {
     @Override
     public boolean isEncrypted() {
         return this.encrypted;
+    }
+
+    @Override
+    public void disconnect() {
+        if (isActive()) {
+            this.context.close();
+        }
     }
 
     public <T> void setAttributeValue(@NonNull AttributeKey<T> key, @Nullable T newValue) {

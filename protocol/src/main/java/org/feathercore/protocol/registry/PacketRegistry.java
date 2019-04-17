@@ -63,6 +63,8 @@ public interface PacketRegistry<P extends Packet> {
 
     void registryDetached(@NonNull Connection connection);
 
+    void exceptionCaught(@NonNull Connection connection, @NonNull Throwable t);
+
     interface Builder<P extends Packet> {
 
         /**
@@ -153,6 +155,14 @@ public interface PacketRegistry<P extends Packet> {
          * @return self for chaining
          */
         Builder detachListener(@Nullable Consumer<Connection> listener);
+
+        /**
+         * Sets registry uncaught exception handler
+         *
+         * @param handler uncaught exception handler
+         * @return self for chaining
+         */
+        Builder exceptionHandler(@Nullable BiConsumer<Connection, Throwable> handler);
 
         /**
          * Builds a new packet registry.
