@@ -106,6 +106,11 @@ public class NettyBuffer extends Buffer {
     }
 
     @Override
+    public boolean release(final int decrement) {
+        return release();
+    }
+
+    @Override
     public int hashCode() {
         return buffer == null ? 0 : buffer.hashCode();
     }
@@ -126,6 +131,7 @@ public class NettyBuffer extends Buffer {
 
     // exclusions for Lombok's @Delegate
     private interface __DelegateExclusions {
-        void release();
+        boolean release();
+        boolean release(int decrement);
     }
 }
