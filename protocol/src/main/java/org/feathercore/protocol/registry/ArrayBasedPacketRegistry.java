@@ -27,6 +27,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -36,9 +37,14 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
 
     private final PacketType[] types;
     private final BiConsumer<Connection, Packet>[] handlers;
+    private final Consumer<Connection> attachListener;
+    private final Consumer<Connection> detachListener;
+    private final BiConsumer<Connection, Throwable> exceptionHandler;
 
     protected ArrayBasedPacketRegistry(@NonNull final Collection<PacketType<? extends P>> types,
-                                     Map<Integer, BiConsumer<Connection, Packet>> handlers) {
+                                     Map<Integer, BiConsumer<Connection, Packet>> handlers,
+                                       Consumer<Connection> attachListener, Consumer<Connection> detachListener,
+                                       BiConsumer<Connection, Throwable> exceptionHandler) {
         this.types = new PacketType[types
                 .stream()
                 .mapToInt(PacketType::getId)
@@ -53,6 +59,10 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
         //noinspection unchecked
         this.handlers = new BiConsumer[handlers.keySet().stream().mapToInt(i -> i).max().orElse(0)];
         handlers.forEach((id, handler) -> this.handlers[id] = handler);
+
+        this.attachListener = attachListener;
+        this.detachListener = detachListener;
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Override
@@ -66,6 +76,27 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
         val handler = this.handlers[packet.getId()];
         if (handler != null) {
             handler.accept(connection, packet);
+        }
+    }
+
+    @Override
+    public void registryAttached(@NonNull final Connection connection) {
+        if (this.attachListener != null) {
+            this.attachListener.accept(connection);
+        }
+    }
+
+    @Override
+    public void registryDetached(@NonNull final Connection connection) {
+        if (this.detachListener != null) {
+            this.detachListener.accept(connection);
+        }
+    }
+
+    @Override
+    public void exceptionCaught(@NonNull final Connection connection, @NonNull final Throwable t) {
+        if (this.exceptionHandler != null) {
+            this.exceptionHandler.accept(connection, t);
         }
     }
 
@@ -87,7 +118,7 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
 
         @Override
         public PacketRegistry<P> build() {
-            return new ArrayBasedPacketRegistry<>(super.packetTypes, super.packetHandlers);
+            return new ArrayBasedPacketRegistry<>(super.packetTypes, super.packetHandlers, this.attachListener, this.detachListener, this.exceptionHandler);
         }
     }
 

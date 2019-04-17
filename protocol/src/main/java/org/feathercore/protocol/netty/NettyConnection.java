@@ -17,8 +17,10 @@
 package org.feathercore.protocol.netty;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.AttributeKey;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -56,6 +59,11 @@ public class NettyConnection implements Connection {
     }
 
     @Override
+    public ChannelFuture writeFuture(@NonNull final byte[] bytes) {
+        return this.context.writeAndFlush(bytes);
+    }
+
+    @Override
     public InetSocketAddress getRemoteAddress() {
         return (InetSocketAddress) this.context.channel().remoteAddress();
     }
@@ -70,12 +78,47 @@ public class NettyConnection implements Connection {
         return this.encrypted;
     }
 
+    @Override
+    public void disconnect() {
+        if (isActive()) {
+            this.context.close();
+        }
+    }
+
+    public <T> void setAttributeValue(@NonNull AttributeKey<T> key, @Nullable T newValue) {
+        if (!isActive()) {
+            throw new IllegalStateException("This connection is not connected anymore: can't change attribute's value");
+        }
+        this.context.channel().attr(key).set(newValue);
+    }
+
+    public <T> T getAttributeValue(@NonNull AttributeKey<T> key) {
+        if (!isActive()) {
+            throw new IllegalStateException("This connection is not connected anymore: can't get attribute's value");
+        }
+        return this.context.channel().attr(key).get();
+    }
+
+    public <T> T removeAttribute(@NonNull AttributeKey<T> key) {
+        if (!isActive()) {
+            throw new IllegalStateException("This connection is not connected anymore: can't remove attribute");
+        }
+        Channel channel = this.context.channel();
+        if (!channel.hasAttr(key)) {
+            throw new IllegalStateException("Channel does not contain requested attribute key!");
+        }
+        return channel.attr(key).getAndSet(null);
+    }
+
     public void changePacketRegistry(@NonNull PacketRegistry<? extends Packet> packetRegistry) {
-        HandlerBoss boss = NettyAttributes.getAttribute(context, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
+        HandlerBoss boss = NettyAttributes.getAttribute(this.context, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
         if (boss == null) {
             throw new IllegalStateException("This connection is not connected anymore: packet registry can't be changed");
         }
+        PacketRegistry<?> old = boss.getPacketRegistry();
+        old.registryDetached(this);
         boss.setPacketRegistry(packetRegistry);
+        packetRegistry.registryAttached(this);
     }
 
     public void enableEncryption(@NonNull SecretKey key) {
