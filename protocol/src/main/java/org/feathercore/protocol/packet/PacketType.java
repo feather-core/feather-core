@@ -17,8 +17,8 @@
 package org.feathercore.protocol.packet;
 
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 
@@ -29,9 +29,9 @@ import java.util.function.Supplier;
  *
  * @param <P> type of packet
  */
-@Getter
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+@Value
 @NonFinal
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public class PacketType<P extends Packet> {
 
     int id;
