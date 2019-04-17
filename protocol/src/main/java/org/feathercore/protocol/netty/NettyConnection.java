@@ -40,6 +40,7 @@ import javax.crypto.spec.IvParameterSpec;
 import java.net.InetSocketAddress;
 import java.security.GeneralSecurityException;
 import java.security.Key;
+import java.util.function.Consumer;
 
 /**
  * Created by k.shandurenko on 12/04/2019
@@ -102,7 +103,12 @@ public class NettyConnection implements Connection {
         if (boss == null) {
             throw new IllegalStateException("This connection is not connected anymore: packet registry can't be changed");
         }
+        PacketRegistry<?> old = boss.getPacketRegistry();
+        if (old != null) {
+            old.registryDetached(this);
+        }
         boss.setPacketRegistry(packetRegistry);
+        packetRegistry.registryAttached(this);
     }
 
     public void enableEncryption(@NonNull SecretKey key) {

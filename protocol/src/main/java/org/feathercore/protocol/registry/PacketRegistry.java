@@ -61,6 +61,8 @@ public interface PacketRegistry<P extends Packet> {
 
     void registryAttached(@NonNull Connection connection);
 
+    void registryDetached(@NonNull Connection connection);
+
     interface Builder<P extends Packet> {
 
         /**

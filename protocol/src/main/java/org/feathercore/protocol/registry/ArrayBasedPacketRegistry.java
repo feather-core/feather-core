@@ -23,7 +23,6 @@ import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
 import org.jetbrains.annotations.NotNull;
-import sun.dc.pr.PRError;
 
 import java.util.Collection;
 import java.util.Map;
@@ -80,6 +79,13 @@ public class ArrayBasedPacketRegistry<P extends Packet> extends AbstractPacketRe
     public void registryAttached(@NonNull final Connection connection) {
         if (this.attachListener != null) {
             this.attachListener.accept(connection);
+        }
+    }
+
+    @Override
+    public void registryDetached(@NonNull final Connection connection) {
+        if (this.detachListener != null) {
+            this.detachListener.accept(connection);
         }
     }
 
