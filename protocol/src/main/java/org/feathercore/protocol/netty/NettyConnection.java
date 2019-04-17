@@ -59,7 +59,7 @@ public class NettyConnection implements Connection {
     }
 
     @Override
-    public ChannelFuture writeFuture(@NonNull final byte[] bytes) {
+    public ChannelFuture writeFuture(@NotNull final byte[] bytes) {
         return this.context.writeAndFlush(bytes);
     }
 
@@ -79,10 +79,8 @@ public class NettyConnection implements Connection {
     }
 
     @Override
-    public void disconnect() {
-        if (isActive()) {
-            this.context.close();
-        }
+    public ChannelFuture disconnect() {
+        return isActive() ? this.context.close() : null;
     }
 
     public <T> void setAttributeValue(@NonNull AttributeKey<T> key, @Nullable T newValue) {

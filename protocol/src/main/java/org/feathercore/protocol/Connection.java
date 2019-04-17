@@ -20,6 +20,7 @@ import io.netty.channel.ChannelFuture;
 import lombok.NonNull;
 import org.feathercore.protocol.packet.Packet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 
@@ -46,6 +47,6 @@ public interface Connection {
 
     boolean isEncrypted();
 
-    void disconnect();
+    @Nullable ChannelFuture disconnect();
 
 }
