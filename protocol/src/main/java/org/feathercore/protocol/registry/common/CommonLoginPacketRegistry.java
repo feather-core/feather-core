@@ -31,13 +31,14 @@ import org.feathercore.protocol.registry.PacketRegistry;
 import org.feathercore.protocol.encrypt.CryptManager;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class CommonLoginPacketRegistry {
 
     @SuppressWarnings("unchecked")
     public static PacketRegistry<MinecraftPacket> createNew() {
         return ArrayBasedPacketRegistry.Builder.create()
-                                               .attachListener(connection -> ((NettyConnection)connection)
+                                               .attachListener((Consumer<Connection>) connection -> ((NettyConnection)connection)
                                                        .setAttributeValue(
                                                                NettyAttributes.LOGIN_STATE_ATTRIBUTE_KEY,
                                                                LoginState.USERNAME
