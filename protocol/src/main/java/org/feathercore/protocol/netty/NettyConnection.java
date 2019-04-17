@@ -77,21 +77,21 @@ public class NettyConnection implements Connection {
         if (!isActive()) {
             throw new IllegalStateException("This connection is not connected anymore: can't change attribute's value");
         }
-        context.channel().attr(key).set(newValue);
+        this.context.channel().attr(key).set(newValue);
     }
 
     public <T> T getAttributeValue(@NonNull AttributeKey<T> key) {
         if (!isActive()) {
             throw new IllegalStateException("This connection is not connected anymore: can't get attribute's value");
         }
-        return context.channel().attr(key).get();
+        return this.context.channel().attr(key).get();
     }
 
     public void removeAttribute(@NonNull AttributeKey<?> key) {
         if (!isActive()) {
             throw new IllegalStateException("This connection is not connected anymore: can't remove attribute");
         }
-        Channel channel = context.channel();
+        Channel channel = this.context.channel();
         if (!channel.hasAttr(key)) {
             throw new IllegalStateException("Channel does not contain requested attribute key!");
         }
@@ -99,7 +99,7 @@ public class NettyConnection implements Connection {
     }
 
     public void changePacketRegistry(@NonNull PacketRegistry<? extends Packet> packetRegistry) {
-        HandlerBoss boss = NettyAttributes.getAttribute(context, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
+        HandlerBoss boss = NettyAttributes.getAttribute(this.context, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY);
         if (boss == null) {
             throw new IllegalStateException("This connection is not connected anymore: packet registry can't be changed");
         }
