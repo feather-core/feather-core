@@ -99,7 +99,7 @@ public class NettyConnection implements Connection {
         return this.context.channel().attr(key).get();
     }
 
-    public void removeAttribute(@NonNull AttributeKey<?> key) {
+    public <T> T removeAttribute(@NonNull AttributeKey<T> key) {
         if (!isActive()) {
             throw new IllegalStateException("This connection is not connected anymore: can't remove attribute");
         }
@@ -107,7 +107,7 @@ public class NettyConnection implements Connection {
         if (!channel.hasAttr(key)) {
             throw new IllegalStateException("Channel does not contain requested attribute key!");
         }
-        channel.attr(key).set(null);
+        return channel.attr(key).getAndSet(null);
     }
 
     public void changePacketRegistry(@NonNull PacketRegistry<? extends Packet> packetRegistry) {

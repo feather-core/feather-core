@@ -80,6 +80,10 @@ public class CryptManager {
         }
     }
 
+    public byte[] getPublicEncoded() {
+        return PUBLIC_KEY.getEncoded();
+    }
+
     static {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");

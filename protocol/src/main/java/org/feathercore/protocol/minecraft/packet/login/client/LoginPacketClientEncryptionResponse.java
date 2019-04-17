@@ -25,9 +25,6 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
-import javax.crypto.SecretKey;
-import java.security.PrivateKey;
-
 /**
  * Created by k.shandurenko on 09/04/2019
  */
@@ -41,17 +38,6 @@ public class LoginPacketClientEncryptionResponse implements MinecraftPacket {
 
     byte[] secretKeyEncrypted = new byte[0];
     byte[] verifyTokenEncrypted = new byte[0];
-
-    public SecretKey getSecretKey(@NotNull final PrivateKey key) {
-        throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        // TODO: return CryptManager.decryptSharedKey(key, this.secretKeyEncrypted);
-    }
-
-    public byte[] getVerifyToken(@NotNull final PrivateKey key) {
-        throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        // TODO: return key == null ? this.verifyTokenEncrypted : CryptManager.decryptData(key, this
-        // .verifyTokenEncrypted);
-    }
 
     @Override
     public void write(@NotNull final Buffer buffer) {
