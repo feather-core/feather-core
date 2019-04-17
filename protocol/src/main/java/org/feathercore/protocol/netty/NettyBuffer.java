@@ -19,6 +19,7 @@ package org.feathercore.protocol.netty;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufUtil;
 import io.netty.util.Recycler;
+import lombok.experimental.Delegate;
 import org.feathercore.protocol.Buffer;
 
 import java.nio.charset.StandardCharsets;
@@ -36,10 +37,11 @@ public class NettyBuffer extends Buffer {
     };
 
     private final Recycler.Handle<NettyBuffer> recycler;
-    private ByteBuf buffer;
     private boolean releaseNetty = false;
 
-    private NettyBuffer(Recycler.Handle<NettyBuffer> recycler) {
+    @Delegate(excludes = __DelegateExclusions.class) private ByteBuf buffer;
+
+    protected NettyBuffer(Recycler.Handle<NettyBuffer> recycler) {
         this.recycler = recycler;
     }
 
@@ -52,111 +54,6 @@ public class NettyBuffer extends Buffer {
             releaseNetty = false;
         }
         this.buffer = buffer;
-    }
-
-    public ByteBuf getHandle() {
-        return this.buffer;
-    }
-
-    @Override
-    public void release() {
-        setHandle(null);
-        recycler.recycle(this);
-    }
-
-    @Override
-    public int readableBytes() {
-        return this.buffer.readableBytes();
-    }
-
-    @Override
-    public void ensureWritable(int size) {
-        this.buffer.ensureWritable(size);
-    }
-
-    @Override
-    public byte readByte() {
-        return this.buffer.readByte();
-    }
-
-    @Override
-    public void writeByte(byte val) {
-        this.buffer.writeByte(val);
-    }
-
-    @Override
-    public short readShort() {
-        return this.buffer.readShort();
-    }
-
-    @Override
-    public void writeShort(short val) {
-        this.buffer.writeShort(val);
-    }
-
-    @Override
-    public int readInt() {
-        return this.buffer.readInt();
-    }
-
-    @Override
-    public void writeInt(int val) {
-        this.buffer.writeInt(val);
-    }
-
-    @Override
-    public long readLong() {
-        return this.buffer.readLong();
-    }
-
-    @Override
-    public void writeLong(long val) {
-        this.buffer.writeLong(val);
-    }
-
-    @Override
-    public float readFloat() {
-        return this.buffer.readFloat();
-    }
-
-    @Override
-    public void writeFloat(float val) {
-        this.buffer.writeFloat(val);
-    }
-
-    @Override
-    public double readDouble() {
-        return this.buffer.readDouble();
-    }
-
-    @Override
-    public void writeDouble(double val) {
-        this.buffer.writeDouble(val);
-    }
-
-    @Override
-    public byte[] readBytes(int length) {
-        byte[] bytes = new byte[length];
-        this.buffer.readBytes(bytes);
-        return bytes;
-    }
-
-    @Override
-    public void writeBytes(byte[] bytes) {
-        this.buffer.writeBytes(bytes);
-    }
-
-    @Override
-    public void writeBytes(byte[] bytes, int index, int size) {
-        this.buffer.writeBytes(bytes, index, size);
-    }
-
-    public void writeBytes(ByteBuf buffer) {
-        this.buffer.writeBytes(buffer);
-    }
-
-    public void writeBytes(ByteBuf buffer, int index, int size) {
-        this.buffer.writeBytes(buffer, index, size);
     }
 
     @Override
@@ -200,4 +97,35 @@ public class NettyBuffer extends Buffer {
         return wrapper;
     }
 
+    @Override
+    public boolean release() {
+        setHandle(null);
+        recycler.recycle(this);
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return buffer == null ? 0 : buffer.hashCode();
+    }
+
+    // Object's methods overridden due to ByteBuf's contracts
+
+    @Override
+    @SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+    public boolean equals(final Object obj) {
+        if (buffer == null) return obj == null;
+        return buffer.equals(obj);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + (buffer == null ?  "{Uninitialized}" : "{" + buffer.toString() + "}");
+    }
+
+    // exclusions for Lombok's @Delegate
+    private interface __DelegateExclusions {
+        void release();
+    }
 }

@@ -40,7 +40,7 @@ public interface Packet {
         buffer.writeVarInt(getId());
         write(buffer);
         try {
-            return buffer.readBytes(buffer.readableBytes());
+            return buffer.readByteArray(buffer.readableBytes());
         } finally {
             buffer.release();
         }
