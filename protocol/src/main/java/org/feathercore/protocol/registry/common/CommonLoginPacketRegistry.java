@@ -16,14 +16,19 @@
 
 package org.feathercore.protocol.registry.common;
 
+import com.mojang.authlib.GameProfile;
 import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.encrypt.EncryptionRequestContext;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
+import org.feathercore.protocol.minecraft.packet.login.client.LoginPacketClientEncryptionResponse;
 import org.feathercore.protocol.minecraft.packet.login.client.LoginPacketClientLoginStart;
+import org.feathercore.protocol.minecraft.packet.login.server.LoginPacketServerEncryptionRequest;
 import org.feathercore.protocol.netty.NettyConnection;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.PacketType;
 import org.feathercore.protocol.registry.ArrayBasedPacketRegistry;
 import org.feathercore.protocol.registry.PacketRegistry;
+import org.feathercore.protocol.encrypt.CryptManager;
 
 import java.util.function.BiConsumer;
 
@@ -40,10 +45,36 @@ public class CommonLoginPacketRegistry {
                                                .addPacket(
                                                        PacketType.create(LoginPacketClientLoginStart.class, LoginPacketClientLoginStart::new),
                                                        (BiConsumer<Connection, LoginPacketClientLoginStart>) (connection, packet) -> {
+                                                           NettyConnection nettyConnection = (NettyConnection) connection;
+                                                           checkState(nettyConnection, LoginState.USERNAME);
+                                                           GameProfile profile = packet.getProfile();
+                                                           nettyConnection.setAttributeValue(NettyAttributes.LOGIN_PROFILE_ATTRIBUTE_KEY, profile);
+                                                           // TODO: online mode
+                                                           if (false) {
+                                                               nettyConnection.setAttributeValue(NettyAttributes.LOGIN_STATE_ATTRIBUTE_KEY, LoginState.ENCRYPT);
+                                                               LoginPacketServerEncryptionRequest request = CryptManager.newEncryptionRequest();
+                                                               EncryptionRequestContext context = EncryptionRequestContext.fromPacket(request);
+                                                               nettyConnection.setAttributeValue(NettyAttributes.ENCRYPTION_REQUEST_CONTEXT_KEY, context);
+                                                               nettyConnection.write(request);
+                                                           }
+                                                           // TODO
+                                                       }
+                                               )
+                                               .addPacket(
+                                                       PacketType.create(LoginPacketClientEncryptionResponse.class, LoginPacketClientEncryptionResponse::new),
+                                                       (BiConsumer<Connection, LoginPacketClientEncryptionResponse>) (connection, packet) -> {
+                                                           checkState((NettyConnection) connection, LoginState.ENCRYPT);
                                                            // TODO
                                                        }
                                                )
                                                .build();
+    }
+
+    private static void checkState(NettyConnection connection, LoginState expected) {
+        LoginState state = connection.getAttributeValue(NettyAttributes.LOGIN_STATE_ATTRIBUTE_KEY);
+        if (expected != state) {
+            throw new IllegalStateException("Expected login state: " + expected + ", but got: " + state);
+        }
     }
 
     public enum LoginState {

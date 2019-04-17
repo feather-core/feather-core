@@ -79,6 +79,13 @@ public class NettyConnection implements Connection {
         context.channel().attr(key).set(newValue);
     }
 
+    public <T> T getAttributeValue(@NonNull AttributeKey<T> key) {
+        if (!isActive()) {
+            throw new IllegalStateException("This connection is not connected anymore: can't get attribute's value");
+        }
+        return context.channel().attr(key).get();
+    }
+
     public void removeAttribute(@NonNull AttributeKey<?> key) {
         if (!isActive()) {
             throw new IllegalStateException("This connection is not connected anymore: can't remove attribute");
