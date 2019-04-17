@@ -1,4 +1,20 @@
 /*
+ * Copyright (C) 2013-2017 Steveice10
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
+ * and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * - The above copyright notice and this permission notice shall be included
+ *   in all copies or substantial portions of the Software.
+ *
+ * - THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
+ *   TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ *   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ *   CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+ *   OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ *
  * Copyright 2019 Feather Core
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +53,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
      * @param name The name of the tag.
      */
     public CompoundTag(String name) {
-        this(name, new LinkedHashMap<String, Tag>());
+        this(name, new LinkedHashMap<>());
     }
 
     /**
@@ -48,12 +64,12 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
      */
     public CompoundTag(String name, Map<String, Tag> value) {
         super(name);
-        this.value = new LinkedHashMap<String, Tag>(value);
+        this.value = new LinkedHashMap<>(value);
     }
 
     @Override
     public Map<String, Tag> getValue() {
-        return new LinkedHashMap<String, Tag>(this.value);
+        return new LinkedHashMap<>(this.value);
     }
 
     /**
@@ -158,7 +174,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
 
     @Override
     public void read(DataInput in) throws IOException {
-        List<Tag> tags = new ArrayList<Tag>();
+        List<Tag> tags = new ArrayList<>();
         try {
             Tag tag;
             while ((tag = NBTIO.readTag(in)) != null) {
@@ -184,7 +200,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
 
     @Override
     public CompoundTag clone() {
-        Map<String, Tag> newMap = new LinkedHashMap<String, Tag>();
+        Map<String, Tag> newMap = new LinkedHashMap<>();
         for (Entry<String, Tag> entry : this.value.entrySet()) {
             newMap.put(entry.getKey(), entry.getValue().clone());
         }
