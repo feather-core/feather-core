@@ -48,6 +48,7 @@
         <module>runtime</module>
         <module>eventbus</module>
         <module>protocol</module>
+        <module>pool</module>
     </modules>
 
     <repositories>
