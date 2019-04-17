@@ -24,8 +24,8 @@ import lombok.Setter;
 import lombok.val;
 import org.apache.logging.log4j.Logger;
 import org.feathercore.protocol.Connection;
-import org.feathercore.protocol.event.PacketReceiveEventSimple;
-import org.feathercore.protocol.event.PreConnectionEventSimple;
+import org.feathercore.protocol.event.PacketReceiveEvent;
+import org.feathercore.protocol.event.PreConnectionEvent;
 import org.feathercore.protocol.event.PreDisconnectionEvent;
 import org.feathercore.protocol.exception.PacketHandleException;
 import org.feathercore.protocol.netty.util.NettyAttributes;
@@ -61,7 +61,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
     public void channelActive(ChannelHandlerContext ctx) {
         NettyConnection connection = new NettyConnection(ctx);
 
-        if (new PreConnectionEventSimple(connection).callCancellableGlobally()) {
+        if (new PreConnectionEvent(connection).callCancellableGlobally()) {
             ctx.channel().close();
             return;
         }
@@ -90,7 +90,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
         try {
             val packet = (Packet) msg;
 
-            if (new PacketReceiveEventSimple(connection, packet).callCancellableGlobally()) {
+            if (new PacketReceiveEvent(connection, packet).callCancellableGlobally()) {
                 return;
             }
 

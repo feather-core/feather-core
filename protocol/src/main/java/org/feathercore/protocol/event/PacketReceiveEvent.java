@@ -20,13 +20,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.feathercore.eventbus.SimpleCancellableEvent;
 import org.feathercore.protocol.Connection;
+import org.feathercore.protocol.packet.Packet;
 
 /**
  * Created by k.shandurenko on 16/04/2019
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class PreConnectionEventSimple extends SimpleCancellableEvent {
+public class PacketReceiveEvent extends SimpleCancellableEvent {
 
     private final Connection connection;
+    private final Packet packet;
 }

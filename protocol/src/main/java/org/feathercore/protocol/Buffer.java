@@ -16,6 +16,11 @@
 
 package org.feathercore.protocol;
 
+import io.netty.buffer.ByteBuf;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.chat.ComponentSerializer;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,52 +29,15 @@ import java.util.UUID;
 import java.util.function.*;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * Buffer capable of storing various data-types.
  */
-public abstract class Buffer {
+public abstract class Buffer extends ByteBuf {
 
-    public abstract byte readByte();
-
-    public abstract void writeByte(byte val);
-
-    public abstract short readShort();
-
-    public abstract void writeShort(short val);
-
-    public abstract int readInt();
-
-    public abstract void writeInt(int val);
-
-    public abstract long readLong();
-
-    public abstract void writeLong(long val);
-
-    public abstract float readFloat();
-
-    public abstract void writeFloat(float val);
-
-    public abstract double readDouble();
-
-    public abstract void writeDouble(double val);
-
-    public boolean readBoolean() {
-        return readByte() == (byte) 1;
+    public Buffer newBuffer() {
+        return newBuffer(256);
     }
 
-    public void writeBoolean(boolean val) {
-        writeByte(val ? (byte) 1 : (byte) 0);
-    }
-
-    public abstract byte[] readBytes(int length);
-
-    /**
-     * Without array size.
-     *
-     * @param bytes bytes to be written.
-     */
-    public abstract void writeBytes(byte[] bytes);
-
-    public abstract void writeBytes(byte[] bytes, int index, int size);
+    public abstract Buffer newBuffer(int size);
 
     /**
      * Reads an unsigned varint
@@ -117,7 +85,6 @@ public abstract class Buffer {
     /**
      * Writes a signed varint
      */
-    @SuppressWarnings("NumericOverflow")
     public int readSignedVarInt() {
         int raw = readVarInt();
         // This undoes the trick in writeSignedVarInt()
@@ -170,7 +137,6 @@ public abstract class Buffer {
     /**
      * Reads a signed varlong
      */
-    @SuppressWarnings("NumericOverflow")
     public long readSignedVarLong() {
         long raw = readVarLong();
         // This undoes the trick in writeSignedVarInt()
@@ -196,11 +162,11 @@ public abstract class Buffer {
                     "Trying to read string with length " + length + " when the max is " + maxLength
             );
         }
-        return new String(readBytes(length), StandardCharsets.UTF_8);
+        return new String(readByteArray(length), StandardCharsets.UTF_8);
     }
 
     public String readString() {
-        return new String(readBytes(readVarInt()), StandardCharsets.UTF_8);
+        return new String(readByteArray(readVarInt()), StandardCharsets.UTF_8);
     }
 
     public void writeString(String s) {
@@ -245,7 +211,7 @@ public abstract class Buffer {
      * @param reader function to read collection
      */
     public <T, C extends Collection<T>> C readCollection(int maxSize, Function<Integer, C> collectionCreator,
-                                                         Supplier<T> reader) {
+                                                          Supplier<T> reader) {
         int size = readVarInt();
         if (size > maxSize) {
             throw new IllegalStateException(
@@ -381,26 +347,19 @@ public abstract class Buffer {
         }
     }
 
-    /* TODO BaseComponent support
-    public BaseComponent readChatComponent() {
-        return ChatComponent.Serializer.jsonToComponent(readString(32767));
+    public BaseComponent[] readBaseComponents() {
+        return ComponentSerializer.parse(readString(32767));
     }
 
-    public void writeChatComponent(BaseComponent component) {
-        writeString(ChatComponent.Serializer.componentToJson(component));
-    }
-    */
-
-    public Buffer newBuffer() {
-        return newBuffer(256);
+    public void writeBaseComponents(BaseComponent... component) {
+        writeString(ComponentSerializer.toString(component));
     }
 
-    public abstract Buffer newBuffer(int size);
+    public TextComponent readTextComponent() {
+        return new TextComponent(ComponentSerializer.parse(readString(32767)));
+    }
 
-    public abstract void release();
-
-    public abstract int readableBytes();
-
-    public abstract void ensureWritable(int size);
-
+    public void writeChatComponent(TextComponent component) {
+        writeString(ComponentSerializer.toString(component));
+    }
 }

@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.packet.PacketType;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public abstract class AbstractPacketRegistry<P extends Packet> implements PacketRegistry<P> {
@@ -34,9 +36,11 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
     @ToString
     @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
     protected abstract static class Builder<P extends Packet> implements PacketRegistry.Builder<P> {
-
         @NonNull Collection<PacketType<? extends P>> packetTypes;
         @NonNull Collection<PacketType<? extends P>> packetTypesView;
+        @Nullable @NonFinal Consumer<Connection> attachListener;
+        @Nullable @NonFinal Consumer<Connection> detachListener;
+        @Nullable @NonFinal BiConsumer<Connection, Throwable> exceptionHandler;
         @NonNull Map<Integer, BiConsumer<Connection, Packet>> packetHandlers;
 
         protected Builder(@NonNull final Collection<PacketType<? extends P>> packetTypes) {
@@ -87,6 +91,24 @@ public abstract class AbstractPacketRegistry<P extends Packet> implements Packet
         @Override
         public Builder retainOnly(@NonNull final Predicate<PacketType<? extends P>> filter) {
             return removeOnly(filter.negate());
+        }
+
+        @Override
+        public PacketRegistry.Builder attachListener(@Nullable final Consumer<Connection> listener) {
+            this.attachListener = listener;
+            return this;
+        }
+
+        @Override
+        public PacketRegistry.Builder detachListener(@Nullable final Consumer<Connection> listener) {
+            this.detachListener = listener;
+            return this;
+        }
+
+        @Override
+        public PacketRegistry.Builder exceptionHandler(@Nullable final BiConsumer<Connection, Throwable> handler) {
+            this.exceptionHandler = handler;
+            return this;
         }
 
         @Override
