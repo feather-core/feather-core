@@ -36,6 +36,7 @@ import org.feathercore.shared.nbt.exception.TagCreateException;
 import org.feathercore.shared.nbt.tag.TagRegistry;
 import org.feathercore.shared.nbt.tag.exact.CompoundTag;
 import org.feathercore.shared.nbt.tag.exact.Tag;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.zip.GZIPInputStream;
@@ -44,6 +45,7 @@ import java.util.zip.GZIPOutputStream;
 /**
  * Created by k.shandurenko on 18/04/2019
  */
+@SuppressWarnings("WeakerAccess")
 public class NBTIO {
     /**
      * Reads the compressed, big endian root CompoundTag from the given file.
@@ -148,6 +150,7 @@ public class NBTIO {
      * @param littleEndian Whether to write little endian NBT.
      * @throws java.io.IOException If an I/O error occurs.
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static void writeFile(CompoundTag tag, File file, boolean compressed, boolean littleEndian)
             throws IOException {
         if (!file.exists()) {
@@ -258,23 +261,23 @@ public class NBTIO {
         }
 
         @Override
-        public int read(byte[] b) throws IOException {
+        public int read(@NotNull byte[] b) throws IOException {
             return this.in.read(b, 0, b.length);
 
         }
 
         @Override
-        public int read(byte[] b, int off, int len) throws IOException {
+        public int read(@NotNull byte[] b, int off, int len) throws IOException {
             return this.in.read(b, off, len);
         }
 
         @Override
-        public void readFully(byte[] b) throws IOException {
+        public void readFully(@NotNull byte[] b) throws IOException {
             this.readFully(b, 0, b.length);
         }
 
         @Override
-        public void readFully(byte[] b, int off, int len) throws IOException {
+        public void readFully(@NotNull byte[] b, int off, int len) throws IOException {
             if (len < 0) {
                 throw new IndexOutOfBoundsException();
             } else {
@@ -403,12 +406,12 @@ public class NBTIO {
         }
 
         @Override
-        public String readLine() throws IOException {
+        public String readLine() {
             throw new UnsupportedOperationException("Use readUTF.");
         }
 
         @Override
-        public String readUTF() throws IOException {
+        public @NotNull String readUTF() throws IOException {
             byte[] bytes = new byte[this.readUnsignedShort()];
             this.readFully(bytes);
 
@@ -427,7 +430,7 @@ public class NBTIO {
         }
 
         @Override
-        public synchronized void write(byte[] b, int off, int len) throws IOException {
+        public synchronized void write(@NotNull byte[] b, int off, int len) throws IOException {
             this.out.write(b, off, len);
         }
 
@@ -489,7 +492,7 @@ public class NBTIO {
         }
 
         @Override
-        public void writeBytes(String s) throws IOException {
+        public void writeBytes(@NotNull String s) throws IOException {
             int len = s.length();
             for (int index = 0; index < len; index++) {
                 this.out.write((byte) s.charAt(index));
@@ -497,7 +500,7 @@ public class NBTIO {
         }
 
         @Override
-        public void writeChars(String s) throws IOException {
+        public void writeChars(@NotNull String s) throws IOException {
             int len = s.length();
             for (int index = 0; index < len; index++) {
                 char c = s.charAt(index);
@@ -507,7 +510,7 @@ public class NBTIO {
         }
 
         @Override
-        public void writeUTF(String s) throws IOException {
+        public void writeUTF(@NotNull String s) throws IOException {
             byte[] bytes = s.getBytes("UTF-8");
 
             this.writeShort(bytes.length);

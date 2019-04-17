@@ -33,6 +33,7 @@
 package org.feathercore.shared.nbt.tag.exact;
 
 import org.feathercore.shared.nbt.NBTIO;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -78,7 +79,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
      * @param value New value of this tag.
      */
     public void setValue(Map<String, Tag> value) {
-        this.value = new LinkedHashMap<String, Tag>(value);
+        this.value = new LinkedHashMap<>(value);
     }
 
     /**
@@ -107,6 +108,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
      * @param tagName Name of the tag.
      * @return The tag with the specified name.
      */
+    @SuppressWarnings("unchecked")
     public <T extends Tag> T get(String tagName) {
         return (T) this.value.get(tagName);
     }
@@ -118,6 +120,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
      * @param tag Tag to put into this compound tag.
      * @return The previous tag associated with its name, or null if there wasn't one.
      */
+    @SuppressWarnings("unchecked")
     public <T extends Tag> T put(T tag) {
         return (T) this.value.put(tag.getName(), tag);
     }
@@ -129,6 +132,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
      * @param tagName Name of the tag to remove.
      * @return The removed tag.
      */
+    @SuppressWarnings("unchecked")
     public <T extends Tag> T remove(String tagName) {
         return (T) this.value.remove(tagName);
     }
@@ -168,7 +172,7 @@ public class CompoundTag extends Tag implements Iterable<Tag> {
     }
 
     @Override
-    public Iterator<Tag> iterator() {
+    public @NotNull Iterator<Tag> iterator() {
         return this.values().iterator();
     }
 

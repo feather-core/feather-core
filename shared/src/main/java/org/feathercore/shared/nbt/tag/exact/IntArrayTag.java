@@ -120,8 +120,8 @@ public class IntArrayTag extends Tag {
     @Override
     public void write(DataOutput out) throws IOException {
         out.writeInt(this.value.length);
-        for (int index = 0; index < this.value.length; index++) {
-            out.writeInt(this.value[index]);
+        for (final int value : this.value) {
+            out.writeInt(value);
         }
     }
 

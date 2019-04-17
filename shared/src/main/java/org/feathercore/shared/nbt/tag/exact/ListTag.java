@@ -34,6 +34,7 @@ package org.feathercore.shared.nbt.tag.exact;
 
 import org.feathercore.shared.nbt.exception.TagCreateException;
 import org.feathercore.shared.nbt.tag.TagRegistry;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -157,6 +158,7 @@ public class ListTag extends Tag implements Iterable<Tag> {
      * @param index Index of the tag.
      * @return The tag at the given index.
      */
+    @SuppressWarnings("unchecked")
     public <T extends Tag> T get(int index) {
         return (T) this.value.get(index);
     }
@@ -171,7 +173,7 @@ public class ListTag extends Tag implements Iterable<Tag> {
     }
 
     @Override
-    public Iterator<Tag> iterator() {
+    public @NotNull Iterator<Tag> iterator() {
         return this.value.iterator();
     }
 
