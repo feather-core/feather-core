@@ -19,6 +19,7 @@ package org.feathercore.shared.advancements;
 import lombok.Builder;
 import lombok.Data;
 import net.md_5.bungee.api.chat.BaseComponent;
+import org.feathercore.shared.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,9 +29,8 @@ public class AdvancementDisplayInfo {
 
     @Nullable private final BaseComponent title;
     @Nullable private final BaseComponent description;
-    // TODO
-    //private final ItemStack icon;
-    @NotNull private final EnumFrameType frameType;
+    private final ItemStack icon;
+    @NotNull private final AdvancementFrameType frameType;
     private final boolean showToast;
     private final boolean announceToChat;
     private final boolean hidden;

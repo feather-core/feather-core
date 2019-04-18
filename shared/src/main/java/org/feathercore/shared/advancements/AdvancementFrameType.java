@@ -26,7 +26,7 @@ import org.feathercore.shared.color.MinecraftColor;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @ToString
 @Getter
-public enum EnumFrameType {
+public enum AdvancementFrameType {
 
     TASK("task", 0, MinecraftColor.GREEN),
     CHALLENGE("challenge", 26, MinecraftColor.PURPLE),

@@ -57,4 +57,9 @@ public interface Advancement extends MinecraftNative {
      * Returns {@code BaseComponent} that is shown in the chat when this {@code Advancement} is completed.
      */
     @NotNull BaseComponent getCompletionText();
+
+    /**
+     * Creates a new {@code Advancement} with the data from this {@code Advancement}
+     */
+    Advancement clone();
 }
