@@ -69,7 +69,8 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readBytes(@NonNull byte[] bytes, boolean compressed, boolean littleEndian) throws IOException {
+    public static CompoundTag readBytes(@NonNull byte[] bytes, boolean compressed, boolean littleEndian)
+            throws IOException {
         return readStream(new ByteArrayInputStream(bytes), compressed, littleEndian);
     }
 
@@ -104,7 +105,8 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readFile(@NonNull String path, boolean compressed, boolean littleEndian) throws IOException {
+    public static CompoundTag readFile(@NonNull String path, boolean compressed, boolean littleEndian)
+            throws IOException {
         return readFile(new File(path), compressed, littleEndian);
     }
 
@@ -117,11 +119,13 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readFile(@NonNull File file, boolean compressed, boolean littleEndian) throws IOException {
+    public static CompoundTag readFile(@NonNull File file, boolean compressed, boolean littleEndian)
+            throws IOException {
         return readStream(new FileInputStream(file), compressed, littleEndian);
     }
 
-    private static CompoundTag readStream(@NotNull InputStream in, boolean compressed, boolean littleEndian) throws IOException {
+    private static CompoundTag readStream(@NotNull InputStream in, boolean compressed, boolean littleEndian)
+            throws IOException {
         if (compressed) {
             in = new GZIPInputStream(in);
         }
@@ -156,7 +160,8 @@ public class NBTIO {
      * @return array of bytes to which given tag was serialized.
      * @throws IOException If an I/O error occurs.
      */
-    public static byte[] serialize(@NonNull CompoundTag tag, boolean compressed, boolean littleEndian) throws IOException {
+    public static byte[] serialize(@NonNull CompoundTag tag, boolean compressed, boolean littleEndian)
+            throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         writeStream(tag, baos, compressed, littleEndian);
         return baos.toByteArray();
@@ -193,7 +198,8 @@ public class NBTIO {
      * @param littleEndian Whether to write little endian NBT.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeFile(@NonNull CompoundTag tag, @NonNull String path, boolean compressed, boolean littleEndian)
+    public static void writeFile(@NonNull CompoundTag tag, @NonNull String path, boolean compressed,
+                                 boolean littleEndian)
             throws IOException {
         writeFile(tag, new File(path), compressed, littleEndian);
     }
@@ -220,7 +226,8 @@ public class NBTIO {
         writeStream(tag, new FileOutputStream(file), compressed, littleEndian);
     }
 
-    private static void writeStream(@NotNull CompoundTag tag, @NotNull OutputStream out, boolean compressed, boolean littleEndian) throws IOException {
+    private static void writeStream(@NotNull CompoundTag tag, @NotNull OutputStream out, boolean compressed,
+                                    boolean littleEndian) throws IOException {
         if (compressed) {
             out = new GZIPOutputStream(out);
         }
