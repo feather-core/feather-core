@@ -32,6 +32,7 @@
 
 package org.feathercore.shared.nbt;
 
+import lombok.NonNull;
 import org.feathercore.shared.nbt.exception.TagCreateException;
 import org.feathercore.shared.nbt.tag.TagRegistry;
 import org.feathercore.shared.nbt.tag.exact.CompoundTag;
@@ -47,6 +48,31 @@ import java.util.zip.GZIPOutputStream;
  */
 @SuppressWarnings("WeakerAccess")
 public class NBTIO {
+
+    /**
+     * Reads the compressed, big endian root CompoundTag from the given bytes array.
+     *
+     * @param bytes array of the bytes.
+     * @return The read compound tag.
+     * @throws java.io.IOException If an I/O error occurs.
+     */
+    public static CompoundTag readBytes(@NonNull byte[] bytes) throws IOException {
+        return readBytes(bytes, true, false);
+    }
+
+    /**
+     * Reads the root CompoundTag from the given bytes array.
+     *
+     * @param bytes array of the bytes.
+     * @param compressed Whether the NBT bytes array is compressed.
+     * @param littleEndian Whether the NBT bytes array is little endian.
+     * @return The read compound tag.
+     * @throws java.io.IOException If an I/O error occurs.
+     */
+    public static CompoundTag readBytes(@NonNull byte[] bytes, boolean compressed, boolean littleEndian) throws IOException {
+        return readStream(new ByteArrayInputStream(bytes), compressed, littleEndian);
+    }
+
     /**
      * Reads the compressed, big endian root CompoundTag from the given file.
      *
@@ -54,7 +80,7 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readFile(String path) throws IOException {
+    public static CompoundTag readFile(@NonNull String path) throws IOException {
         return readFile(new File(path));
     }
 
@@ -65,7 +91,7 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readFile(File file) throws IOException {
+    public static CompoundTag readFile(@NonNull File file) throws IOException {
         return readFile(file, true, false);
     }
 
@@ -78,7 +104,7 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readFile(String path, boolean compressed, boolean littleEndian) throws IOException {
+    public static CompoundTag readFile(@NonNull String path, boolean compressed, boolean littleEndian) throws IOException {
         return readFile(new File(path), compressed, littleEndian);
     }
 
@@ -91,8 +117,11 @@ public class NBTIO {
      * @return The read compound tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static CompoundTag readFile(File file, boolean compressed, boolean littleEndian) throws IOException {
-        InputStream in = new FileInputStream(file);
+    public static CompoundTag readFile(@NonNull File file, boolean compressed, boolean littleEndian) throws IOException {
+        return readStream(new FileInputStream(file), compressed, littleEndian);
+    }
+
+    private static CompoundTag readStream(@NotNull InputStream in, boolean compressed, boolean littleEndian) throws IOException {
         if (compressed) {
             in = new GZIPInputStream(in);
         }
@@ -102,7 +131,35 @@ public class NBTIO {
             throw new IOException("Root tag is not a CompoundTag!");
         }
 
+        in.close();
+
         return (CompoundTag) tag;
+    }
+
+    /**
+     * Writes the given root CompoundTag to the bytes array, compressed and in big endian.
+     *
+     * @param tag Tag to write.
+     * @return array of bytes to which given tag was serialized.
+     * @throws IOException If an I/O error occurs.
+     */
+    public static byte[] serialize(@NonNull CompoundTag tag) throws IOException {
+        return serialize(tag, true, false);
+    }
+
+    /**
+     * Writes the given root CompoundTag to the bytes array.
+     *
+     * @param tag Tag to write.
+     * @param compressed Whether the NBT file should be compressed.
+     * @param littleEndian Whether to write little endian NBT.
+     * @return array of bytes to which given tag was serialized.
+     * @throws IOException If an I/O error occurs.
+     */
+    public static byte[] serialize(@NonNull CompoundTag tag, boolean compressed, boolean littleEndian) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        writeStream(tag, baos, compressed, littleEndian);
+        return baos.toByteArray();
     }
 
     /**
@@ -112,7 +169,7 @@ public class NBTIO {
      * @param path Path to write to.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeFile(CompoundTag tag, String path) throws IOException {
+    public static void writeFile(@NonNull CompoundTag tag, @NonNull String path) throws IOException {
         writeFile(tag, new File(path));
     }
 
@@ -123,7 +180,7 @@ public class NBTIO {
      * @param file File to write to.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeFile(CompoundTag tag, File file) throws IOException {
+    public static void writeFile(@NonNull CompoundTag tag, @NonNull File file) throws IOException {
         writeFile(tag, file, true, false);
     }
 
@@ -136,7 +193,7 @@ public class NBTIO {
      * @param littleEndian Whether to write little endian NBT.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeFile(CompoundTag tag, String path, boolean compressed, boolean littleEndian)
+    public static void writeFile(@NonNull CompoundTag tag, @NonNull String path, boolean compressed, boolean littleEndian)
             throws IOException {
         writeFile(tag, new File(path), compressed, littleEndian);
     }
@@ -151,7 +208,7 @@ public class NBTIO {
      * @throws java.io.IOException If an I/O error occurs.
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    public static void writeFile(CompoundTag tag, File file, boolean compressed, boolean littleEndian)
+    public static void writeFile(@NonNull CompoundTag tag, @NonNull File file, boolean compressed, boolean littleEndian)
             throws IOException {
         if (!file.exists()) {
             if (file.getParentFile() != null && !file.getParentFile().exists()) {
@@ -160,12 +217,13 @@ public class NBTIO {
 
             file.createNewFile();
         }
+        writeStream(tag, new FileOutputStream(file), compressed, littleEndian);
+    }
 
-        OutputStream out = new FileOutputStream(file);
+    private static void writeStream(@NotNull CompoundTag tag, @NotNull OutputStream out, boolean compressed, boolean littleEndian) throws IOException {
         if (compressed) {
             out = new GZIPOutputStream(out);
         }
-
         writeTag(out, tag, littleEndian);
         out.close();
     }
@@ -177,7 +235,7 @@ public class NBTIO {
      * @return The read tag, or null if the tag is an end tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static Tag readTag(InputStream in) throws IOException {
+    public static Tag readTag(@NonNull InputStream in) throws IOException {
         return readTag(in, false);
     }
 
@@ -189,7 +247,7 @@ public class NBTIO {
      * @return The read tag, or null if the tag is an end tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static Tag readTag(InputStream in, boolean littleEndian) throws IOException {
+    public static Tag readTag(@NonNull InputStream in, boolean littleEndian) throws IOException {
         return readTag((DataInput) (littleEndian ? new LittleEndianDataInputStream(in) : new DataInputStream(in)));
     }
 
@@ -200,7 +258,7 @@ public class NBTIO {
      * @return The read tag, or null if the tag is an end tag.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static Tag readTag(DataInput in) throws IOException {
+    public static Tag readTag(@NotNull DataInput in) throws IOException {
         int id = in.readUnsignedByte();
         if (id == 0) {
             return null;
@@ -226,7 +284,7 @@ public class NBTIO {
      * @param tag Tag to write.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeTag(OutputStream out, Tag tag) throws IOException {
+    public static void writeTag(@NonNull OutputStream out, @NonNull Tag tag) throws IOException {
         writeTag(out, tag, false);
     }
 
@@ -238,7 +296,7 @@ public class NBTIO {
      * @param littleEndian Whether to write little endian NBT.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeTag(OutputStream out, Tag tag, boolean littleEndian) throws IOException {
+    public static void writeTag(@NonNull OutputStream out, @NonNull Tag tag, boolean littleEndian) throws IOException {
         writeTag((DataOutput) (littleEndian ? new LittleEndianDataOutputStream(out) : new DataOutputStream(out)), tag);
     }
 
@@ -249,7 +307,7 @@ public class NBTIO {
      * @param tag Tag to write.
      * @throws java.io.IOException If an I/O error occurs.
      */
-    public static void writeTag(DataOutput out, Tag tag) throws IOException {
+    public static void writeTag(@NotNull DataOutput out, @NotNull Tag tag) throws IOException {
         out.writeByte(TagRegistry.getIdFor(tag.getClass()));
         out.writeUTF(tag.getName());
         tag.write(out);
