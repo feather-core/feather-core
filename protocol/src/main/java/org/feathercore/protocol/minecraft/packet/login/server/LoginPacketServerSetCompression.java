@@ -16,7 +16,6 @@
 
 package org.feathercore.protocol.minecraft.packet.login.server;
 
-import com.mojang.authlib.GameProfile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,23 +25,30 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Enables compression. If compression is enabled, all following packets
+ * are encoded in the compressed packet format. Negative values will
+ * disable compression, meaning the packet format should remain in the
+ * uncompressed packet format. However, this packet is entirely optional,
+ * and if not sent, compression will also not be enabled (the notchian
+ * server does not send the packet when compression is disabled).
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketServerLoginSuccess implements MinecraftPacket {
+public class LoginPacketServerSetCompression implements MinecraftPacket {
 
-    public static final int ID = 0x02;
+    public static final int ID = 0x03;
 
     /**
-     * Profile of the player
+     * Maximum size of a packet before it is compressed
      */
-    GameProfile profile;
+    int threshold;
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        buffer.writeUuid(profile.getId());
-        buffer.writeString(profile.getName());
+        buffer.writeVarInt(threshold);
     }
 
     @Override

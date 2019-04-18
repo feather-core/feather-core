@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.login.server;
+package org.feathercore.protocol.minecraft.packet.handshake.client;
 
-import com.mojang.authlib.GameProfile;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,23 +25,30 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * This packet uses a nonstandard format. It is never length-prefixed,
+ * and the packet ID is an Unsigned Byte instead of a VarInt.
+ *
+ * While not technically part of the current protocol, legacy clients may
+ * send this packet to initiate Server List Ping, and modern servers
+ * should handle it correctly.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketServerLoginSuccess implements MinecraftPacket {
+public class HandshakePacketClientLegacyServerListPing implements MinecraftPacket {
 
-    public static final int ID = 0x02;
+    public static final int ID = 0xFE;
 
     /**
-     * Profile of the player
+     * Always 1 ({@link 0x01})
      */
-    GameProfile profile;
+    int payload;
 
     @Override
-    public void write(@NotNull final Buffer buffer) {
-        buffer.writeUuid(profile.getId());
-        buffer.writeString(profile.getName());
+    public void read(@NotNull final Buffer buffer) {
+        payload = buffer.readUnsignedByte();
     }
 
     @Override

@@ -14,28 +14,35 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.status.client;
+package org.feathercore.protocol.minecraft.packet.status.server;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by k.shandurenko on 09/04/2019
- */
 @Data
 @NoArgsConstructor
-public class StatusPacketClientServerQuery implements MinecraftPacket {
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED)
+public class StatusPacketServerResponse implements MinecraftPacket {
 
     public static final int ID = 0x00;
 
-    @Override
-    public void write(@NotNull final Buffer buffer) {}
+    /**
+     * Server's MOTD data
+     */
+    // TODO: 18.04.2019 Replace with special object
+    String jsonResponse;
 
     @Override
-    public void read(@NotNull final Buffer buffer) {}
+    public void write(@NotNull final Buffer buffer) {
+        buffer.writeString(jsonResponse);
+    }
 
     @Override
     public int getId() {

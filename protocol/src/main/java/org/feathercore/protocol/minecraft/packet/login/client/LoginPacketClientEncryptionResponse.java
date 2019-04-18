@@ -41,14 +41,14 @@ public class LoginPacketClientEncryptionResponse implements MinecraftPacket {
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        buffer.writeByteArray(this.secretKeyEncrypted);
-        buffer.writeByteArray(this.verifyTokenEncrypted);
+        buffer.writeByteArray(secretKeyEncrypted);
+        buffer.writeByteArray(verifyTokenEncrypted);
     }
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        this.secretKeyEncrypted = buffer.readByteArray();
-        this.verifyTokenEncrypted = buffer.readByteArray();
+        secretKeyEncrypted = buffer.readByteArray();
+        verifyTokenEncrypted = buffer.readByteArray();
     }
 
     @Override

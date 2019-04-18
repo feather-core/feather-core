@@ -25,9 +25,6 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by k.shandurenko on 09/04/2019
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -36,16 +33,14 @@ public class StatusPacketServerPong implements MinecraftPacket {
 
     public static final int ID = 0x01;
 
-    long clientTime;
+    /**
+     * Should be the same as sent by the client
+     */
+    long payload;
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        buffer.writeLong(this.clientTime);
-    }
-
-    @Override
-    public void read(@NotNull final Buffer buffer) {
-        this.clientTime = buffer.readLong();
+        buffer.writeLong(this.payload);
     }
 
     @Override

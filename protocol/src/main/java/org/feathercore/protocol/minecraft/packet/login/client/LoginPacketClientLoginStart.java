@@ -26,9 +26,6 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by k.shandurenko on 09/04/2019
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,21 +34,18 @@ public class LoginPacketClientLoginStart implements MinecraftPacket {
 
     public static final int ID = 0x00;
 
+    /**
+     * Player's Username
+     */
     GameProfile profile;
 
     @Override
-    public void write(@NotNull final Buffer buffer) {
-        buffer.writeString(this.profile.getName());
-    }
-
-    @Override
     public void read(@NotNull final Buffer buffer) {
-        this.profile = new GameProfile(null, buffer.readString(16));
+        profile = new GameProfile(null, buffer.readString(16));
     }
 
     @Override
     public int getId() {
         return ID;
     }
-
 }

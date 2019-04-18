@@ -23,14 +23,11 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
-import org.feathercore.protocol.encrypt.CryptManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PublicKey;
 
-/**
- * Created by k.shandurenko on 09/04/2019
- */
+// TODO: 18.04.2019 Docs
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,16 +42,9 @@ public class LoginPacketServerEncryptionRequest implements MinecraftPacket {
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        buffer.writeString(this.hashedServerID);
-        buffer.writeByteArray(this.publicKey.getEncoded());
-        buffer.writeByteArray(this.verifyToken);
-    }
-
-    @Override
-    public void read(@NotNull final Buffer buffer) {
-        this.hashedServerID = buffer.readString(20);
-        this.publicKey = CryptManager.decodePublicKey(buffer.readByteArray());
-        this.verifyToken = buffer.readByteArray();
+        buffer.writeString(hashedServerID);
+        buffer.writeByteArray(publicKey.getEncoded());
+        buffer.writeByteArray(verifyToken);
     }
 
     @Override

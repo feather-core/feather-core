@@ -14,36 +14,20 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.login.server;
+package org.feathercore.protocol.minecraft.packet.status.client;
 
-import com.mojang.authlib.GameProfile;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketServerLoginSuccess implements MinecraftPacket {
+public class StatusPacketClientRequest implements MinecraftPacket {
 
-    public static final int ID = 0x02;
-
-    /**
-     * Profile of the player
-     */
-    GameProfile profile;
+    public static final int ID = 0x00;
 
     @Override
-    public void write(@NotNull final Buffer buffer) {
-        buffer.writeUuid(profile.getId());
-        buffer.writeString(profile.getName());
-    }
+    public void read(@NotNull final Buffer buffer) {}
 
     @Override
     public int getId() {
