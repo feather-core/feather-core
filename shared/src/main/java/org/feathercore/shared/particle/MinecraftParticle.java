@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared;
+package org.feathercore.shared.particle;
 
-public enum Particle {
+public enum MinecraftParticle implements Particle {
     AMBIENT_ENTITY_EFFECT("minecraft:ambient_entity_effect", 0),
     ANGRY_VILLAGER("minecraft:angry_villager", 1),
     BARRIER("minecraft:barrier", 2),
@@ -69,42 +69,30 @@ public enum Particle {
     DOLPHIN("minecraft:dolphin", 49);
 
     private final String name;
-    private final int id;
+    private final int nativeId;
     private final boolean complex;
 
-    Particle(String name, int id) {
-        this(name, id, false);
+    MinecraftParticle(String name, int nativeId) {
+        this(name, nativeId, false);
     }
 
-    Particle(String name, int id, boolean complex) {
+    MinecraftParticle(String name, int nativeId, boolean complex) {
         this.name = name;
-        this.id = id;
+        this.nativeId = nativeId;
         this.complex = complex;
     }
 
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
+    @Override
     public String getName() {
         return this.name;
     }
 
-    /**
-     * Gets the id of the particle
-     *
-     * @return id of the particle
-     */
-    public int getId() {
-        return this.id;
+    @Override
+    public int getNativeId() {
+        return this.nativeId;
     }
 
-    /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
-     *
-     * @return {@link true} if the particle is complex
-     */
+    @Override
     public boolean isComplex() {
         return this.complex;
     }
