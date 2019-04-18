@@ -16,9 +16,9 @@
 
 package org.feathercore.shared.color;
 
-import org.feathercore.shared.Native;
+import org.feathercore.shared.MinecraftNative;
 
-public interface Color extends Native {
+public interface Color extends MinecraftNative {
 
     /**
      * Gets color name
@@ -46,7 +46,6 @@ public interface Color extends Native {
      *
      * @return RGB color representation
      */
-
     int getColorRGB();
 
     /**

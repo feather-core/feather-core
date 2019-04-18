@@ -18,11 +18,11 @@ package org.feathercore.shared.advancements;
 
 import lombok.NonNull;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.feathercore.shared.Native;
+import org.feathercore.shared.MinecraftNative;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Advancement extends Native {
+public interface Advancement extends MinecraftNative {
 
     /**
      * Get the {@code Advancement} that is this {@code Advancement}'s parent,
