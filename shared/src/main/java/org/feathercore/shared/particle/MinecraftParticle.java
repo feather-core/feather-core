@@ -93,6 +93,11 @@ public enum MinecraftParticle implements Particle {
     }
 
     @Override
+    public boolean isNative() {
+        return true;
+    }
+
+    @Override
     public boolean isComplex() {
         return this.complex;
     }

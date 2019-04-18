@@ -16,10 +16,12 @@
 
 package org.feathercore.shared.sound;
 
+import org.feathercore.shared.MinecraftNative;
+
 /**
  * @author xtrafrancyz
  */
-public interface Sound {
+public interface Sound extends MinecraftNative {
 
     /**
      * Name of the sound. It usually consists of the <code>namespace:path</code>.
@@ -27,18 +29,4 @@ public interface Sound {
      * @return name of the sound
      */
     String getName();
-
-    /**
-     * Gets the native id of sound used by Notchian client.
-     *
-     * @return native id
-     */
-    default int getNativeId() {
-        return -1;
-    }
-
-    /**
-     * @return {@link true} if this sound should be present in client and {@link false} otherwise
-     */
-    boolean isNative();
 }
