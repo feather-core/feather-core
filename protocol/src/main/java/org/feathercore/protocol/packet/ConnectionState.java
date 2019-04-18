@@ -27,7 +27,7 @@ public enum ConnectionState {
 
     private static final ConnectionState[] VALUES = values();
 
-    public static ConnectionState getByID(int id) {
+    public static ConnectionState getById(int id) {
         for (ConnectionState state : VALUES) {
             if (state.id == id) {
                 return state;
