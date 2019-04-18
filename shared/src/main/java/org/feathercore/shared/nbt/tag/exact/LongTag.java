@@ -67,6 +67,10 @@ public class LongTag extends Tag {
         return this.value;
     }
 
+    public long getValuePrimitive() {
+        return this.value;
+    }
+
     /**
      * Sets the value of this tag.
      *

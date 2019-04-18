@@ -67,6 +67,10 @@ public class ShortTag extends Tag {
         return this.value;
     }
 
+    public short getValuePrimitive() {
+        return this.value;
+    }
+
     /**
      * Sets the value of this tag.
      *

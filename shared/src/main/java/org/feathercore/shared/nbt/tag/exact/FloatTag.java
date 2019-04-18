@@ -67,6 +67,10 @@ public class FloatTag extends Tag {
         return this.value;
     }
 
+    public float getValuePrimitive() {
+        return this.value;
+    }
+
     /**
      * Sets the value of this tag.
      *
