@@ -51,18 +51,8 @@ public class SharedNettyResources {
     @NonFinal @Nullable volatile EventLoopGroup bossLoopGroup, workerLoopGroup;
 
     @NonNull Supplier<ThreadFactory>
-            bossThreadFactorySupplier = new Supplier<ThreadFactory>() {
-        @Override
-        public ThreadFactory get() {
-            return new NamedThreadFactory("Netty Boss Thread #", false);
-        }
-    },
-            workerThreadFactorySupplier = new Supplier<ThreadFactory>() {
-                @Override
-                public ThreadFactory get() {
-                    return new NamedThreadFactory("Netty Worker Thread #", false);
-                }
-            };
+            bossThreadFactorySupplier = () -> new NamedThreadFactory("Netty Boss Thread #", false),
+            workerThreadFactorySupplier = () -> new NamedThreadFactory("Netty Worker Thread #", false);
 
     public boolean isInitialized() {
         lock.readLock().lock();

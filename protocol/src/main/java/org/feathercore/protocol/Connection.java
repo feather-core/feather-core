@@ -16,8 +16,11 @@
 
 package org.feathercore.protocol;
 
+import io.netty.channel.ChannelFuture;
+import lombok.NonNull;
 import org.feathercore.protocol.packet.Packet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.net.InetSocketAddress;
 
@@ -30,12 +33,20 @@ public interface Connection {
         write(packet.serialize());
     }
 
+    default ChannelFuture writeFuture(@NotNull Packet packet) {
+        return writeFuture(packet.serialize());
+    }
+
     void write(@NotNull byte[] bytes);
+
+    ChannelFuture writeFuture(@NonNull byte[] bytes);
 
     InetSocketAddress getRemoteAddress();
 
     boolean isActive();
 
     boolean isEncrypted();
+
+    @Nullable ChannelFuture disconnect();
 
 }

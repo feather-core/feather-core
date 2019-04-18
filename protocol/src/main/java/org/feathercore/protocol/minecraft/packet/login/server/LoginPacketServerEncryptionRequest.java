@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
+import org.feathercore.protocol.encrypt.CryptManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.security.PublicKey;
@@ -51,11 +52,8 @@ public class LoginPacketServerEncryptionRequest implements MinecraftPacket {
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        if (true) {
-            throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        }
         this.hashedServerID = buffer.readString(20);
-        // TODO: this.publicKey = CryptManager.decodePublicKey(buffer.readByteArray());
+        this.publicKey = CryptManager.decodePublicKey(buffer.readByteArray());
         this.verifyToken = buffer.readByteArray();
     }
 
