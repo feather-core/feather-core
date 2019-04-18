@@ -28,7 +28,7 @@ import org.feathercore.shared.color.MinecraftColor;
 @Getter
 public enum EnumFrameType {
 
-    TASk("task", 0, MinecraftColor.GREEN),
+    TASK("task", 0, MinecraftColor.GREEN),
     CHALLENGE("challenge", 26, MinecraftColor.PURPLE),
     GOAL("goal", 52, MinecraftColor.GREEN);
 
