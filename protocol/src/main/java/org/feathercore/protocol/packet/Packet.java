@@ -16,6 +16,7 @@
 
 package org.feathercore.protocol.packet;
 
+import io.netty.buffer.Unpooled;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.netty.NettyBuffer;
 import org.jetbrains.annotations.NotNull;
@@ -36,10 +37,11 @@ public interface Packet {
     int getId();
 
     default byte[] serialize() {
-        NettyBuffer buffer = NettyBuffer.newInstance();
+        NettyBuffer buffer = NettyBuffer.newInstance(Unpooled.buffer(128)); //TODO capacity
         buffer.writeVarInt(getId());
         write(buffer);
         try {
+            buffer.readerIndex(0);
             return buffer.readByteArray(buffer.readableBytes());
         } finally {
             buffer.release();
