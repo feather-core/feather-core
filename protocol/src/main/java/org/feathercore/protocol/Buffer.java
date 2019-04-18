@@ -347,15 +347,6 @@ public abstract class Buffer extends ByteBuf {
         }
     }
 
-    public UUID readUuid() {
-        return new UUID(readLong(), readLong());
-    }
-
-    public void writeUuid(UUID uuid) {
-        writeLong(uuid.getMostSignificantBits());
-        writeLong(uuid.getLeastSignificantBits());
-    }
-
     public BaseComponent[] readBaseComponents() {
         return ComponentSerializer.parse(readString(32767));
     }
