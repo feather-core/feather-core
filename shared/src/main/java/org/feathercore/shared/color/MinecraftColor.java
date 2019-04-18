@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.regex.Pattern;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public enum MinecraftColor implements Color {
 

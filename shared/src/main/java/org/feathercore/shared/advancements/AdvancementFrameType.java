@@ -23,7 +23,7 @@ import lombok.ToString;
 import org.feathercore.shared.color.Color;
 import org.feathercore.shared.color.MinecraftColor;
 
-@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 @ToString
 @Getter
 public enum AdvancementFrameType {
