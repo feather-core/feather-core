@@ -67,6 +67,10 @@ public class ByteTag extends Tag {
         return this.value;
     }
 
+    public byte getValuePrimitive() {
+        return this.value;
+    }
+
     /**
      * Sets the value of this tag.
      *

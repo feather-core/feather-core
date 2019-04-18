@@ -40,6 +40,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,7 +91,7 @@ public class ListTag extends Tag implements Iterable<Tag> {
 
     @Override
     public List<Tag> getValue() {
-        return new ArrayList<>(this.value);
+        return Collections.unmodifiableList(this.value);
     }
 
     /**
@@ -225,7 +226,7 @@ public class ListTag extends Tag implements Iterable<Tag> {
 
     @Override
     public ListTag clone() {
-        List<Tag> newList = new ArrayList<Tag>();
+        List<Tag> newList = new ArrayList<>();
         for (Tag value : this.value) {
             newList.add(value.clone());
         }

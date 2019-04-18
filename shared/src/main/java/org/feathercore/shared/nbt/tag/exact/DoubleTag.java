@@ -67,6 +67,10 @@ public class DoubleTag extends Tag {
         return this.value;
     }
 
+    public double getValuePrimitive() {
+        return this.value;
+    }
+
     /**
      * Sets the value of this tag.
      *
