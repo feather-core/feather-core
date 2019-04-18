@@ -16,16 +16,14 @@
 
 package org.feathercore.shared.color;
 
+import it.unimi.dsi.fastutil.chars.Char2ObjectArrayMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
@@ -61,7 +59,7 @@ public enum MinecraftColor implements Color {
      *
      * @see MinecraftColor#charCode
      */
-    private static final Map<Character, MinecraftColor> COLORS_BY_CHAR;
+    private static final Char2ObjectMap<MinecraftColor> COLORS_BY_CHAR;
     /**
      * All the color codes that will be used to translate alternative symbols
      */
@@ -152,11 +150,11 @@ public enum MinecraftColor implements Color {
 
     static {
         MinecraftColor[] values = values();
-        COLORS_BY_CHAR = Arrays.stream(values)
-                               .collect(Collectors.toMap(MinecraftColor::getCharCode, Function.identity()));
+        COLORS_BY_CHAR = new Char2ObjectArrayMap<>(values.length);
         StringBuilder builder = new StringBuilder(values.length);
         for (MinecraftColor color : values) {
             char code = color.getCharCode();
+            COLORS_BY_CHAR.put(code, color);
             builder.append(code);
             if (Character.isAlphabetic(code)) {
                 builder.append(Character.toUpperCase(code));
