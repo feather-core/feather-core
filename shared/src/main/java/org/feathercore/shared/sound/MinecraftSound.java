@@ -16,6 +16,7 @@
 
 package org.feathercore.shared.sound;
 
+@SuppressWarnings("unused")
 public enum MinecraftSound implements Sound {
     AMBIENT_CAVE("ambient.cave", 0),
     AMBIENT_UNDERWATER_ENTER("ambient.underwater.enter", 1),

@@ -16,6 +16,7 @@
 
 package org.feathercore.shared.particle;
 
+@SuppressWarnings("unused")
 public enum MinecraftParticle implements Particle {
     AMBIENT_ENTITY_EFFECT("minecraft:ambient_entity_effect", 0),
     ANGRY_VILLAGER("minecraft:angry_villager", 1),
