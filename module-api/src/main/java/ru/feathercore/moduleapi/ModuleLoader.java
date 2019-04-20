@@ -22,6 +22,8 @@ import java.util.Collection;
 
 /**
  * Loader of {@link Module modules} which uses {@link ModuleInitializer initializers} for this purpose.
+ *
+ * @param <M> super-type of all modules managed
  */
 public interface ModuleLoader<M extends Module> {
 
