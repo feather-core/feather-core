@@ -51,6 +51,7 @@
         <module>shared</module>
         <module>runtime</module>
         <module>eventbus</module>
+        <module>module-api</module>
         <module>protocol</module>
     </modules>
 
@@ -94,6 +95,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>feathercore-eventbus</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>feathercore-module-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
