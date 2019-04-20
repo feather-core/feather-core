@@ -18,6 +18,8 @@ package ru.feathercore.moduleapi;
 
 import lombok.NonNull;
 
+import java.util.Collection;
+
 /**
  * Loader of {@link Module modules} which uses {@link ModuleInitializer initializers} for this purpose.
  */
@@ -49,4 +51,13 @@ public interface ModuleLoader<M extends Module> {
                 () -> new ModuleConfigurationException(initializer + " does not allow usage of default configuration")
         ).get());
     }
+
+    /**
+     * Gets all modules loaded by this module loader.
+     *
+     * @return all loaded modules
+     *
+     * @apiNote modifications to returned collection should not have side-effect on this module loader
+     */
+    Collection<? extends M> getModules();
 }
