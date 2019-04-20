@@ -53,5 +53,10 @@ public class AbstractModuleLoader<M extends Module> implements ModuleLoader<M> {
         return module;
     }
 
+    /**
+     * Callback used by {@link #loadModule(ModuleInitializer, Object)} to notify that the module has been loaded.
+     *
+     * @param module module which has just been loaded
+     */
     protected void onModuleLoad(@NotNull final M module) {}
 }
