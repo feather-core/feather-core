@@ -24,18 +24,29 @@ import lombok.NonNull;
 public interface ModuleLoader<M extends Module> {
 
     /**
-     * Loads a module provided by the specified initializer
+     * Loads a module provided by the specified initializer and using the given.
      *
      * @param initializer initializer to use for module's initialization
      * @param configuration configuration required by the module
      * (might be {@link null} depending on the initializer implementation)
      * @param <T> exact type of a module loaded
-     * @param <C> configuration tye of a module ({@link Void} if none is expected)
+     * @param <C> configuration type of a module ({@link Void} if none is expected)
      * @return initialized module
      */
     <T extends M, C> T loadModule(@NonNull ModuleInitializer<T, C> initializer, C configuration);
 
+    /**
+     * Loads a module provided by the specified initializer using its default configuration.
+     *
+     * @param initializer initializer to use for module's initialization
+     * @param <T> exact type of a module loaded
+     * @param <C> configuration type of a module ({@link Void} if none is expected)
+     * @return initialized module
+     * @throws ModuleConfigurationException if this initializer doesn't allow default configuration
+     */
     default <T extends M, C> T loadModule(@NonNull ModuleInitializer<T, C> initializer) {
-        return loadModule(initializer, null);
+        return loadModule(initializer, initializer.getDefaultConfiguration().orElseThrow(
+                () -> new ModuleConfigurationException(initializer + " does not allow usage of default configuration")
+        ).get());
     }
 }

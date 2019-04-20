@@ -16,6 +16,11 @@
 
 package ru.feathercore.moduleapi;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
+import java.util.function.Supplier;
+
 /**
  * Initializer of a module which is normally used by {@link ModuleLoader} to load a specific module.
  *
@@ -24,6 +29,9 @@ package ru.feathercore.moduleapi;
  */
 @FunctionalInterface
 public interface ModuleInitializer<M extends Module, C> {
+
+    @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<Supplier<?>> OPTIONAL_NULL_SUPPLIER
+            = Optional.of(() -> null);
 
     /**
      * Loads the associated module.
@@ -37,4 +45,19 @@ public interface ModuleInitializer<M extends Module, C> {
      * then it is expected to be wrapped using {@link ModuleInitializationException}
      */
     M loadModule(C configuration) throws ModuleConfigurationException, ModuleInitializationException;
+
+    /**
+     * Gets the default configuration for the module.
+     *
+     * @return optional containing supplier of the default configuration if it exists
+     * and an empty optional otherwise which means that this object <b>requires</b> it but cannot provide a default one
+     *
+     * @apiNote if type of {@link C} is {@link Void} then {@link Optional optional} of {@link Supplier supplier}
+     * of {@link null} should be returned which is recommended to be taken from {@link #OPTIONAL_NULL_SUPPLIER}
+     */
+    @SuppressWarnings("unchecked")
+    @NotNull default Optional<Supplier<C>> getDefaultConfiguration() {
+        // somehow the direct cast is impossible
+        return (Optional<Supplier<C>>) (Object) OPTIONAL_NULL_SUPPLIER;
+    }
 }
