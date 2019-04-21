@@ -16,10 +16,9 @@
 
 package org.feathercore.shared.object;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
+import lombok.experimental.Delegate;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
@@ -31,22 +30,6 @@ import java.util.function.Supplier;
  * does not make this value container empty.
  */
 public interface ValueContainer<T> extends Supplier<T> {
-
-    /**
-     * {@inheritDoc}
-     *
-     * @return {@inheritDoc}
-     * @throws EmptyValueException if this value container is empty
-     */
-    @Override
-    T get() throws EmptyValueException;
-
-    /**
-     * Checks whether the object is present ot not.
-     *
-     * @return {@link true} if the value is present (might be {@link null}) and {@link false} otherwise
-     */
-    boolean isPresent();
 
     /**
      * Gets a value container being empty.
@@ -93,8 +76,63 @@ public interface ValueContainer<T> extends Supplier<T> {
         return value == null ? (ValueContainer<T>) Empty.INSTANCE : new Containing<>(value);
     }
 
+    /**
+     * {@inheritDoc}
+     *
+     * @return {@inheritDoc}
+     * @throws EmptyValueException if this value container is empty
+     */
+    @Override
+    T get() throws EmptyValueException;
+
+    /**
+     * Checks whether the object is present ot not.
+     *
+     * @return {@link true} if the value is present (might be {@link null}) and {@link false} otherwise
+     */
+    boolean isPresent();
+
+    /**
+     * Gets the value if it is present otherwise using the specified one.
+     *
+     * @param value value to use if this value container is empty
+     * @return this value container's value if it is not empty or the specified value otherwise
+     */
+    @Nullable default T orElse(@Nullable final T value) {
+        return isPresent() ? get() : value;
+    }
+
+    /**
+     * Gets the value if it is present otherwise using the one got from the specified supplier.
+     *
+     * @param valueSupplier supplier to be used for getting the value if this value container is empty
+     * @return this value container's value if it is not empty or the one got from the supplier otherwise
+     */
+    @Nullable default T orElseGet(@NonNull final Supplier<T> valueSupplier) {
+        return isPresent() ? get() : valueSupplier.get();
+    }
+
+    /**
+     * Gets the value if it is present otherwise throwing an exception.
+     *
+     * @param exceptionSupplier supplier to be used for getting the exception if this value container is empty
+     * @param <X> type of an exception thrown if this value container is empty
+     * @return this value container's value if it is not empty
+     * @throws X if this value container is empty
+     */
+    @Nullable default <X extends Throwable> T orElseThrow(@NonNull final Supplier<@NotNull X> exceptionSupplier)
+            throws X {
+        if (isPresent()) {
+            return get();
+        }
+
+        throw exceptionSupplier.get();
+    }
+
+    // use default equals and hashCode
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class Empty<T> implements ValueContainer<T> {
+
         private static final Empty<?> INSTANCE = new Empty<>();
 
         @Override
@@ -106,10 +144,17 @@ public interface ValueContainer<T> extends Supplier<T> {
         public boolean isPresent() {
             return false;
         }
+
+        @Override
+        public String toString() {
+            return "Empty ValueContainer";
+        }
     }
 
+    // use default equals and hashCode
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     final class OfNull<T> implements ValueContainer<T> {
+
         private static final OfNull<?> INSTANCE = new OfNull<>();
 
         @Override
@@ -121,10 +166,16 @@ public interface ValueContainer<T> extends Supplier<T> {
         public boolean isPresent() {
             return true;
         }
+
+        @Override
+        public String toString() {
+            return "ValueContainer{null}";
+        }
     }
 
+    @Value
     @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-    final class Containing<T> implements ValueContainer<T> {
+    class Containing<T> implements ValueContainer<T> {
 
         @NonNull private final T value;
 
@@ -132,6 +183,18 @@ public interface ValueContainer<T> extends Supplier<T> {
         public T get() throws EmptyValueException {
             return value;
         }
+
+        @Override
+        public boolean isPresent() {
+            return true;
+        }
+    }
+
+    @Value
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    class Supplying<T> implements ValueContainer<T> {
+
+        @NonNull @Delegate private final Supplier<T> valueSupplier;
 
         @Override
         public boolean isPresent() {
