@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Supplier;
 
 /**
- * A value which may be present (which includes {@link null}) otr not-present.
+ * A value which may be present (which includes {@link null}) or not-present.
  * <p>
  * This differs from {@link java.util.Optional<T>} as presence of a {@link null} value
  * does not make this value container empty.

@@ -28,7 +28,7 @@ import java.util.Collection;
 public interface ModuleLoader<M extends Module> {
 
     /**
-     * Loads a module provided by the specified initializer and using the given.
+     * Loads a module provided by the specified initializer using the given configuration.
      *
      * @param initializer initializer to use for module's initialization
      * @param configuration configuration required by the module
