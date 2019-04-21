@@ -51,7 +51,7 @@ public interface ModuleLoader<M extends Module> {
     default <T extends M, C> T loadModule(@NonNull ModuleInitializer<T, C> initializer) {
         return loadModule(initializer, initializer.getDefaultConfiguration().orElseThrow(
                 () -> new ModuleConfigurationException(initializer + " does not allow usage of default configuration")
-        ).get());
+        ));
     }
 
     /**
