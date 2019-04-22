@@ -16,6 +16,7 @@
 
 package org.feathercore.protocol.registry.common;
 
+import lombok.val;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.minecraft.packet.handshake.client.HandshakePacketClientHandshake;
@@ -38,16 +39,20 @@ public class CommonHandshakePacketRegistry {
                 .addPacket(
                         PacketType.create(HandshakePacketClientHandshake.class, HandshakePacketClientHandshake::new),
                         (BiConsumer<Connection, HandshakePacketClientHandshake>) (connection, packet) -> {
-                            switch (packet.getRequestedState()) {
-                                case STATUS:
+                            val nextState = packet.getNextState();
+                            switch (nextState) {
+                                case STATUS: {
                                     // TODO
                                     break;
-                                case LOGIN:
+                                }
+                                case LOGIN: {
                                     // TODO: find more elegant way to switch between registries
                                     //((NettyConnection)connection).changePacketRegistry(CommonLoginPacketRegistry);
                                     break;
-                                default:
-                                    throw new IllegalStateException("Received unexpected handshake state: " + packet.getRequestedState());
+                                }
+                                default: {
+                                    throw new IllegalStateException("Received unexpected handshake state: " + nextState);
+                                }
                             }
                             //TODO
                         }
