@@ -62,4 +62,15 @@ public interface ModuleLoader<M extends Module> {
      * @apiNote modifications to returned collection should not have side-effect on this module loader
      */
     Collection<? extends M> getModules();
+
+    /**
+     * Checks whether module of given class was loaded by this module loader.
+     *
+     * @param module class of module to be checked.
+     * @return true/false.
+     */
+    default boolean isModuleLoaded(Class<? extends M> module) {
+        return getModules().stream().anyMatch(mod -> module.isAssignableFrom(mod.getClass()));
+    }
+
 }
