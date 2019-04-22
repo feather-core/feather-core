@@ -41,7 +41,7 @@ public class LoginPacketServerLoginSuccess implements MinecraftPacket {
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        buffer.writeUuid(profile.getId());
+        buffer.writeString(profile.getId().toString()); // special case because Mojang, haha
         buffer.writeString(profile.getName());
     }
 
