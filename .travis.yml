@@ -3,7 +3,3 @@ language: java
 # JDK to test against (currently, only OpenJDK 8 is used)
 jdk:
   - openjdk8
-
-# Install dependencies
-install:
-  - mvn dependency:resolve
