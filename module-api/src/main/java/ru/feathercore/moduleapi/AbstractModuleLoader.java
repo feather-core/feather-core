@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * An abstract implementation of {@link ModuleLoader<M>} sufficient for all its requires operations.
+ * An abstract implementation of {@link ModuleLoader<M>} sufficient for all operations it requires.
  *
  * @param <M> super-type of all modules managed
  */
