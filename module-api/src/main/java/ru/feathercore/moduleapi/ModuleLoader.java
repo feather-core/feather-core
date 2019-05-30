@@ -55,6 +55,15 @@ public interface ModuleLoader<M extends Module> {
     }
 
     /**
+     * Unloads the specified module.
+     *
+     * @param module module which should unloaded
+     * @param <T> exact type of a module unloaded
+     * @return {@code true} if the specified module was loaded (and so got unloaded) and {@link false} otherwise
+     */
+    <T extends M> boolean unloadModule(@NonNull T module);
+
+    /**
      * Gets all modules loaded by this module loader.
      *
      * @return all loaded modules
