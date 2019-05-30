@@ -64,10 +64,10 @@ public interface ModuleLoader<M extends Module> {
     Collection<? extends M> getModules();
 
     /**
-     * Checks whether module of given class was loaded by this module loader.
+     * Checks whether there is a module of given type currently loaded by this module loader.
      *
      * @param module class of module to be checked.
-     * @return true/false.
+     * @return {@link true} if the module is loaded and {@link false} otherwise
      */
     default boolean isModuleLoaded(Class<? extends M> module) {
         return getModules().stream().anyMatch(mod -> module.isAssignableFrom(mod.getClass()));
