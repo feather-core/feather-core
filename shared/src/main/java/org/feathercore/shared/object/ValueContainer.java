@@ -50,7 +50,7 @@ public interface ValueContainer<T> extends Supplier<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> ValueContainer<T> ofNull() {
-        return (ValueContainer<T>) Empty.INSTANCE;
+        return (ValueContainer<T>) OfNull.INSTANCE;
     }
 
     /**
