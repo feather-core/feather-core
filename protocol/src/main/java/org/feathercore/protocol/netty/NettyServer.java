@@ -22,39 +22,46 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.feathercore.protocol.server.BaseServer;
+import lombok.val;
+import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.netty.channel.ChannelInitializer;
 import org.feathercore.protocol.netty.util.SharedNettyResources;
+import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.server.AbstractServer;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.SoftReference;
+import java.net.SocketAddress;
 
 /**
  * Created by k.shandurenko on 12/04/2019
  */
 @Log4j2
-public abstract class NettyServer extends BaseServer {
+public abstract class NettyServer<P extends Packet> extends AbstractServer<P> {
 
     @NonNull private final SharedNettyResources sharedNettyResources;
 
     protected Channel channel;
 
-    public NettyServer(@NonNull final String host, final int port) {
-        super(host, port);
+    public NettyServer(@NonNull final SocketAddress address) {
+        super(address);
         this.sharedNettyResources = SharedNettyResources.builder().build();
     }
 
     @Override
     public ChannelFuture start() {
+        val address = getAddress();
+
         ServerBootstrap bootstrap = new ServerBootstrap()
                 .group(sharedNettyResources.getBossLoopGroup(), sharedNettyResources.getWorkerLoopGroup())
                 .channel(sharedNettyResources.getServerChannelClass())
                 .childHandler(new ChannelInitializer(new SoftReference<>(this), log));
-        return bootstrap.bind(host, port).addListener((ChannelFutureListener) future -> {
+        return bootstrap.bind(getAddress()).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 channel = future.channel();
-                log.info("BaseServer has been started on " + host + ":" + port);
+                log.info("Server has been started on " + address);
             } else {
-                log.warn("BaseServer could not bind to " + host + ":" + port, future.cause());
+                log.warn("Server could not bind to " + address, future.cause());
             }
         });
     }
@@ -64,4 +71,9 @@ public abstract class NettyServer extends BaseServer {
         return channel.close().syncUninterruptibly();
     }
 
+    @Override
+    public void handleConnect(final @NotNull Connection connection) {}
+
+    @Override
+    public void handleDisconnect(final @NotNull Connection connection) {}
 }
