@@ -25,5 +25,14 @@
 
     <artifactId>feathercore-server</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>feathercore-protocol</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
+            <artifactId>feathercore-module-api</artifactId>
+        </dependency>
 
 </project>
