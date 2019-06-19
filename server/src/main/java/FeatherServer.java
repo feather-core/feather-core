@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import lombok.experimental.Delegate;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.server.Server;
 import ru.feathercore.moduleapi.Module;
@@ -40,7 +39,7 @@ public interface FeatherServer<P extends Packet, M extends Module> extends AutoC
      *
      * @return module-loader of this feather-server
      */
-    @Delegate ModuleLoader<M> getModuleLoader();
+    ModuleLoader<M> getModuleLoader();
 
     /**
      * Starts this feather-server.
