@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 /**
  * Loader of {@link Module modules} which uses {@link ModuleInitializer initializers} for this purpose.
  *
- * @param <M> super-type of all modules managed
+ * @param <M> super-type of modules which this module-loader can manage
  */
 public interface ModuleLoader<M extends Module> {
 

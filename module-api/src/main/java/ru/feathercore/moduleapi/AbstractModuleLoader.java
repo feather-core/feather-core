@@ -28,7 +28,7 @@ import java.util.Set;
 /**
  * An abstract implementation of {@link ModuleLoader<M>} sufficient for all operations it requires.
  *
- * @param <M> super-type of all modules managed
+ * @param <M> super-type of modules which this module-loader can manage
  */
 @ToString
 @EqualsAndHashCode
