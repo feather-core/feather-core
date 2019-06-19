@@ -16,12 +16,14 @@
 
 package ru.feathercore.moduleapi;
 
+import com.google.common.base.Preconditions;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * An abstract implementation of {@link ModuleLoader<M>} sufficient for all operations it requires.
@@ -33,11 +35,20 @@ import java.util.Collections;
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public abstract class AbstractModuleLoader<M extends Module> implements ModuleLoader<M> {
 
-    @NonNull Collection<M> modules, modulesView;
+    @NonNull Set<M> modules, modulesView;
 
-    public AbstractModuleLoader(@NonNull final Collection<M> modules) {
-        this.modules = modules;
-        modulesView = Collections.unmodifiableCollection(modules);
+    /**
+     * Creates new instance of module loader using the given set for storage of modules.
+     *
+     * @param modulesSet set which will be used for storage of loaded modules
+     *
+     * @throws IllegalArgumentException if the given set is non-empty
+     */
+    public AbstractModuleLoader(@NonNull final Set<M> modulesSet) {
+        Preconditions.checkArgument(modulesSet.isEmpty(), "modulesSet should be empty");
+
+        this.modules = modulesSet;
+        modulesView = Collections.unmodifiableSet(modulesSet);
     }
 
     @Override
