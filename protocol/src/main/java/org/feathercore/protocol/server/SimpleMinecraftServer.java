@@ -16,35 +16,23 @@
 
 package org.feathercore.protocol.server;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.feathercore.protocol.Connection;
-import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
+import org.feathercore.protocol.netty.NettyServer;
 import org.feathercore.protocol.registry.PacketRegistry;
-import org.jetbrains.annotations.NotNull;
+import org.feathercore.protocol.registry.common.CommonHandshakePacketRegistry;
 
-import java.util.concurrent.Future;
+import java.net.SocketAddress;
 
 /**
  * Created by k.shandurenko on 16/04/2019
  */
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class BaseServer {
+public class SimpleMinecraftServer extends NettyServer<MinecraftPacket> {
 
-    @NonNull protected final String host;
-    protected final int port;
+    @Getter private final PacketRegistry<MinecraftPacket> packetRegistry = CommonHandshakePacketRegistry.createNew();
 
-    public abstract Future<Void> start();
-
-    public abstract Future<Void> stop();
-
-    public abstract void onConnected(@NotNull Connection connection);
-
-    public abstract void onDisconnected(@NotNull Connection connection);
-
-    public abstract @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry();
-
+    public SimpleMinecraftServer(@NonNull final SocketAddress address) {
+        super(address);
+    }
 }

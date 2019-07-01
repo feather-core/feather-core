@@ -16,28 +16,21 @@
 
 package org.feathercore.protocol.server;
 
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
-import org.feathercore.protocol.Connection;
-import org.feathercore.protocol.netty.NettyServer;
-import org.jetbrains.annotations.NotNull;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.feathercore.protocol.packet.Packet;
+
+import java.net.SocketAddress;
 
 /**
  * Created by k.shandurenko on 16/04/2019
  */
-public abstract class AbstractServer extends NettyServer {
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
+public abstract class AbstractServer<P extends Packet> implements Server<P> {
 
-    public AbstractServer(final @NonNull String host, final int port) {
-        super(host, port);
-    }
-
-    @Override
-    public void onConnected(@NotNull final Connection connection) {
-
-    }
-
-    @Override
-    public void onDisconnected(@NotNull final Connection connection) {
-
-    }
-
+    @NonNull @Getter SocketAddress address;
 }

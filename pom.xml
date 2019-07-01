@@ -53,6 +53,7 @@
         <module>eventbus</module>
         <module>module-api</module>
         <module>protocol</module>
+        <module>server</module>
     </modules>
 
     <repositories>
@@ -105,6 +106,11 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>feathercore-protocol</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>feathercore-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Hamcrest should be above any possible JUnit dependencies -->

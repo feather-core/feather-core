@@ -21,12 +21,12 @@ import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.Logger;
-import org.feathercore.protocol.server.BaseServer;
 import org.feathercore.protocol.netty.HandlerBoss;
 import org.feathercore.protocol.netty.codec.InboundDecoder;
 import org.feathercore.protocol.netty.codec.InboundPacketDecoder;
 import org.feathercore.protocol.netty.codec.OutboundEncoder;
 import org.feathercore.protocol.netty.codec.ServerPingAdapter;
+import org.feathercore.protocol.server.Server;
 
 import java.lang.ref.SoftReference;
 
@@ -36,7 +36,7 @@ import java.lang.ref.SoftReference;
 @RequiredArgsConstructor
 public class ChannelInitializer extends io.netty.channel.ChannelInitializer<Channel> {
 
-    private final SoftReference<BaseServer> serverSoftReference;
+    private final SoftReference<Server> serverSoftReference;
     private final Logger logger;
 
     @Override

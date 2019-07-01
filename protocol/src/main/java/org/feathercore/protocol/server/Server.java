@@ -17,25 +17,30 @@
 package org.feathercore.protocol.server;
 
 import lombok.NonNull;
-import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
+import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
-import org.feathercore.protocol.registry.common.CommonHandshakePacketRegistry;
+import org.jetbrains.annotations.NotNull;
+
+import java.net.SocketAddress;
+import java.util.concurrent.Future;
 
 /**
- * Created by k.shandurenko on 16/04/2019
+ * Base for IO-server based on {@link PacketRegistry}.
+ *
+ * @param <P> super-type of packets used by this server's protocol
  */
-public class CommonServer extends AbstractServer {
+public interface Server<P extends Packet> {
 
-    private final PacketRegistry<MinecraftPacket> initialPacketRegistry = CommonHandshakePacketRegistry.createNew();
+    SocketAddress getAddress();
 
-    public CommonServer(final @NonNull String host, final int port) {
-        super(host, port);
-    }
+    Future<Void> start();
 
-    @Override
-    public @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry() {
-        return this.initialPacketRegistry;
-    }
+    Future<Void> stop();
 
+    @NonNull PacketRegistry<P> getPacketRegistry();
+
+    void handleConnect(@NotNull final Connection connection);
+
+    void handleDisconnect(@NotNull final Connection connection);
 }
