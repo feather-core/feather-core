@@ -62,6 +62,10 @@
             <name>Minecraft Libraries</name>
             <url>https://libraries.minecraft.net</url>
         </repository>
+        <repository>
+            <id>sonatype-snapshot-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
     </repositories>
 
     <build>
@@ -129,7 +133,7 @@
             <dependency>
                 <groupId>net.md-5</groupId>
                 <artifactId>bungeecord-chat</artifactId>
-                <version>1.13-SNAPSHOT</version>
+                <version>1.14-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
