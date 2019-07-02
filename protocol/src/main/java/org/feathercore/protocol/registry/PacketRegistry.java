@@ -54,7 +54,7 @@ public interface PacketRegistry<P extends Packet> {
     default P createById(final int id) {
         val type = getTypeById(id);
 
-        return type == null ? null : type.getSupplier().get();
+        return type == null ? null : type.getFactory().get();
     }
 
     void handlePacket(@NotNull Connection connection, @NotNull Packet packet);
