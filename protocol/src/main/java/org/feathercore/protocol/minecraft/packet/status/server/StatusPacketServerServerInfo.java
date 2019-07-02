@@ -22,6 +22,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.annotation.PacketId;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.shared.util.json.JsonUtil;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
+@PacketId(StatusPacketServerPong.ID)
 public class StatusPacketServerServerInfo implements MinecraftPacket {
 
     public static final int ID = 0x00;

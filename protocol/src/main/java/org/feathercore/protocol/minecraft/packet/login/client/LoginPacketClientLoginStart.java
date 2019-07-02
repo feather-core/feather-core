@@ -23,6 +23,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.annotation.PacketId;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
+@PacketId(LoginPacketClientLoginStart.ID)
 public class LoginPacketClientLoginStart implements MinecraftPacket {
 
     public static final int ID = 0x00;

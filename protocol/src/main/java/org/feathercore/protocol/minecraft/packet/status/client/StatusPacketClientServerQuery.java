@@ -19,6 +19,7 @@ package org.feathercore.protocol.minecraft.packet.status.client;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.annotation.PacketId;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
  */
 @Data
 @NoArgsConstructor
+@PacketId(StatusPacketClientServerQuery.ID)
 public class StatusPacketClientServerQuery implements MinecraftPacket {
 
     public static final int ID = 0x00;
