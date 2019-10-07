@@ -16,127 +16,70 @@
 
 package org.feathercore.eventbus;
 
-import java.lang.invoke.LambdaMetafactory;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
+import lombok.NonNull;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.function.Consumer;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * A manager for handling events.
+ *
+ * @param <E> super-type of events handled
  */
-public class EventManager {
-
-    private static Map<Class<Event>, Set<Handler>> HANDLERS = new ConcurrentHashMap<>();
+public interface EventManager<E extends Event> {
 
     /**
-     * Register given listener (all events handling method within it).
+     * Gets the global (singleton) event manager initialized lazily.
      *
-     * @param listener
+     * @return global event manager (singleton)
      */
-    @SuppressWarnings("unchecked")
-    public static void register(IListener listener) {
-        Class<? extends IListener> clazz = listener.getClass();
-        Class<Event> event = Event.class;
-        for (Method m : clazz.getDeclaredMethods()) {
-            if (m.getParameterCount() != 1 || !m.isAnnotationPresent(EventHandler.class)) {
-                continue;
-            }
-            Class<?> param = m.getParameterTypes()[0];
-            if (!event.isAssignableFrom(param)) {
-                continue;
-            }
-            @SuppressWarnings("SuspiciousMethodCalls") Set<Handler> handlers = HANDLERS.get(param);
-            if (handlers == null) {
-                handlers = new TreeSet<>(Comparator.comparing(Handler::priority).thenComparingInt(a -> a.id));
-                handlers = Collections.synchronizedSet(handlers);
-                HANDLERS.put((Class<Event>) param, handlers);
-            }
-            EventHandler annotation = m.getAnnotation(EventHandler.class);
-            handlers.add(new Handler(annotation.priority(), annotation.ignoreCancelled(), constructConsumer(listener, m)));
-        }
+    static EventManager<Event> getGlobal() {
+        return GlobalContainer.INSTANCE;
     }
 
     /**
-     * Call given event (invoke all methods in registered listeners, which are handling this event).
-     * Doesn't invoke handle-methods for any parents of the given event.
+     * Registers an event-handler for the specified event type.
      *
-     * @param event
+     * @param eventType type of the event
+     * @param handler handler of the event
+     * @param priority event priority (higher priority means latter call)
+     *
+     * @param <T> generic type of the event
      */
-    public static void call(Event event) {
-        @SuppressWarnings("SuspiciousMethodCalls") Set<Handler> handlers = HANDLERS.get(event.getClass());
-        if (handlers == null) {
-            return;
-        }
-        CancellableEvent ce = event instanceof CancellableEvent ? (CancellableEvent) event : null;
-        for (Handler h : handlers) {
-            if (h.ignoreCancelled && ce != null && ce.isCancelled()) {
-                continue;
-            }
-            h.consumer.accept(event);
-        }
-    }
+    <T extends E> void register(@NonNull Class<T> eventType,
+                                @NonNull Consumer<T> handler, byte priority);
 
-    @SuppressWarnings("unchecked")
-    private static Consumer<Event> constructConsumer(IListener listener, Method method) {
-        try {
-            MethodHandles.Lookup lookup = constructLookup(listener.getClass());
-            return (Consumer<Event>) LambdaMetafactory.metafactory(
-                    lookup,
-                    "accept",
-                    MethodType.methodType(Consumer.class, listener.getClass()),
-                    MethodType.methodType(void.class, Object.class),
-                    lookup.unreflect(method),
-                    MethodType.methodType(void.class, method.getParameterTypes()[0])
-            ).getTarget().invoke(listener);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            return null;
-        }
+    /**
+     * Registers an event-handler for the specified event type using <i>normal</i> priority.
+     *
+     * @param eventType type of the event
+     * @param handler handler of the event
+     *
+     * @param <T> generic type of the event
+     */
+    default <T extends E> void register(@NonNull Class<T> eventType, @NonNull Consumer<T> handler) {
+        register(eventType, handler, (byte) 0);
     }
 
     /**
-     * We are in need of our own Lookup creation with an argument of given owner class, because we want to be able
-     * to execute private and any other non-public methods.
+     * Registers all methods of this object annotated as {@link EventHandler}
+     * as listeners using the annotations configuration.
      *
-     * @param owner owner class.
-     * @return lookup with owner class privileges.
-     * @throws Exception if something is wrong (?)
+     * @param listener object whose annotated methods should be registered as listeners
+     * and who should be used for calling them
      */
-    private static MethodHandles.Lookup constructLookup(Class<?> owner) throws Exception {
-        Constructor<MethodHandles.Lookup> constructor = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class);
-        constructor.setAccessible(true);
-        try {
-            return constructor.newInstance(owner);
-        } finally {
-            constructor.setAccessible(false);
-        }
+    void register(@NonNull Object listener);
+
+    /**
+     * Calls the specified event.
+     *
+     * @param event event to call
+     * @param <T> exact type of the event to call
+     */
+    <T extends E> void call(@NotNull T event);
+
+    final class GlobalContainer {
+
+        private static final EventManager<Event> INSTANCE = new SimpleEventManager<>();
     }
-
-    private static class Handler {
-
-        private final static AtomicInteger ID = new AtomicInteger();
-
-        private final byte priority;
-        private final boolean ignoreCancelled;
-        private final Consumer<Event> consumer;
-        private final int id;
-
-        Handler(byte priority, boolean ignoreCancelled, Consumer<Event> consumer) {
-            this.priority = priority;
-            this.ignoreCancelled = ignoreCancelled;
-            this.consumer = consumer;
-            this.id = ID.incrementAndGet();
-        }
-
-        private byte priority() {
-            return this.priority;
-        }
-
-    }
-
 }

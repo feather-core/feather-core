@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
  */
 public class InterfaceImplementor {
 
-    private final static Pattern GETTER_PATTERN = Pattern.compile("/^get(?<varname>.+)$/");
-    private final static Pattern SETTER_PATTERN = Pattern.compile("/^set(?<varname>.+)$/");
+    private static final Pattern GETTER_PATTERN = Pattern.compile("get(?<varname>.+)");
+    private static final Pattern SETTER_PATTERN = Pattern.compile("set(?<varname>.+)");
 
     public static <T> ImplementationGenerator<T> createFactory(Class<T> interfaceClass) {
         Map<String, Class<?>> fieldTypes = new HashMap<>();
@@ -42,16 +42,20 @@ public class InterfaceImplementor {
             Matcher matcher = GETTER_PATTERN.matcher(name);
             if (matcher.matches()) {
                 if (method.getParameterCount() != 0) {
-                    throw new IllegalArgumentException("Could not create getter (must be without args): " + interfaceClass.getName() + "#" + name);
+                    throw new IllegalArgumentException(
+                            "Could not create getter (must be without args): " + interfaceClass.getName() + "#" + name);
                 }
                 Class<?> returnType = method.getReturnType();
                 if (returnType == void.class || returnType == Void.class) {
-                    throw new IllegalArgumentException("Could not create getter (must not return void): " + interfaceClass.getName() + "#" + name);
+                    throw new IllegalArgumentException(
+                            "Could not create getter (must not return void): " + interfaceClass.getName() + "#" + name);
                 }
                 String varname = matcher.group("varname").toLowerCase();
                 if (fieldTypes.containsKey(varname)) {
                     if (fieldTypes.get(varname) != returnType) {
-                        throw new IllegalArgumentException("Could not create getter (type mismatch with setter for same field): " + interfaceClass.getName() + "#" + name);
+                        throw new IllegalArgumentException(
+                                "Could not create getter (type mismatch with setter for same field): " + interfaceClass
+                                        .getName() + "#" + name);
                     }
                 } else {
                     fieldTypes.put(varname, returnType);
@@ -61,49 +65,56 @@ public class InterfaceImplementor {
             matcher = SETTER_PATTERN.matcher(name);
             if (matcher.matches()) {
                 if (method.getParameterCount() != 1) {
-                    throw new IllegalArgumentException("Could not create setter (must be with a single arg): " + interfaceClass.getName() + "#" + name);
+                    throw new IllegalArgumentException(
+                            "Could not create setter (must be with a single arg): " + interfaceClass.getName() + "#"
+                                    + name);
                 }
                 Class<?> returnType = method.getReturnType();
                 if (returnType != void.class && returnType != Void.class) {
-                    throw new IllegalArgumentException("Could not create setter (must return void): " + interfaceClass.getName() + "#" + name);
+                    throw new IllegalArgumentException(
+                            "Could not create setter (must return void): " + interfaceClass.getName() + "#" + name);
                 }
                 String varname = matcher.group("varname").toLowerCase();
                 Class<?> argumentType = method.getParameterTypes()[0];
                 if (fieldTypes.containsKey(varname)) {
                     if (fieldTypes.get(varname) != argumentType) {
-                        throw new IllegalArgumentException("Could not create setter (type mismatch with getter for same field): " + interfaceClass.getName() + "#" + name);
+                        throw new IllegalArgumentException(
+                                "Could not create setter (type mismatch with getter for same field): " + interfaceClass
+                                        .getName() + "#" + name);
                     }
                 } else {
                     fieldTypes.put(varname, argumentType);
                 }
                 continue;
             }
-            throw new IllegalArgumentException("Could not implement method that is not a getter/setter: " + interfaceClass.getName() + "#" + name);
+            throw new IllegalArgumentException(
+                    "Could not implement method that is not a getter/setter: " + interfaceClass.getName() + "#" + name);
         }
         return () -> {
             Map<String, Object> fields = new HashMap<>();
             //noinspection unchecked
-            return (T) Proxy.newProxyInstance(InterfaceImplementor.class.getClassLoader(), new Class[]{interfaceClass}, (instance, method, args) -> {
-                if (method.isDefault()) {
-                    return method.invoke(instance, args);
-                }
-                String name = method.getName();
-                Matcher matcher = GETTER_PATTERN.matcher(name);
-                if (matcher.matches()) {
-                    String varname = matcher.group("varname").toLowerCase();
-                    synchronized (fields) {
-                        return fields.get(varname);
-                    }
-                }
-                matcher = SETTER_PATTERN.matcher(name);
-                if (matcher.matches()) {
-                    String varname = matcher.group("varname").toLowerCase();
-                    synchronized (fields) {
-                        fields.put(varname, args[0]);
-                    }
-                }
-                return null;
-            });
+            return (T) Proxy.newProxyInstance(InterfaceImplementor.class.getClassLoader(), new Class[]{interfaceClass},
+                    (instance, method, args) -> {
+                        if (method.isDefault()) {
+                            return method.invoke(instance, args);
+                        }
+                        String name = method.getName();
+                        Matcher matcher = GETTER_PATTERN.matcher(name);
+                        if (matcher.matches()) {
+                            String varname = matcher.group("varname").toLowerCase();
+                            synchronized (fields) {
+                                return fields.get(varname);
+                            }
+                        }
+                        matcher = SETTER_PATTERN.matcher(name);
+                        if (matcher.matches()) {
+                            String varname = matcher.group("varname").toLowerCase();
+                            synchronized (fields) {
+                                fields.put(varname, args[0]);
+                            }
+                        }
+                        return null;
+                    });
         };
     }
 

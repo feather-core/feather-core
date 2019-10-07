@@ -1,0 +1,5 @@
+# Primary programming language of the repository
+language: java
+# JDK to test against (currently, only OpenJDK 8 is used)
+jdk:
+  - openjdk8
