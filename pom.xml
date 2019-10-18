@@ -28,7 +28,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <version.netty>4.1.42.Final</version.netty>
         <!-- Testing -->
-        <version.junit>5.5.1</version.junit>
+        <version.junit>5.5.2</version.junit>
         <version.junit.platform>1.5.1</version.junit.platform>
         <version.mockito>3.0.0</version.mockito>
     </properties>
