@@ -22,7 +22,7 @@ import io.netty.channel.socket.SocketChannel;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
-import org.feathercore.shared.util.NamedThreadFactory;
+import org.feathercore.shared.util.thread.ThreadFactories;
 import org.jetbrains.annotations.Nullable;
 
 import javax.annotation.Nonnegative;
@@ -51,8 +51,8 @@ public class SharedNettyResources {
     @NonFinal @Nullable volatile EventLoopGroup bossLoopGroup, workerLoopGroup;
 
     @NonNull Supplier<ThreadFactory>
-            bossThreadFactorySupplier = () -> new NamedThreadFactory("Netty Boss Thread #", false),
-            workerThreadFactorySupplier = () -> new NamedThreadFactory("Netty Worker Thread #", false);
+            bossThreadFactorySupplier = () -> ThreadFactories.createPaginated("Netty Boss Thread #", false),
+            workerThreadFactorySupplier = () -> ThreadFactories.createPaginated("Netty Worker Thread #", false);
 
     public boolean isInitialized() {
         lock.readLock().lock();
