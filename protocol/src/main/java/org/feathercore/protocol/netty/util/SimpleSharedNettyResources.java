@@ -153,8 +153,9 @@ import static java.lang.Math.max;
             if (bossLoopGroup == null) {
                 writeLock.lock();
                 try {
-                    bossLoopGroup = (useNativeTransport ? TransportType.getNative() : TransportType.getDefault())
-                            .newEventLoopGroup(bossThreads, bossThreadFactorySupplier.get());
+                    bossLoopGroup = (useNativeTransport
+                            ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
+                    ).newEventLoopGroup(bossThreads, bossThreadFactorySupplier.get());
                 } finally {
                     writeLock.unlock();
                 }
@@ -177,8 +178,9 @@ import static java.lang.Math.max;
                     if (bossIsWorker) {
                         workerLoopGroup = getWorkerLoopGroup();
                     } else {
-                        workerLoopGroup = (useNativeTransport ? TransportType.getNative() : TransportType.getDefault())
-                                .newEventLoopGroup(max(1, workerThreads), workerThreadFactorySupplier.get());
+                        workerLoopGroup = (useNativeTransport
+                                ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
+                        ).newEventLoopGroup(max(1, workerThreads), workerThreadFactorySupplier.get());
                     }
                 } finally {
                     writeLock.unlock();
@@ -192,11 +194,15 @@ import static java.lang.Math.max;
     }
 
     public Class<? extends SocketChannel> getSocketChannelClass() {
-        return (useNativeTransport ? TransportType.getNative() : TransportType.getDefault()).getSocketChannelClass();
+        return (useNativeTransport
+                ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
+        ).getSocketChannelClass();
     }
 
     public Class<? extends ServerChannel> getServerChannelClass() {
-        return (useNativeTransport ? TransportType.getNative() : TransportType.getDefault()).getServerChannelClass();
+        return (useNativeTransport
+                ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
+        ).getServerChannelClass();
     }
 
     /*
