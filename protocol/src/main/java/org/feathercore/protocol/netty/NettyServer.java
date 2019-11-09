@@ -22,9 +22,10 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
+import org.feathercore.protocol.netty.util.SharedNettyResources;
+import org.feathercore.protocol.netty.util.SimpleSharedNettyResources;
 import org.feathercore.protocol.server.BaseServer;
 import org.feathercore.protocol.netty.channel.ChannelInitializer;
-import org.feathercore.protocol.netty.util.SharedNettyResources;
 
 import java.lang.ref.SoftReference;
 
@@ -40,7 +41,7 @@ public abstract class NettyServer extends BaseServer {
 
     public NettyServer(@NonNull final String host, final int port) {
         super(host, port);
-        this.sharedNettyResources = SharedNettyResources.builder().build();
+        this.sharedNettyResources = SimpleSharedNettyResources.builder().build();
     }
 
     @Override
