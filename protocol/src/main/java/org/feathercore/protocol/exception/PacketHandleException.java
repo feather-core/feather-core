@@ -16,13 +16,20 @@
 
 package org.feathercore.protocol.exception;
 
-/**
- * Created by k.shandurenko on 12/04/2019
- */
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class PacketHandleException extends IllegalStateException {
 
-    public PacketHandleException(String message, Throwable cause) {
+    public PacketHandleException(final String s) {
+        super(s);
+    }
+
+    public PacketHandleException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
+    public PacketHandleException(final Throwable cause) {
+        super(cause);
+    }
 }
