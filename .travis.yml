@@ -1,5 +1,50 @@
-# Primary programming language of the repository
+# Programming language
 language: java
-# JDK to test against (currently, only OpenJDK 8 is used)
-jdk:
-  - openjdk8
+
+before_script:
+  # Install the tool to switch between JDK versions
+  - wget https://raw.githubusercontent.com/sormuras/bach/master/install-jdk.sh
+
+### Maven basic build ###
+# Build project, installing to local repo (skip testing and javadoc generation (if those exist))
+install:
+  # Normal build part
+  - mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
+jobs:
+  include:
+    # Test project against various JDKs
+    - stage: Test against various JDKs
+      # Current stable version whatever it is
+      env: JDK=ea
+      script:
+        - source ./install-jdk.sh --verbose --feature ea
+        - mvn -q verify
+    - # Java 14 (very experimental)
+      env: JDK=14
+      script:
+        - source ./install-jdk.sh --verbose --feature 14
+        - mvn -q verify
+    - # Java 13 (upcoming stable (experimental))
+      env: JDK=13
+      script:
+        - source ./install-jdk.sh --verbose --feature 13
+        - mvn -q verify
+    - # Java 12 (latest stable)
+      env: JDK=12
+      script:
+        - source ./install-jdk.sh --verbose --feature 12
+        - mvn -q verify
+    - # Java 11 (LTS)
+      env: JDK=11
+      script:
+        - source ./install-jdk.sh --verbose --feature 11
+        - mvn -q verify
+    - # Java 8 (good == old == stable)
+      env: JDK=8
+      jdk: openjdk8
+      script: mvn -q verify
+
+# Cached directories
+cache:
+  directories:
+    - ~/.m2/repository # Maven repository
