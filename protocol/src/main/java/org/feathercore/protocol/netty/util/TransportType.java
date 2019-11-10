@@ -21,13 +21,14 @@ import io.netty.channel.ServerChannel;
 import io.netty.channel.socket.SocketChannel;
 import lombok.NonNull;
 
+import javax.annotation.Nonnegative;
 import java.util.concurrent.ThreadFactory;
 
 public interface TransportType {
 
     boolean isAvailable();
 
-    EventLoopGroup newEventLoopGroup(int threads, @NonNull ThreadFactory threadFactory);
+    EventLoopGroup newEventLoopGroup(@Nonnegative int threads, @NonNull ThreadFactory threadFactory);
 
     Class<? extends SocketChannel> getSocketChannelClass();
 

@@ -17,213 +17,51 @@
 package org.feathercore.protocol.netty.util;
 
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.ServerChannel;
-import io.netty.channel.socket.SocketChannel;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import org.feathercore.shared.util.thread.ThreadFactories;
-import org.jetbrains.annotations.Nullable;
-
-import javax.annotation.Nonnegative;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.Math.max;
 
-@Builder
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-@NonFinal public class SimpleSharedNettyResources implements SharedNettyResources {
+@NonFinal public class SimpleSharedNettyResources extends AbstractSharedNettyResources {
 
-    @NonNull final Lock readLock, writeLock;
+    protected int bossThreads, workerThreads;
 
-    {
-        val lock = new ReentrantReadWriteLock();
-        readLock = lock.readLock();
-        writeLock = lock.writeLock();
+    @Builder
+    public SimpleSharedNettyResources(@NonNull final TransportType transportType, final boolean bossIsWorker,
+                                      final int bossThreads, final int workerThreads) {
+        super(transportType, bossIsWorker);
+
+        checkArgument(bossThreads >= 0, "There should be at least 1 boss thread (or 0 for default)");
+        checkArgument(workerThreads >= 0, "There should be at least 1 worker thread (or 0 for default)");
+
+        this.bossThreads = bossThreads;
+        this.workerThreads = workerThreads;
     }
 
-    @NonNull final AtomicBoolean shutDown = new AtomicBoolean();
-
-    boolean bossIsWorker;
-    @Builder.Default boolean useNativeTransport = true;
-    @Builder.Default @Nonnegative int bossThreads = 2, workerThreads = 0;
-
-    @NonFinal @Nullable volatile EventLoopGroup bossLoopGroup, workerLoopGroup;
-
-    @NonNull Supplier<ThreadFactory>
-            bossThreadFactorySupplier = () -> ThreadFactories.createPaginated("Netty Boss Thread #", false),
-            workerThreadFactorySupplier = () -> ThreadFactories.createPaginated("Netty Worker Thread #", false);
-
-    /**
-     * Asserts that this instance is not shut down.
-     *
-     * @throws IllegalStateException if this instance is already shut down
-     */
-    protected void assertNotShutDown() {
-        if (isShutDown()) {
-            throw new IllegalStateException("LoopGroupGracefully is already shut down.");
-        }
+    public static SimpleSharedNettyResources createDefault() {
+        return SimpleSharedNettyResources.builder()
+                                         .transportType(DefaultTransportType.getNative())
+                                         .bossThreads(2)
+                                         .workerThreads(0)
+                                         .build();
     }
 
     @Override
-    public boolean isInitialized() {
-        assertNotShutDown();
-
-        readLock.lock();
-        try {
-            return bossLoopGroup != null && workerLoopGroup != null;
-        } finally {
-            readLock.unlock();
-        }
+    protected EventLoopGroup newBossLoopGroup() {
+        return transportType.newEventLoopGroup(
+                bossThreads, ThreadFactories.createPaginated("Netty Worker Thread #", false)
+        );
     }
 
     @Override
-    public boolean isShutDown() {
-        return shutDown.get();
-    }
-
-    @SneakyThrows(InterruptedException.class)
-    protected void performLoopGroupsShutdownGracefully(final boolean await) {
-        readLock.lock();
-        try {
-            if (bossLoopGroup != null || workerLoopGroup != null) {
-                writeLock.lock();
-                try {
-                    var loopGroup = bossLoopGroup;
-                    /* Disable boss */
-                    if (loopGroup != null) {
-                        if (await) {
-                            loopGroup.shutdownGracefully().await();
-                        } else {
-                            loopGroup.shutdownGracefully();
-                        }
-                        bossLoopGroup = null;
-                    }
-
-                    loopGroup = workerLoopGroup;
-                    if (loopGroup != null) {
-                        /* Disable worker */
-                        if (await) {
-                            loopGroup.shutdownGracefully().await();
-                        } else {
-                            loopGroup.shutdownGracefully();
-                        }
-                        workerLoopGroup = null;
-                    }
-                } finally {
-                    writeLock.unlock();
-                }
-            }
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-
-    public void shutdownLoopGroupsGracefully(final boolean await) {
-        if (shutDown.compareAndSet(false, true)) {
-            performLoopGroupsShutdownGracefully(await);
-        } else {
-            throw new IllegalStateException("LoopGroupGracefully is already shut down.");
-        }
-    }
-
-    @Override
-    public boolean tryShutdownLoopGroupsGracefully(final boolean await) {
-        if (shutDown.compareAndSet(false, true)) {
-            performLoopGroupsShutdownGracefully(await);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    public EventLoopGroup getBossLoopGroup() {
-        assertNotShutDown();
-
-        readLock.lock();
-        try {
-            if (bossLoopGroup == null) {
-                writeLock.lock();
-                try {
-                    bossLoopGroup = (useNativeTransport
-                            ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
-                    ).newEventLoopGroup(bossThreads, bossThreadFactorySupplier.get());
-                } finally {
-                    writeLock.unlock();
-                }
-            }
-
-            return bossLoopGroup;
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    public EventLoopGroup getWorkerLoopGroup() {
-        assertNotShutDown();
-
-        readLock.lock();
-        try {
-            if (workerLoopGroup == null) {
-                writeLock.lock();
-                try {
-                    if (bossIsWorker) {
-                        workerLoopGroup = getWorkerLoopGroup();
-                    } else {
-                        workerLoopGroup = (useNativeTransport
-                                ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
-                        ).newEventLoopGroup(max(1, workerThreads), workerThreadFactorySupplier.get());
-                    }
-                } finally {
-                    writeLock.unlock();
-                }
-            }
-
-            return workerLoopGroup;
-        } finally {
-            readLock.unlock();
-        }
-    }
-
-    public Class<? extends SocketChannel> getSocketChannelClass() {
-        return (useNativeTransport
-                ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
-        ).getSocketChannelClass();
-    }
-
-    public Class<? extends ServerChannel> getServerChannelClass() {
-        return (useNativeTransport
-                ? DefaultTransportType.getNative() : DefaultTransportType.getDefault()
-        ).getServerChannelClass();
-    }
-
-    /*
-     * Extended Lombok-generated builder. Extension is used in order to check preconditions.
-     */
-    public static class SimpleSharedNettyResourcesBuilder {
-
-        public SimpleSharedNettyResourcesBuilder bossThreads(@Nonnegative final int bossThreads) {
-            checkArgument(bossThreads > 0, "There should be at least 1 boss thread");
-
-            this.bossThreads = bossThreads;
-
-            return this;
-        }
-
-        public SimpleSharedNettyResourcesBuilder workerThreads(@Nonnegative final int workerThreads) {
-            checkArgument(workerThreads <= 0, "Number of worker threads cannot be negative");
-
-            this.workerThreads = workerThreads;
-
-            return this;
-        }
+    protected EventLoopGroup newWorkerLoopGroup() {
+        return transportType.newEventLoopGroup(
+                workerThreads, ThreadFactories.createPaginated("Netty Worker Thread #", false)
+        );
     }
 }

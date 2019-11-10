@@ -41,21 +41,21 @@ public abstract class NettyServer extends BaseServer {
 
     public NettyServer(@NonNull final String host, final int port) {
         super(host, port);
-        this.sharedNettyResources = SimpleSharedNettyResources.builder().build();
+        this.sharedNettyResources = SimpleSharedNettyResources.createDefault();
     }
 
     @Override
     public ChannelFuture start() {
         ServerBootstrap bootstrap = new ServerBootstrap()
                 .group(sharedNettyResources.getBossLoopGroup(), sharedNettyResources.getWorkerLoopGroup())
-                .channel(sharedNettyResources.getServerChannelClass())
+                .channel(sharedNettyResources.getTransportType().getServerChannelClass())
                 .childHandler(new ChannelInitializer(new SoftReference<>(this), log));
         return bootstrap.bind(host, port).addListener((ChannelFutureListener) future -> {
             if (future.isSuccess()) {
                 channel = future.channel();
-                log.info("BaseServer has been started on " + host + ":" + port);
+                log.info("Server has been started on " + host + ":" + port);
             } else {
-                log.warn("BaseServer could not bind to " + host + ":" + port, future.cause());
+                log.warn("Server could not bind to " + host + ":" + port, future.cause());
             }
         });
     }

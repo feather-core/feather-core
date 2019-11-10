@@ -17,8 +17,7 @@
 package org.feathercore.protocol.netty.util;
 
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.ServerChannel;
-import io.netty.channel.socket.SocketChannel;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Holder of shared data used by Netty's basic elements.
@@ -28,6 +27,12 @@ public interface SharedNettyResources {
     boolean isInitialized();
 
     boolean isShutDown();
+
+    @NotNull TransportType getTransportType();
+
+    @NotNull EventLoopGroup getBossLoopGroup();
+
+    @NotNull EventLoopGroup getWorkerLoopGroup();
 
     void shutdownLoopGroupsGracefully(final boolean await);
 
@@ -40,12 +45,4 @@ public interface SharedNettyResources {
     default boolean tryShutdownLoopGroupsGracefully() {
         return tryShutdownLoopGroupsGracefully(true);
     }
-
-    EventLoopGroup getBossLoopGroup();
-
-    EventLoopGroup getWorkerLoopGroup();
-
-    Class<? extends SocketChannel> getSocketChannelClass();
-
-    Class<? extends ServerChannel> getServerChannelClass();
 }
