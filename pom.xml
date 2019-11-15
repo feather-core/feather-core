@@ -127,6 +127,16 @@
             </dependency>
             <!-- Third-party components -->
             <dependency>
+                <groupId>ru.progrm-jarvis</groupId>
+                <artifactId>java-commons</artifactId>
+                <version>${version.padla}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.progrm-jarvis</groupId>
+                <artifactId>reflector</artifactId>
+                <version>${version.padla}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${version.netty}</version>
