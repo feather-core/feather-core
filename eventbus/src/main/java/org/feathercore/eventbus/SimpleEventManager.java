@@ -118,7 +118,7 @@ public class SimpleEventManager<E extends Event> implements EventManager<E> {
                     lookup.unreflect(method),
                     MethodType.methodType(void.class, method.getParameterTypes()[0])
             ).getTarget().invoke(listener);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             throw new RuntimeException("Could not create event listener", t);
         }
     }

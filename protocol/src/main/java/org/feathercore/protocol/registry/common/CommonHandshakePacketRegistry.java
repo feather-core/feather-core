@@ -32,6 +32,7 @@ public class CommonHandshakePacketRegistry {
 
     @SuppressWarnings("unchecked")
     public static PacketRegistry<MinecraftPacket> createNew() {
+        //noinspection RedundantCast this is a javac bug: cast is required
         return ArrayBasedPacketRegistry.Builder.create()
                 .exceptionHandler((BiConsumer<Connection, Throwable>) (connection, throwable) ->
                         connection.disconnect())
