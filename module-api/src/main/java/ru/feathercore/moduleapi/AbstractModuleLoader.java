@@ -26,6 +26,8 @@ import java.util.*;
  * An abstract implementation of {@link ModuleLoader<M>} sufficient for all operations it requires.
  *
  * @param <M> super-type of modules which this module-loader can manage
+ *
+ * // TODO: 15.11.2019 Docs
  */
 @ToString
 @EqualsAndHashCode
