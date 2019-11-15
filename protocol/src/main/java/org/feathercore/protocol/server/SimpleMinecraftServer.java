@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.netty.NettyServer;
+import org.feathercore.protocol.netty.util.SharedNettyResources;
 import org.feathercore.protocol.registry.PacketRegistry;
 import org.feathercore.protocol.registry.common.CommonHandshakePacketRegistry;
 
@@ -28,11 +29,13 @@ import java.net.SocketAddress;
 /**
  * Created by k.shandurenko on 16/04/2019
  */
+@Deprecated
 public class SimpleMinecraftServer extends NettyServer<MinecraftPacket> {
 
     @Getter private final PacketRegistry<MinecraftPacket> packetRegistry = CommonHandshakePacketRegistry.createNew();
 
-    public SimpleMinecraftServer(@NonNull final SocketAddress address) {
-        super(address);
+    public SimpleMinecraftServer(@NonNull final SocketAddress address,
+                                 @NonNull final SharedNettyResources sharedNettyResources) {
+        super(address, sharedNettyResources);
     }
 }

@@ -21,16 +21,51 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import org.feathercore.protocol.packet.Packet;
 
 import java.net.SocketAddress;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by k.shandurenko on 16/04/2019
+ * Abstract base for a {@link Server implementation}.
+ *
+ * @param <P> super-type of packets used by this server's protocol
  */
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
 public abstract class AbstractServer<P extends Packet> implements Server<P> {
 
     @NonNull @Getter SocketAddress address;
+
+    @NonNull Object startStopMutex = new Object[0];
+    @NonNull @NonFinal volatile boolean running = false;
+
+    protected abstract Future<Void> performStart();
+
+    protected abstract Future<Void> performStop();
+
+    @Override
+    public Future<Void> start() {
+        synchronized (startStopMutex) {
+            if (running) throw new IllegalStateException("This server is already started");
+
+            running = true;
+
+            return performStart();
+        }
+    }
+
+    @Override
+    public Future<Void> stop() {
+        synchronized (startStopMutex) {
+            if (!running) throw new IllegalStateException("This server is not running");
+
+            running = false;
+
+            return performStop();
+        }
+    }
 }

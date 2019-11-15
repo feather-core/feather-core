@@ -23,6 +23,7 @@ import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.SocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
@@ -40,7 +41,7 @@ public interface Server<P extends Packet> {
 
     @NonNull PacketRegistry<P> getPacketRegistry();
 
-    void handleConnect(@NotNull final Connection connection);
+    default void handleConnect(@NotNull final Connection connection) {}
 
-    void handleDisconnect(@NotNull final Connection connection);
+    default void handleDisconnect(@NotNull final Connection connection) {}
 }

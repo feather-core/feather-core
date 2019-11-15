@@ -16,6 +16,7 @@
 
 import lombok.NonNull;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
+import org.feathercore.protocol.netty.util.SimpleSharedNettyResources;
 import org.feathercore.protocol.server.SimpleMinecraftServer;
 import ru.feathercore.moduleapi.Module;
 import ru.feathercore.moduleapi.SimpleModuleLoader;
@@ -35,6 +36,6 @@ public class SimpleMinecraftFeatherServer<M extends Module> extends AbstractFeat
      * @param address address of this server used by IO-server
      */
     public SimpleMinecraftFeatherServer(@NonNull final SocketAddress address) {
-        super(new SimpleMinecraftServer(address), new SimpleModuleLoader<>());
+        super(new SimpleMinecraftServer(address, SimpleSharedNettyResources.createDefault()), new SimpleModuleLoader<>());
     }
 }
