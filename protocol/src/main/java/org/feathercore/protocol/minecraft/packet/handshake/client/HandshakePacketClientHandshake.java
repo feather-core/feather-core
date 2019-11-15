@@ -17,6 +17,7 @@
 package org.feathercore.protocol.minecraft.packet.handshake.client;
 
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.annotation.PacketId;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.packet.ConnectionState;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Created by k.shandurenko on 09/04/2019
  */
+@PacketId(HandshakePacketClientHandshake.ID)
 public class HandshakePacketClientHandshake implements MinecraftPacket {
 
     public static final int ID = 0x00;

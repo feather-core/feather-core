@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.server;
+package org.feathercore.protocol.annotation;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import org.feathercore.protocol.packet.Packet;
-
-import java.net.SocketAddress;
+import java.lang.annotation.*;
 
 /**
- * Created by k.shandurenko on 16/04/2019
+ * Annotation used for creation of {@link org.feathercore.protocol.packet.PacketType}
+ * from the class annotated with it.
+ *
+ * @apiNote This is an alternative to {@link PacketFactory} - they cannot be used at the same time.
  */
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-public abstract class AbstractServer<P extends Packet> implements Server<P> {
-
-    @NonNull @Getter SocketAddress address;
+@Documented
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PacketId {
+    /**
+     * ID of a packet which this class represents.
+     *
+     * @return ID of the packet which this class represents
+     */
+    int value();
 }

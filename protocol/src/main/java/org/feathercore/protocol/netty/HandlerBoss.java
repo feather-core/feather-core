@@ -31,7 +31,7 @@ import org.feathercore.protocol.exception.PacketHandleException;
 import org.feathercore.protocol.netty.util.NettyAttributes;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
-import org.feathercore.protocol.server.BaseServer;
+import org.feathercore.protocol.server.Server;
 
 import java.io.IOException;
 import java.lang.ref.SoftReference;
@@ -44,12 +44,12 @@ import java.util.concurrent.TimeoutException;
 public class HandlerBoss extends ChannelInboundHandlerAdapter {
 
     @Setter @Getter private PacketRegistry<?> packetRegistry;
-    private SoftReference<BaseServer> serverSoftReference;
+    private SoftReference<Server> serverSoftReference;
     private final Logger logger;
 
-    public HandlerBoss(SoftReference<BaseServer> serverSoftReference, Logger logger) {
+    public HandlerBoss(SoftReference<Server> serverSoftReference, Logger logger) {
         this.serverSoftReference = serverSoftReference;
-        this.packetRegistry = serverSoftReference.get().getInitialPacketRegistry();
+        this.packetRegistry = serverSoftReference.get().getPacketRegistry();
         this.logger = logger;
     }
 
@@ -68,7 +68,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
 
         NettyAttributes.setAttribute(ctx, NettyAttributes.CONNECTION_ATTRIBUTE_KEY, connection);
         NettyAttributes.setAttribute(ctx, NettyAttributes.HANDLER_BOSS_ATTRIBUTE_KEY, this);
-        this.serverSoftReference.get().onConnected(connection);
+        this.serverSoftReference.get().handleConnect(connection);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class HandlerBoss extends ChannelInboundHandlerAdapter {
             return;
         }
         new PreDisconnectionEvent(connection).callGlobally();
-        this.serverSoftReference.get().onDisconnected(connection);
+        this.serverSoftReference.get().handleDisconnect(connection);
     }
 
     @Override
