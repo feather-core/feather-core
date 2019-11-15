@@ -16,14 +16,19 @@
 
 package org.feathercore.protocol.packet;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.NonNull;
+import lombok.Value;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
+import lombok.val;
 import org.feathercore.protocol.annotation.PacketFactory;
 import org.feathercore.protocol.annotation.PacketId;
-import org.feathercore.shared.util.InvokeUtil;
+import ru.progrm_jarvis.reflector.invoke.InvokeUtil;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.function.Supplier;
