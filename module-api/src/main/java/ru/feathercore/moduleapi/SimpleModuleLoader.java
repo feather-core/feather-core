@@ -18,9 +18,8 @@ package ru.feathercore.moduleapi;
 
 import lombok.NonNull;
 
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Simple module loader based on {@link AbstractModuleLoader}.
@@ -31,30 +30,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SimpleModuleLoader<M extends Module> extends AbstractModuleLoader<M> {
 
     /**
-     * Creates new instance of module loader using the given set for storage of modules.
+     * Creates new instance of module loader using the given collections for storage of modules.
      *
-     * @param modulesSet set which will be used for storage of loaded modules
+     * @param modulesMap set which will be used for storage of associations of module types with their implementations
+     * @param loadedModulesSet set which will be used for storage of loaded modules
      *
      * @throws IllegalArgumentException if the given set is non-empty
      */
-    public SimpleModuleLoader(@NonNull final Set<M> modulesSet) {
-        super(modulesSet);
-    }
-
-    /**
-     * Creates new instance of module loader enabling concurrency support if needed.
-     *
-     * @param concurrent {@code true} if the module loader should allow concurrent operations
-     * and {@code false} otherwise
-     */
-    public SimpleModuleLoader(final boolean concurrent) {
-        this(concurrent ? ConcurrentHashMap.newKeySet() : new HashSet<>());
-    }
-
-    /**
-     * Creates new instance of module loader enabling concurrency support.
-     */
-    public SimpleModuleLoader() {
-        this(true);
+    public SimpleModuleLoader(@NonNull final Map<Class<? extends M>, M> modulesMap,
+                              @NonNull final Set<M> loadedModulesSet) {
+        super(modulesMap, loadedModulesSet);
     }
 }

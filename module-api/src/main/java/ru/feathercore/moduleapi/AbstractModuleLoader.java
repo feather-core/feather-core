@@ -16,14 +16,11 @@
 
 package ru.feathercore.moduleapi;
 
-import com.google.common.base.Preconditions;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 
 /**
  * An abstract implementation of {@link ModuleLoader<M>} sufficient for all operations it requires.
@@ -33,56 +30,104 @@ import java.util.Set;
 @ToString
 @EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PROTECTED, makeFinal = true)
-public abstract class AbstractModuleLoader<M extends Module> implements ModuleLoader<M> {
+public class AbstractModuleLoader<M extends Module> implements ModuleLoader<M> {
 
-    @NonNull Set<M> modules, modulesView;
+    @NonNull Map<Class<? extends M>, M> modules;
+    /**
+     * Storage of unique instanced of loaded modules.
+     */
+    @NonNull Set<M> loadedModules, loadedModulesView;
 
     /**
-     * Creates new instance of module loader using the given set for storage of modules.
+     * Creates new instance of module loader using the given {@link Collection collections} for storage of modules.
      *
-     * @param modulesSet set which will be used for storage of loaded modules
-     *
+     * @param modulesMap set which will be used for storage of associations of module types with their implementations
+     * @param loadedModulesSet set which will be used for storage of loaded modules
      * @throws IllegalArgumentException if the given set is non-empty
      */
-    public AbstractModuleLoader(@NonNull final Set<M> modulesSet) {
-        Preconditions.checkArgument(modulesSet.isEmpty(), "modulesSet should be empty");
+    public AbstractModuleLoader(@NonNull final Map<Class<? extends M>, M> modulesMap,
+                                @NonNull final Set<M> loadedModulesSet) {
+        if (!modulesMap.isEmpty()) throw new IllegalArgumentException("modules map should be empty");
+        if (!loadedModulesSet.isEmpty()) throw new IllegalArgumentException("loaded modules set should be empty");
 
-        this.modules = modulesSet;
-        modulesView = Collections.unmodifiableSet(modulesSet);
+        modules = modulesMap;
+        loadedModules = loadedModulesSet;
+        loadedModulesView = Collections.unmodifiableSet(loadedModules);
     }
 
-    @Override
-    public Collection<? extends M> getModules() {
-        return modulesView;
-    }
-
-    @Override
-    public <T extends M, C> T loadModule(@NonNull final ModuleInitializer<T, C> initializer, final C configuration) {
-        val module = initializer.loadModule(configuration);
-        if (modules.add(module)) onModuleLoad(module);
-
-        return module;
-    }
-
-    @Override
-    public <T extends M> boolean unloadModule(@NonNull final T module) {
-        val unloaded = modules.remove(module);
-        if (unloaded) onModuleUnload(module);
-
-        return unloaded;
-    }
+    /* ************************************************* Callbacks ************************************************* */
 
     /**
-     * Callback used by {@link #loadModule(ModuleInitializer, Object)} to notify that the module has been loaded.
+     * Callback used by method-loading methods to notify that the module has been loaded.
      *
      * @param module module which has just been loaded
      */
     protected void onModuleLoad(@NotNull final M module) {}
 
     /**
-     * Callback used by {@link #unloadModule(Module)} to notify that the module has been unloaded.
+     * Callback used by {@link #unloadModule(Class)} to notify that the module has been unloaded.
      *
-     * @param module module which has just been loaded
+     * @param module module which has just been unloaded
      */
     protected void onModuleUnload(@NotNull final M module) {}
+
+    /* *************************************************** Logic *************************************************** */
+
+    @Override
+    public Collection<M> getModules() {
+        return loadedModulesView;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T extends M> Optional<? extends T> getModule(@NonNull final Class<T> type) {
+        return Optional.ofNullable((T) modules.get(type));
+    }
+
+    @Override
+    public boolean isModuleLoaded(@NonNull final Class<? extends M> type) {
+        return modules.containsKey(type);
+    }
+
+    @Override
+    public <T extends M> boolean isModuleLoaded(@NonNull final T module) {
+        return modules.containsValue(module);
+    }
+
+    @Override
+    public <T extends M, C> T loadModule(@NonNull final ModuleInitializer<T, C> initializer, final C configuration,
+                                         final Iterable<Class<T>> moduleTypes) {
+        val module = initializer.loadModule(configuration);
+        for (val moduleType : moduleTypes) modules.put(moduleType, module);
+        loadedModules.add(module);
+
+        onModuleLoad(module);
+
+        return module;
+    }
+
+    @Override
+    public <T extends M> Optional<T> unloadModule(@NonNull final Class<? extends T> moduleType) {
+        @SuppressWarnings("unchecked") val module = (T) modules.remove(moduleType);
+        if (module != null) {
+            if (!modules.containsValue(module)) loadedModules.remove(module);
+            onModuleUnload(module);
+
+            return Optional.of(module);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public Collection<? extends M> unloadAllModules() {
+        val modulesUnloaded = new ArrayList<>(loadedModules);
+
+        for (val module : modulesUnloaded) onModuleUnload(module);
+
+        modules.clear();
+        loadedModules.clear();
+
+        return modulesUnloaded;
+    }
 }
