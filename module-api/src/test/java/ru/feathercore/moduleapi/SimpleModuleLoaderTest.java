@@ -18,8 +18,6 @@ package ru.feathercore.moduleapi;
 
 import org.junit.jupiter.params.provider.Arguments;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -27,6 +25,9 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class SimpleModuleLoaderTest extends AbstractModuleLoaderTest {
 
     public static Stream<Arguments> provideTestedModuleLoader() {
-        return Stream.of(arguments(new SimpleModuleLoader<>(new HashMap<>(), new HashSet<>())));
+        return Stream.of(
+                arguments(SimpleModuleLoader.create()),
+                arguments(SimpleModuleLoader.createConcurrent())
+        );
     }
 }

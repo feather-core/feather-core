@@ -18,8 +18,11 @@ package ru.feathercore.moduleapi;
 
 import lombok.NonNull;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Simple module loader based on {@link AbstractModuleLoader}.
@@ -37,8 +40,16 @@ public class SimpleModuleLoader<M extends Module> extends AbstractModuleLoader<M
      *
      * @throws IllegalArgumentException if the given set is non-empty
      */
-    public SimpleModuleLoader(@NonNull final Map<Class<? extends M>, M> modulesMap,
-                              @NonNull final Set<M> loadedModulesSet) {
+    protected SimpleModuleLoader(@NonNull final Map<Class<? extends M>, M> modulesMap,
+                                 @NonNull final Set<M> loadedModulesSet) {
         super(modulesMap, loadedModulesSet);
+    }
+
+    public static <M extends Module> ModuleLoader<M> create() {
+        return new SimpleModuleLoader<M>(new HashMap<>(), new HashSet<>());
+    }
+
+    public static <M extends Module> ModuleLoader<M> createConcurrent() {
+        return new SimpleModuleLoader<M>(new ConcurrentHashMap<>(), ConcurrentHashMap.newKeySet());
     }
 }

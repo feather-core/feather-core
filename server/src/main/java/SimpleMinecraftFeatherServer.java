@@ -36,6 +36,9 @@ public class SimpleMinecraftFeatherServer<M extends Module> extends AbstractFeat
      * @param address address of this server used by IO-server
      */
     public SimpleMinecraftFeatherServer(@NonNull final SocketAddress address) {
-        super(new SimpleMinecraftServer(address, SimpleSharedNettyResources.createDefault()), new SimpleModuleLoader<>());
+        super(
+                new SimpleMinecraftServer(address, SimpleSharedNettyResources.createDefault()),
+                SimpleModuleLoader.createConcurrent()
+        );
     }
 }
