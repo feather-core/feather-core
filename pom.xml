@@ -26,7 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <version.netty>4.1.43.Final</version.netty>
+        <version.netty>4.1.46.Final</version.netty>
         <!-- Testing -->
         <version.junit>5.5.2</version.junit>
         <version.junit.platform>1.5.2</version.junit.platform>
