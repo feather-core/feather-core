@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.annotation.PacketId;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
+@PacketId(LoginPacketServerDisconnect.ID)
 public class LoginPacketServerDisconnect implements MinecraftPacket {
 
     public static final int ID = 0x00;

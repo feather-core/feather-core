@@ -16,35 +16,32 @@
 
 package org.feathercore.protocol.server;
 
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import org.feathercore.protocol.Connection;
 import org.feathercore.protocol.packet.Packet;
 import org.feathercore.protocol.registry.PacketRegistry;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.SocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 /**
- * Created by k.shandurenko on 16/04/2019
+ * Base for IO-server based on {@link PacketRegistry}.
+ *
+ * @param <P> super-type of packets used by this server's protocol
  */
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public abstract class BaseServer {
+public interface Server<P extends Packet> {
 
-    @NonNull protected final String host;
-    protected final int port;
+    SocketAddress getAddress();
 
-    public abstract Future<Void> start();
+    Future<Void> start();
 
-    public abstract Future<Void> stop();
+    Future<Void> stop();
 
-    public abstract void onConnected(@NotNull Connection connection);
+    @NonNull PacketRegistry<P> getPacketRegistry();
 
-    public abstract void onDisconnected(@NotNull Connection connection);
+    default void handleConnect(@NotNull final Connection connection) {}
 
-    public abstract @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry();
-
+    default void handleDisconnect(@NotNull final Connection connection) {}
 }

@@ -16,26 +16,26 @@
 
 package org.feathercore.protocol.server;
 
+import lombok.Getter;
 import lombok.NonNull;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
-import org.feathercore.protocol.packet.Packet;
+import org.feathercore.protocol.netty.NettyServer;
+import org.feathercore.protocol.netty.util.SharedNettyResources;
 import org.feathercore.protocol.registry.PacketRegistry;
 import org.feathercore.protocol.registry.common.CommonHandshakePacketRegistry;
+
+import java.net.SocketAddress;
 
 /**
  * Created by k.shandurenko on 16/04/2019
  */
-public class CommonServer extends AbstractServer {
+@Deprecated
+public class SimpleMinecraftServer extends NettyServer<MinecraftPacket> {
 
-    private final PacketRegistry<MinecraftPacket> initialPacketRegistry = CommonHandshakePacketRegistry.createNew();
+    @Getter private final PacketRegistry<MinecraftPacket> packetRegistry = CommonHandshakePacketRegistry.createNew();
 
-    public CommonServer(final @NonNull String host, final int port) {
-        super(host, port);
+    public SimpleMinecraftServer(@NonNull final SocketAddress address,
+                                 @NonNull final SharedNettyResources sharedNettyResources) {
+        super(address, sharedNettyResources);
     }
-
-    @Override
-    public @NonNull PacketRegistry<? extends Packet> getInitialPacketRegistry() {
-        return this.initialPacketRegistry;
-    }
-
 }

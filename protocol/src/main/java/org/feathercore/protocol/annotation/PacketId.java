@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.exception;
+package org.feathercore.protocol.annotation;
 
-import lombok.NoArgsConstructor;
+import java.lang.annotation.*;
 
-@NoArgsConstructor
-public class PacketHandleException extends IllegalStateException {
-
-    public PacketHandleException(final String s) {
-        super(s);
-    }
-
-    public PacketHandleException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
-
-    public PacketHandleException(final Throwable cause) {
-        super(cause);
-    }
+/**
+ * Annotation used for creation of {@link org.feathercore.protocol.packet.PacketType}
+ * from the class annotated with it.
+ *
+ * @apiNote This is an alternative to {@link PacketFactory} - they cannot be used at the same time.
+ */
+@Documented
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PacketId {
+    /**
+     * ID of a packet which this class represents.
+     *
+     * @return ID of the packet which this class represents
+     */
+    int value();
 }

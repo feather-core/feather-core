@@ -22,6 +22,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
+import org.feathercore.protocol.annotation.PacketId;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.encrypt.CryptManager;
 import org.jetbrains.annotations.NotNull;
@@ -35,6 +36,7 @@ import java.security.PublicKey;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
+@PacketId(LoginPacketServerEncryptionRequest.ID)
 public class LoginPacketServerEncryptionRequest implements MinecraftPacket {
 
     public static final int ID = 0x01;

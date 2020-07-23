@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.exception;
+package ru.feathercore.moduleapi;
 
-import lombok.NoArgsConstructor;
+import org.junit.jupiter.params.provider.Arguments;
 
-@NoArgsConstructor
-public class PacketHandleException extends IllegalStateException {
+import java.util.stream.Stream;
 
-    public PacketHandleException(final String s) {
-        super(s);
-    }
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-    public PacketHandleException(final String message, final Throwable cause) {
-        super(message, cause);
-    }
+public class SimpleModuleLoaderTest extends AbstractModuleLoaderTest {
 
-    public PacketHandleException(final Throwable cause) {
-        super(cause);
+    public static Stream<Arguments> provideTestedModuleLoader() {
+        return Stream.of(
+                arguments(SimpleModuleLoader.create()),
+                arguments(SimpleModuleLoader.createConcurrent())
+        );
     }
 }

@@ -16,8 +16,8 @@
 
 package ru.feathercore.moduleapi;
 
-import org.feathercore.shared.object.ValueContainer;
 import org.jetbrains.annotations.NotNull;
+import ru.progrm_jarvis.javacommons.object.ValueContainer;
 
 /**
  * Initializer of a module which is normally used by {@link ModuleLoader} to load a specific module.

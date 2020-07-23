@@ -18,81 +18,19 @@ package org.feathercore.protocol.netty.util;
 
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
-import io.netty.channel.epoll.Epoll;
-import io.netty.channel.epoll.EpollEventLoopGroup;
-import io.netty.channel.epoll.EpollServerSocketChannel;
-import io.netty.channel.epoll.EpollSocketChannel;
-import io.netty.channel.kqueue.KQueue;
-import io.netty.channel.kqueue.KQueueEventLoopGroup;
-import io.netty.channel.kqueue.KQueueServerSocketChannel;
-import io.netty.channel.kqueue.KQueueSocketChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.NonNull;
 
+import javax.annotation.Nonnegative;
 import java.util.concurrent.ThreadFactory;
 
-@Getter
-@RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public enum TransportType {
-    EPOLL(EpollSocketChannel.class, EpollServerSocketChannel.class) {
-        @Override
-        public boolean isAvailable() {
-            return Epoll.isAvailable();
-        }
+public interface TransportType {
 
-        @Override
-        public EventLoopGroup newEventLoopGroup(final int threads, @NonNull final ThreadFactory threadFactory) {
-            return new EpollEventLoopGroup(threads, threadFactory);
-        }
-    },
-    KQUEUE(KQueueSocketChannel.class, KQueueServerSocketChannel.class) {
-        @Override
-        public boolean isAvailable() {
-            return KQueue.isAvailable();
-        }
+    boolean isAvailable();
 
-        @Override
-        public EventLoopGroup newEventLoopGroup(final int threads, @NonNull final ThreadFactory threadFactory) {
-            return new KQueueEventLoopGroup(threads, threadFactory);
-        }
-    },
-    NIO(NioSocketChannel.class, NioServerSocketChannel.class) {
-        @Override
-        public boolean isAvailable() {
-            return true;
-        }
+    EventLoopGroup newEventLoopGroup(@Nonnegative int threads, @NonNull ThreadFactory threadFactory);
 
-        @Override
-        public EventLoopGroup newEventLoopGroup(final int threads, @NonNull final ThreadFactory threadFactory) {
-            return new NioEventLoopGroup(threads, threadFactory);
-        }
-    };
+    Class<? extends SocketChannel> getSocketChannelClass();
 
-    private static final TransportType[] TRANSPORT_TYPES = values();
-
-    Class<? extends SocketChannel> socketChannelClass;
-    Class<? extends ServerChannel> serverChannelClass;
-
-    public abstract boolean isAvailable();
-
-    public abstract EventLoopGroup newEventLoopGroup(int threads, @NonNull ThreadFactory threadFactory);
-
-    public static TransportType getNative() {
-        for (val transportType : TRANSPORT_TYPES) {
-            if (transportType.isAvailable()) {
-                return transportType;
-            }
-        }
-
-        return getDefault();
-    }
-
-    public static TransportType getDefault() {
-        return NIO;
-    }
+    Class<? extends ServerChannel> getServerChannelClass();
 }

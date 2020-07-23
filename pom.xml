@@ -27,6 +27,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <version.netty>4.1.43.Final</version.netty>
+        <version.padla>1.0-SNAPSHOT</version.padla>
         <!-- Testing -->
         <version.junit>5.6.0</version.junit>
         <version.junit.platform>1.6.0</version.junit.platform>
@@ -53,6 +54,7 @@
         <module>eventbus</module>
         <module>module-api</module>
         <module>protocol</module>
+        <module>server</module>
     </modules>
 
     <repositories>
@@ -60,6 +62,10 @@
             <id>minecraft-libraries</id>
             <name>Minecraft Libraries</name>
             <url>https://libraries.minecraft.net</url>
+        </repository>
+        <repository>
+            <id>sonatype-snapshot-repo</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -107,6 +113,11 @@
                 <artifactId>feathercore-protocol</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>feathercore-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- Hamcrest should be above any possible JUnit dependencies -->
             <dependency>
                 <groupId>org.hamcrest</groupId>
@@ -116,6 +127,16 @@
             </dependency>
             <!-- Third-party components -->
             <dependency>
+                <groupId>ru.progrm-jarvis</groupId>
+                <artifactId>java-commons</artifactId>
+                <version>${version.padla}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.progrm-jarvis</groupId>
+                <artifactId>reflector</artifactId>
+                <version>${version.padla}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
                 <version>${version.netty}</version>
@@ -123,7 +144,7 @@
             <dependency>
                 <groupId>net.md-5</groupId>
                 <artifactId>bungeecord-chat</artifactId>
-                <version>1.13-SNAPSHOT</version>
+                <version>1.14-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -159,7 +180,7 @@
             <dependency>
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
-                <version>1.18.8</version>
+                <version>1.18.10</version>
                 <scope>provided</scope>
                 <optional>true</optional>
             </dependency>

@@ -21,11 +21,9 @@ import lombok.experimental.Delegate;
 import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.progrm_jarvis.reflector.invoke.InvokeUtil;
 
-import java.lang.invoke.LambdaMetafactory;
 import java.lang.invoke.MethodHandles.Lookup;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Queue;
@@ -83,7 +81,14 @@ public class SimpleEventManager<E extends Event> implements EventManager<E> {
             }
 
             EventHandler annotation = method.getAnnotation(EventHandler.class);
-            register((Class<? extends E>) parameterType, constructConsumer(listener, method), annotation.priority());
+            register(
+                    (Class<E>) parameterType,
+                    InvokeUtil.<Consumer<E>, Object>invokeFactory()
+                              .boundTo(listener)
+                              .implementing(Consumer.class)
+                              .via(method)
+                    .createUnsafely(),
+                    annotation.priority());
         }
     }
 
@@ -103,23 +108,6 @@ public class SimpleEventManager<E extends Event> implements EventManager<E> {
 
         for (val handler : handlers) {
             handler.accept(event);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected static <E extends Event> Consumer<E> constructConsumer(Object listener, Method method) {
-        try {
-            Lookup lookup = constructLookup(listener.getClass());
-            return (Consumer<E>) LambdaMetafactory.metafactory(
-                    lookup,
-                    "accept",
-                    MethodType.methodType(Consumer.class, listener.getClass()),
-                    MethodType.methodType(void.class, Object.class),
-                    lookup.unreflect(method),
-                    MethodType.methodType(void.class, method.getParameterTypes()[0])
-            ).getTarget().invoke(listener);
-        } catch (Throwable t) {
-            throw new RuntimeException("Could not create event listener", t);
         }
     }
 

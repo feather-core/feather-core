@@ -16,20 +16,21 @@
 
 package ru.feathercore.moduleapi;
 
-import org.feathercore.shared.object.ValueContainer;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Answers;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.progrm_jarvis.javacommons.object.ValueContainer;
 
-import java.util.HashSet;
+import java.util.stream.Stream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -39,134 +40,138 @@ class AbstractModuleLoaderTest {
     @Mock FooModule fooModule;
     @Spy ModuleInitializer<FooModule, Void> fooModuleInitializer;
     @Mock BarModule barModule;
-    @Spy ModuleInitializer<FooModule, Integer> barModuleInitializer;
-    // < exact type is required for use of protected methods >
-    @SuppressWarnings("unchecked") private AbstractModuleLoader<Module> moduleLoader = mock(AbstractModuleLoader.class,
-            withSettings().defaultAnswer(Answers.CALLS_REAL_METHODS).useConstructor(new HashSet<>())
-    );
+    @Spy ModuleInitializer<BarModule, Integer> barModuleInitializer;
 
     private Exception
-            nullConfigException = new RuntimeException("null passed as config"){},
-            config0Exception = new RuntimeException("0 passed as config"){},
-            config1Exception = new RuntimeException("1 passed as config"){};
+            nullConfigException = new RuntimeException("null passed as config") {},
+            config0Exception = new RuntimeException("0 passed as config") {},
+            config1Exception = new RuntimeException("1 passed as config") {};
+
+
+    interface SomeModule extends Module {}
 
     // Stubs to have different parent classes for modules
-    private class FooModule implements Module {}
-    private class BarModule implements Module {}
-    private class BazModule implements Module {}
+    private static class FooModule implements SomeModule {}
 
-    @Test
-    void testSimpleLoadUnload() {
+    private static class BarModule implements SomeModule {}
+
+    private static class BazModule implements SomeModule {}
+
+    protected static Stream<Arguments> provideTestedModuleLoader() {
+        throw new IllegalStateException("provideTestedModuleLoader() should be overwritten in extending classes");
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideTestedModuleLoader")
+    void testSimpleLoadUnload(final ModuleLoader<SomeModule> moduleLoader) {
         doReturn(fooModule).when(fooModuleInitializer).loadModule(any());
 
         // check initial state
         assertThat(moduleLoader.getModules(), empty());
 
         // load foo ...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader).onModuleLoad(fooModule);
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if it was loaded normally
         assertThat(moduleLoader.getModules(), contains(fooModule));
-        assertThat(moduleLoader.getModules(fooModule.getClass()), contains(fooModule));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule.getClass()), is(true));
+        assertSame(moduleLoader.getModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
 
         // unload foo
-        assertThat(moduleLoader.unloadModule(fooModule), is(true));
-        verify(moduleLoader).onModuleUnload(fooModule);
+        assertThat(moduleLoader.unloadModule(FooModule.class), notNullValue());
         // and check if it was unloaded
         assertThat(moduleLoader.getModules(), empty());
     }
 
-    @Test
-    void checkContainment() {
+    @ParameterizedTest
+    @MethodSource("provideTestedModuleLoader")
+    void checkContainment(final ModuleLoader<SomeModule> moduleLoader) {
         doReturn(fooModule).when(fooModuleInitializer).loadModule(any());
 
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
 
         assertThat(moduleLoader.getModules(), contains(fooModule));
-        assertThat(moduleLoader.getModules(fooModule.getClass()), contains(fooModule));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule.getClass()), is(true));
+        assertSame(moduleLoader.getModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
 
         assertThat(moduleLoader.getModules(), not(contains(barModule)));
-        assertThat(moduleLoader.getModules(barModule.getClass()), empty());
-        assertThat(moduleLoader.getModule(barModule.getClass()).isPresent(), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule.getClass()), is(false));
+        assertSame(moduleLoader.getModule(BarModule.class).isPresent(), false);
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
     }
 
-    @Test
-    void testDuplicateLoading() {
+    @ParameterizedTest
+    @MethodSource("provideTestedModuleLoader")
+    void testDuplicateLoading(final ModuleLoader<SomeModule> moduleLoader) {
         doReturn(fooModule).when(fooModuleInitializer).loadModule(any());
 
         // check initial state
         assertThat(moduleLoader.getModules(), empty());
 
         // load foo once ...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader).onModuleLoad(fooModule);
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if it was loaded normally
         assertThat(moduleLoader.getModules(), contains(fooModule));
-        assertThat(moduleLoader.getModules(fooModule.getClass()), contains(fooModule));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule.getClass()), is(true));
+        assertSame(moduleLoader.getModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
 
         // load foo again ...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader).onModuleLoad(fooModule); // 1 time again which means that it was not called again
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if module loader did not load anything new
         assertThat(moduleLoader.getModules(), contains(fooModule));
-        assertThat(moduleLoader.getModules(fooModule.getClass()), contains(fooModule));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule.getClass()), is(true));
+        assertSame(moduleLoader.getModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
     }
 
-    @Test
-    void testMultipleLoading() {
+    @ParameterizedTest
+    @MethodSource("provideTestedModuleLoader")
+    void testMultipleLoading(final ModuleLoader<SomeModule> moduleLoader) {
         doReturn(fooModule).when(fooModuleInitializer).loadModule(any());
         doReturn(barModule).when(barModuleInitializer).loadModule(any());
 
         // load foo ...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader).onModuleLoad(fooModule);
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if it was loaded normally
         assertThat(moduleLoader.getModules(), contains(fooModule));
-        assertThat(moduleLoader.getModules(fooModule.getClass()), contains(fooModule));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule.getClass()), is(true));
+        assertSame(moduleLoader.getModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
 
         // load bar ...
-        assertThat(moduleLoader.loadModule(barModuleInitializer), is(barModule));
-        verify(moduleLoader).onModuleLoad(barModule);
+        assertSame(moduleLoader.loadModule(barModuleInitializer, BarModule.class), barModule);
         // ... and check if it was loaded normally
         assertThat(moduleLoader.getModules(), containsInAnyOrder(fooModule, barModule));
-        assertThat(moduleLoader.getModules(fooModule.getClass()), contains(fooModule));
-        assertThat(moduleLoader.getModules(barModule.getClass()), contains(barModule));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule.getClass()), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule.getClass()), is(true));
+        assertSame(moduleLoader.getModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
+        assertSame(moduleLoader.getModule(BarModule.class).orElseThrow(AssertionError::new), barModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
 
         // unload each
-        assertThat(moduleLoader.unloadModule(fooModule), is(true));
+        assertSame(moduleLoader.unloadModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
     }
 
-    @Test
-    void testUnloadAll() {
+    @ParameterizedTest
+    @MethodSource("provideTestedModuleLoader")
+    void testUnloadAll(final ModuleLoader<SomeModule> moduleLoader) {
         doReturn(fooModule).when(fooModuleInitializer).loadModule(any());
         doReturn(barModule).when(barModuleInitializer).loadModule(any());
 
         // load foo ...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        assertThat(moduleLoader.loadModule(barModuleInitializer), is(barModule));
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
+        assertSame(moduleLoader.loadModule(barModuleInitializer, BarModule.class), barModule);
 
         assertThat(moduleLoader.unloadAllModules(), containsInAnyOrder(fooModule, barModule));
         assertThat(moduleLoader.getModules(), empty());
     }
 
-    @Test
-    void testIntensiveLoadingWithParameters() {
+    @ParameterizedTest
+    @MethodSource("provideTestedModuleLoader")
+    void testIntensiveLoadingWithParameters(final ModuleLoader<SomeModule> moduleLoader) {
         // foo module
         doReturn(fooModule).when(fooModuleInitializer).loadModule(any());
         // bar module
@@ -181,60 +186,49 @@ class AbstractModuleLoaderTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // make sure that by default there are no loaded modules
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(false));
+        assertSame(moduleLoader.isModuleLoaded(fooModule), false);
+        assertSame(moduleLoader.isModuleLoaded(FooModule.class), false);
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         assertThat(moduleLoader.getModules(), empty());
 
         // try to load foo module...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader).onModuleLoad(fooModule);
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if it is now loaded
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
         assertThat(moduleLoader.getModules(), contains(fooModule));
 
         // try to load bar module...
         // * With default (0) configuration
-        assertThrows(config0Exception.getClass(), () -> moduleLoader.loadModule(barModuleInitializer));
+        assertThrows(config0Exception.getClass(), () -> moduleLoader.loadModule(barModuleInitializer, BarModule.class));
         verify(barModuleInitializer).getDefaultConfiguration();
-        verify(moduleLoader, never()).onModuleLoad(barModule);
         // ~ checking if nothing has broken
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         // * With null configuration
-        assertThrows(nullConfigException.getClass(), () -> moduleLoader.loadModule(barModuleInitializer, null));
-        verify(moduleLoader, never()).onModuleLoad(barModule);
+        assertThrows(nullConfigException.getClass(), () -> moduleLoader.loadModule(barModuleInitializer, null, BarModule.class));
         // ~ checking if nothing has broken
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         // * With 1 as configuration
-        assertThrows(config1Exception.getClass(), () -> moduleLoader.loadModule(barModuleInitializer, 1));
-        verify(moduleLoader, never()).onModuleLoad(barModule);
+        assertThrows(config1Exception.getClass(), () -> moduleLoader.loadModule(barModuleInitializer, 1, BarModule.class));
         // ~ checking if nothing has broken
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         // * Normally
-        assertThat(moduleLoader.loadModule(barModuleInitializer, 2), is(barModule));
-        verify(moduleLoader).onModuleLoad(barModule);
+        assertSame(moduleLoader.loadModule(barModuleInitializer, 2, BarModule.class), barModule);
         // ... and check if it is now loaded
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(true));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
         assertThat(moduleLoader.getModules(), containsInAnyOrder(fooModule, barModule));
 
         ///////////////////////////////////////////////////////////////////////////
@@ -242,40 +236,32 @@ class AbstractModuleLoaderTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // make sure that unloading dummy modules does nothing
-        assertThat(moduleLoader.unloadModule(new Module(){}), is(false));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(true));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
 
-        assertThat(moduleLoader.unloadModules(new Module(){}.getClass()), empty());
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(true));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
 
         // unload foo module ...
-        assertThat(moduleLoader.unloadModule(fooModule), is(true));
-        verify(moduleLoader).onModuleUnload(fooModule);
+        assertSame(moduleLoader.unloadModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
         // ... and check loaded modules
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(true));
+        assertSame(moduleLoader.isModuleLoaded(fooModule), false);
+        assertSame(moduleLoader.isModuleLoaded(FooModule.class), false);
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
         assertThat(moduleLoader.getModules(), contains(barModule));
 
         // unload bar module...
-        assertThat(moduleLoader.unloadModule(barModule), is(true));
-        verify(moduleLoader).onModuleUnload(barModule);
+        assertSame(moduleLoader.unloadModule(BarModule.class).orElseThrow(AssertionError::new), barModule);
         // ... and check loaded modules
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
+        assertSame(moduleLoader.isModuleLoaded(fooModule), false);
+        assertSame(moduleLoader.isModuleLoaded(FooModule.class), false);
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         assertThat(moduleLoader.getModules(), empty());
 
         ///////////////////////////////////////////////////////////////////////////
@@ -283,12 +269,10 @@ class AbstractModuleLoaderTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // try to load foo module...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader, times(2)).onModuleLoad(fooModule);
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if it is now loaded
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
         assertThat(moduleLoader.getModules(), contains(fooModule));
 
         ///////////////////////////////////////////////////////////////////////////
@@ -296,14 +280,12 @@ class AbstractModuleLoaderTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // unload bar module...
-        assertThat(moduleLoader.unloadModule(fooModule), is(true));
-        verify(moduleLoader, times(2)).onModuleUnload(fooModule);
+        assertSame(moduleLoader.unloadModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
         // ... and check loaded modules
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
+        assertSame(moduleLoader.isModuleLoaded(fooModule), false);
+        assertSame(moduleLoader.isModuleLoaded(FooModule.class), false);
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         assertThat(moduleLoader.getModules(), empty());
 
         ///////////////////////////////////////////////////////////////////////////
@@ -311,12 +293,10 @@ class AbstractModuleLoaderTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // try to load foo module...
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        verify(moduleLoader, times(3)).onModuleLoad(fooModule);
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
         // ... and check if it is now loaded
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
         assertThat(moduleLoader.getModules(), contains(fooModule));
 
         ///////////////////////////////////////////////////////////////////////////
@@ -324,26 +304,24 @@ class AbstractModuleLoaderTest {
         ///////////////////////////////////////////////////////////////////////////
 
         // unload foo module...
-        assertThat(moduleLoader.unloadModule(fooModule), is(true));
+        assertSame(moduleLoader.unloadModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
         // ... and check loaded modules
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(false));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(false));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(false));
+        assertSame(moduleLoader.isModuleLoaded(fooModule), false);
+        assertSame(moduleLoader.isModuleLoaded(FooModule.class), false);
+        assertSame(moduleLoader.isModuleLoaded(barModule), false);
+        assertSame(moduleLoader.isModuleLoaded(BarModule.class), false);
         assertThat(moduleLoader.getModules(), empty());
 
         ///////////////////////////////////////////////////////////////////////////
         // Try to load multiple modules now
         ///////////////////////////////////////////////////////////////////////////
 
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        assertThat(moduleLoader.loadModule(barModuleInitializer, 2), is(barModule));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(true));
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
+        assertSame(moduleLoader.loadModule(barModuleInitializer, 2, BarModule.class), barModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
         assertThat(moduleLoader.getModules(), containsInAnyOrder(fooModule, barModule));
 
         ///////////////////////////////////////////////////////////////////////////
@@ -357,26 +335,25 @@ class AbstractModuleLoaderTest {
         // Try to load multiple modules now again for other unload type
         ///////////////////////////////////////////////////////////////////////////
 
-        assertThat(moduleLoader.loadModule(fooModuleInitializer), is(fooModule));
-        assertThat(moduleLoader.loadModule(barModuleInitializer, 2), is(barModule));
-        assertThat(moduleLoader.isModuleLoaded(Module.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(fooModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(FooModule.class), is(true));
-        assertThat(moduleLoader.isModuleLoaded(barModule), is(true));
-        assertThat(moduleLoader.isModuleLoaded(BarModule.class), is(true));
+        assertSame(moduleLoader.loadModule(fooModuleInitializer, FooModule.class), fooModule);
+        assertSame(moduleLoader.loadModule(barModuleInitializer, 2, BarModule.class), barModule);
+        assertTrue(moduleLoader.isModuleLoaded(fooModule));
+        assertTrue(moduleLoader.isModuleLoaded(FooModule.class));
+        assertTrue(moduleLoader.isModuleLoaded(barModule));
+        assertTrue(moduleLoader.isModuleLoaded(BarModule.class));
         assertThat(moduleLoader.getModules(), containsInAnyOrder(fooModule, barModule));
 
         ///////////////////////////////////////////////////////////////////////////
         // Unload by type now
         ///////////////////////////////////////////////////////////////////////////
 
-        assertThat(moduleLoader.unloadModules(fooModule.getClass()), contains(fooModule));
+        assertSame(moduleLoader.unloadModule(FooModule.class).orElseThrow(AssertionError::new), fooModule);
         assertThat(moduleLoader.getModules(), contains(barModule));
 
-        assertThat(moduleLoader.unloadModules(BazModule.class), empty());
+        assertFalse(moduleLoader.unloadModule(BazModule.class).isPresent());
         assertThat(moduleLoader.getModules(), contains(barModule));
 
-        assertThat(moduleLoader.unloadModules(barModule.getClass()), contains(barModule));
+        assertSame(moduleLoader.unloadModule(BarModule.class).orElseThrow(AssertionError::new), barModule);
         assertThat(moduleLoader.getModules(), empty());
     }
 }
