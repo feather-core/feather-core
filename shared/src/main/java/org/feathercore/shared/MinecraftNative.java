@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared.particle;
+package org.feathercore.shared;
 
-import org.feathercore.shared.MinecraftNative;
-
-/**
- * @author xtrafrancyz
- */
-public interface Particle  extends MinecraftNative {
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
-    String getName();
+public interface MinecraftNative {
 
     /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
+     * Gets the native id
      *
-     * @return {@link true} if the particle is complex
+     * @return native id
      */
-    boolean isComplex();
+    int getNativeId();
+
+    /**
+     * @return {@code true} if present in default minecraft client, {@code false} otherwise.
+     */
+    boolean isNative();
 }

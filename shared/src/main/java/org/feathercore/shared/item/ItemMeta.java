@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared.particle;
+package org.feathercore.shared.item;
 
-import org.feathercore.shared.MinecraftNative;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * @author xtrafrancyz
- */
-public interface Particle  extends MinecraftNative {
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
-    String getName();
+import java.util.List;
+
+public interface ItemMeta {
 
     /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
-     *
-     * @return {@link true} if the particle is complex
+     * @return item's display name, may be {@code null}
      */
-    boolean isComplex();
+    @Nullable String getDisplayName();
+
+    /**
+     * @return item's lore, may be {@code null}
+     */
+    @Nullable List<String> getLore();
+
+    /**
+     * Clones an item meta
+     */
+    ItemMeta clone();
 }

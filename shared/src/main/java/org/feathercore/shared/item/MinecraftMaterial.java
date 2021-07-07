@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared.particle;
+package org.feathercore.shared.item;
 
-import org.feathercore.shared.MinecraftNative;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-/**
- * @author xtrafrancyz
- */
-public interface Particle  extends MinecraftNative {
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
-    String getName();
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public enum MinecraftMaterial implements Material {
+    ;
 
-    /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
-     *
-     * @return {@link true} if the particle is complex
-     */
-    boolean isComplex();
+    private final int id;
+    private final boolean block;
+    private final boolean burnable;
+    private final boolean solid;
+    private final int maxStackSize;
+
+    @Override
+    public int getNativeId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNative() {
+        return true;
+    }
 }

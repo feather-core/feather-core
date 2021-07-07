@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared.particle;
+package org.feathercore.shared.advancements;
 
-import org.feathercore.shared.MinecraftNative;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import org.feathercore.shared.color.Color;
+import org.feathercore.shared.color.MinecraftColor;
 
-/**
- * @author xtrafrancyz
- */
-public interface Particle  extends MinecraftNative {
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
-    String getName();
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@ToString
+@Getter
+public enum AdvancementFrameType {
 
-    /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
-     *
-     * @return {@link true} if the particle is complex
-     */
-    boolean isComplex();
+    TASK("task", 0, MinecraftColor.GREEN),
+    CHALLENGE("challenge", 26, MinecraftColor.PURPLE),
+    GOAL("goal", 52, MinecraftColor.GREEN);
+
+    private final String name;
+    private final int icon;
+    private final Color format;
 }

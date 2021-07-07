@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared.particle;
+package org.feathercore.shared.item;
 
-import org.feathercore.shared.MinecraftNative;
-
-/**
- * @author xtrafrancyz
- */
-public interface Particle  extends MinecraftNative {
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
-    String getName();
+public interface Repairable {
 
     /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
-     *
-     * @return {@link true} if the particle is complex
+     * Sets repair cost of the item
      */
-    boolean isComplex();
+    void setRepairCost(int repairCost);
+
+    /**
+     * @return repair cost of the item
+     */
+    int getRepairCost();
+
+    /**
+     * @return {@code true} if {@link Repairable#getRepairCost()} is larger than zero, {@code false} otherwise
+     */
+    boolean hasRepairCost();
+
+    /**
+     * Clones repair data
+     */
+    Repairable clone();
 }

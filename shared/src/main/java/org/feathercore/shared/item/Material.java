@@ -14,25 +14,37 @@
  * limitations under the License.
  */
 
-package org.feathercore.shared.particle;
+package org.feathercore.shared.item;
 
 import org.feathercore.shared.MinecraftNative;
 
-/**
- * @author xtrafrancyz
- */
-public interface Particle  extends MinecraftNative {
-    /**
-     * Gets the name of the particle
-     *
-     * @return name of the particle
-     */
-    String getName();
+public interface Material extends MinecraftNative {
 
     /**
-     * If the particle has additional arguments, such as color or block id, then this particle is complex.
-     *
-     * @return {@link true} if the particle is complex
+     * @return material's numeric id
      */
-    boolean isComplex();
+    @Deprecated
+    int getId();
+
+    /**
+     * @return {@code true} is material is a block, {@code false} otherwise
+     */
+    boolean isBlock();
+
+    /**
+     * @return {@code true} if material is a block and can burn away
+     * @see Material#isBlock()
+     */
+    boolean isBurnable();
+
+    /**
+     * @return {@code true} if material is a block and can be built upon
+     * @see Material#isBlock()
+     */
+    boolean isSolid();
+
+    /**
+     * @return maximum stack size of material
+     */
+    int getMaxStackSize();
 }
