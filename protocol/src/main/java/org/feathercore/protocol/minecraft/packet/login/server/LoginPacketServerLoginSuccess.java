@@ -26,11 +26,6 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.UUID;
-
-/**
- * Created by k.shandurenko on 09/04/2019
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -39,20 +34,15 @@ public class LoginPacketServerLoginSuccess implements MinecraftPacket {
 
     public static final int ID = 0x02;
 
+    /**
+     * Profile of the player
+     */
     GameProfile profile;
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        UUID uuid = this.profile.getId();
-        buffer.writeString(uuid == null ? "" : uuid.toString());
-        buffer.writeString(this.profile.getName());
-    }
-
-    @Override
-    public void read(@NotNull final Buffer buffer) {
-        UUID uuid = UUID.fromString(buffer.readString(36));
-        String name = buffer.readString(16);
-        this.profile = new GameProfile(uuid, name);
+        buffer.writeString(profile.getId().toString()); // special case because Mojang, haha
+        buffer.writeString(profile.getName());
     }
 
     @Override

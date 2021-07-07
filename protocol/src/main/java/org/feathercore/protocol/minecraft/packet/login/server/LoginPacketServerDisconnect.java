@@ -26,9 +26,6 @@ import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Created by k.shandurenko on 09/04/2019
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -37,27 +34,15 @@ public class LoginPacketServerDisconnect implements MinecraftPacket {
 
     public static final int ID = 0x00;
 
-    BaseComponent reason;
+    BaseComponent[] reason;
 
     @Override
     public void write(@NotNull final Buffer buffer) {
-        if (true) {
-            throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        }
-        // TODO buffer.writeChatComponent(this.reason);
-    }
-
-    @Override
-    public void read(@NotNull final Buffer buffer) {
-        if (true) {
-            throw new UnsupportedOperationException("Should be recreated using Mojang API");
-        }
-        // TODO this.reason = buffer.readChatComponent();
+        buffer.writeBaseComponents(reason);
     }
 
     @Override
     public int getId() {
         return ID;
     }
-
 }

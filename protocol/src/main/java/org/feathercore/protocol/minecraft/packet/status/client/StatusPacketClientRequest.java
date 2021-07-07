@@ -16,32 +16,18 @@
 
 package org.feathercore.protocol.minecraft.packet.status.client;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PROTECTED)
-public class StatusPacketClientPing implements MinecraftPacket {
+public class StatusPacketClientRequest implements MinecraftPacket {
 
-    public static final int ID = 0x01;
-
-    /**
-     * May be any number, notchian clients use a system-dependent time value which is counted in milliseconds
-     */
-    long payload;
+    public static final int ID = 0x00;
 
     @Override
-    public void read(@NotNull final Buffer buffer) {
-        payload = buffer.readLong();
-    }
+    public void read(@NotNull final Buffer buffer) {}
 
     @Override
     public int getId() {

@@ -16,68 +16,57 @@
 
 package org.feathercore.protocol.minecraft.packet.handshake.client;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.feathercore.protocol.packet.ConnectionState;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * This causes the server to switch into the target state.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED)
 public class HandshakePacketClientHandshake implements MinecraftPacket {
 
     public static final int ID = 0x00;
 
-    private int protocolVersion;
-    private String ip;
-    private int port;
-    private ConnectionState requestedState;
+    /**
+     * Protocol version number
+     */
+    int protocolVersion;
 
-    public HandshakePacketClientHandshake(int protocolVersion, String ip, int port, ConnectionState requestedState) {
-        this.protocolVersion = protocolVersion;
-        this.ip = ip;
-        this.port = port;
-        this.requestedState = requestedState;
-    }
+    /**
+     * Hostname that was used to connect to the server
+     */
+    String serverAddress;
 
-    public HandshakePacketClientHandshake() {
-    }
+    /**
+     * Default is 25565. The Notchian server does not use this information
+     */
+    int serverPort;
 
-    public int getProtocolVersion() {
-        return protocolVersion;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public ConnectionState getRequestedState() {
-        return requestedState;
-    }
-
-    @Override
-    public void write(@NotNull final Buffer buffer) {
-        buffer.writeVarInt(this.protocolVersion);
-        buffer.writeString(this.ip);
-        buffer.writeShort((short) this.port);
-        buffer.writeVarInt(this.requestedState.getId());
-    }
+    /**
+     * Next connection state
+     */
+    ConnectionState nextState;
 
     @Override
     public void read(@NotNull final Buffer buffer) {
         this.protocolVersion = buffer.readVarInt();
-        this.ip = buffer.readString();
-        this.port = buffer.readShort();
-        this.requestedState = ConnectionState.getByID(buffer.readVarInt());
+        serverAddress = buffer.readString();
+        serverPort = buffer.readShort();
+        nextState = ConnectionState.getById(buffer.readVarInt());
     }
 
     @Override
     public int getId() {
         return ID;
     }
-
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.feathercore.protocol.minecraft.packet.login.client;
+package org.feathercore.protocol.minecraft.packet.handshake.client;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,29 +26,29 @@ import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Created by k.shandurenko on 09/04/2019
+ * This packet uses a nonstandard format. It is never length-prefixed,
+ * and the packet ID is an Unsigned Byte instead of a VarInt.
+ *
+ * While not technically part of the current protocol, legacy clients may
+ * send this packet to initiate Server List Ping, and modern servers
+ * should handle it correctly.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketClientEncryptionResponse implements MinecraftPacket {
+public class HandshakePacketClientLegacyServerListPing implements MinecraftPacket {
 
-    public static final int ID = 0x01;
+    public static final int ID = 0xFE;
 
-    byte[] secretKeyEncrypted = new byte[0];
-    byte[] verifyTokenEncrypted = new byte[0];
-
-    @Override
-    public void write(@NotNull final Buffer buffer) {
-        buffer.writeByteArray(secretKeyEncrypted);
-        buffer.writeByteArray(verifyTokenEncrypted);
-    }
+    /**
+     * Always 1 ({@link 0x01})
+     */
+    int payload;
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        secretKeyEncrypted = buffer.readByteArray();
-        verifyTokenEncrypted = buffer.readByteArray();
+        payload = buffer.readUnsignedByte();
     }
 
     @Override

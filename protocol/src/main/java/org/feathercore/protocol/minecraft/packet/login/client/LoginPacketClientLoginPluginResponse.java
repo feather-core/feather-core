@@ -24,31 +24,44 @@ import lombok.experimental.FieldDefaults;
 import org.feathercore.protocol.Buffer;
 import org.feathercore.protocol.minecraft.packet.MinecraftPacket;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * Created by k.shandurenko on 09/04/2019
- */
+// FIXME: FIXME !!
+// This class has optional fields. You need to write valid reader and writer.
+// https://wiki.vg/Protocol#Login_Plugin_Response
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PROTECTED)
-public class LoginPacketClientEncryptionResponse implements MinecraftPacket {
+public class LoginPacketClientLoginPluginResponse implements MinecraftPacket {
 
-    public static final int ID = 0x01;
+    public static final int ID = 0x02;
 
-    byte[] secretKeyEncrypted = new byte[0];
-    byte[] verifyTokenEncrypted = new byte[0];
+    /**
+     * Should match ID from server
+     */
+    int messageId;
 
-    @Override
-    public void write(@NotNull final Buffer buffer) {
-        buffer.writeByteArray(secretKeyEncrypted);
-        buffer.writeByteArray(verifyTokenEncrypted);
-    }
+    /**
+     * {@link true} if the client understands the request, {@link false} otherwise (no payload follows)
+     */
+    boolean successful;
+
+    /**
+     * Any data, depending on the channel
+     *
+     * @apiNote The length of this array must be inferred from the packet length
+     */
+    @Nullable byte[] data;
 
     @Override
     public void read(@NotNull final Buffer buffer) {
-        secretKeyEncrypted = buffer.readByteArray();
-        verifyTokenEncrypted = buffer.readByteArray();
+        messageId = buffer.readVarInt();
+        successful = buffer.readBoolean();
+        // Array size for data not found
+        // FIXME: 18.04.2019 because `The length of this array must be inferred from the packet length.`
+        buffer.readBytes(data);
     }
 
     @Override

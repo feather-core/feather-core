@@ -322,26 +322,26 @@ public abstract class Buffer extends ByteBuf {
         }
     }
 
-    public UUID readUUID() {
+    public UUID readUuid() {
         return new UUID(readLong(), readLong());
     }
 
-    public void writeUUID(UUID uuid) {
+    public void writeUuid(UUID uuid) {
         writeLong(uuid.getMostSignificantBits());
         writeLong(uuid.getLeastSignificantBits());
     }
 
-    public UUID readUUIDNullable() {
+    public UUID readUuidNullable() {
         if (readBoolean()) {
-            return readUUID();
+            return readUuid();
         }
         return null;
     }
 
-    public void writeUUIDNullable(UUID uuid) {
+    public void writeUuidNullable(UUID uuid) {
         if (uuid != null) {
             writeBoolean(true);
-            writeUUID(uuid);
+            writeUuid(uuid);
         } else {
             writeBoolean(false);
         }
